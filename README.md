@@ -1,35 +1,53 @@
 # Little Letters × Word Mayhem
 
-**New in v3:** 31 advanced vocabulary lessons, 12 idioms, illustrated missions, six-step meaningful word practice, spaced reviews and link-based friend challenges for ages 6–13. See [NEW_IN_V3.md](NEW_IN_V3.md) for feature boundaries, child safety notes and Android build instructions.
+An offline-friendly English learning app for young children **and** older learners. No Flutter, React Native, third-party runtime, analytics, accounts or server costs.
 
-An offline-friendly, age-adaptive English learning experience. No Flutter and no third-party runtime dependencies.
+## Choose a stage
 
-## Choose a learning stage
+The first screen asks who is playing. Stages are **4–6**, **7–9**, **10–13**, **14–17** and **18+**. A child can move stages at any time without losing progress; stage is a learning suggestion, not an ability diagnosis.
 
-At first launch choose 4–6, 7–9, 10–13, 14–17, or 18+. Stages are recommendations, not ability tests; change stage at any time.
+- **4–6:** accessible home with three large picture-first actions, large tap targets, spoken prompts, visual word tiles, three-word sentence missions. Parent-supported early reading is expected.
+- **7–9:** picture/word games, five-to-seven tile sentences, funny consequences and age-appropriate grammar tips.
+- **10–13:** mission-first homepage, sentence-building challenges, semantic consequences, definitions and spelling basics if needed.
+- **14–17:** more precise vocabulary, warnings and science communication.
+- **18+:** professional vocabulary in short decisions (e.g. mitigate losses, negotiate terms, acknowledge concerns).
 
-- 4–6: a picture-first home screen with three enormous tap targets, visual word tiles, sound assistance and three-word stories.
-- 7–9: picture games, spelling and funny simple sentence missions.
-- 10–13: mission-first UX, stronger vocabulary, authored grammar hints and consequence-driven sentence puzzles.
-- 14–17: school-oriented vocabulary, warnings and science scenarios.
-- 18+: workplace English challenges around mitigating losses, negotiating terms and responding to concerns.
+## Word Mayhem playable MVP
 
-## Word Mayhem playable integration
+13 **authored** missions across the five stages. Tap tiles on any device or drag them on supporting browsers; press **Make it happen**. Every mission has one helpful action and one fully grammatical yet unhelpful (often funny) action. A targeted subject–verb grammar mistake blocks execution and highlights the word in red, with a simple explanation. Each scene changes its on-screen consequence; missions offer hints, meanings, text-to-speech and persisted completion. No generic AI grammar checker is claimed: **the checker intentionally covers the authored tile sequences only.**
 
-Fourteen curated offline missions. Tap tiles to build a sentence (desktop browsers also support drag-and-drop), then choose Make it happen. The scene changes to a successful or funny outcome. An authored subject–verb error stops execution and highlights the incorrect word; the player can repair and retry. Word meanings and pronunciation are available.
+Scenes currently use bundled emoji-style illustrations as temporary art; custom illustrated states would make the game more production-ready. Other Word Mayhem plans such as multiplayer, coins, avatar store and unrestricted sentence input are **not** included yet.
 
-Scope: These are authored sentence challenges, not an unrestricted AI grammar engine. The illustrations are emoji-based placeholders pending a custom art pass. Multiplayer, coins/shop, free-form sentence parsing and generated scenes are not included in this first integration.
+## Original ABC lessons still work
 
-## Original alphabet learning preserved
+- 26 letters, five words each: show **3 beginner words** then unlock the next **2** after successful spelling practice on two distinct days (or parent override).
+- Picture matching, picture-to-word recognition, tap-to-spell letters, speech, stars and progress.
+- A4 **Trace & Copy**, **Missing Letter**, and **Picture Spelling** print-ready worksheets.
+- Parent checklist tracks independent handwriting separately from tile-spelling.
+- No account; local device storage. The original letter progress storage key is preserved.
 
-All 26 letters and 130 beginner words. Start with 3 short words and unlock 2 more after spelling practice on two separate days (or by parent override). Includes picture recognition, picture-to-word matching, spelling with letters, TTS, stars and A4 writing worksheets, plus a parent handwriting checklist. Existing device progress data is preserved.
+## Android / old phone support
 
-## Older phone support
+`android/` is a very small native-Java WebView shell (not Flutter), minimum Android **5.0 (API 21)**. It bundles all web game files offline, uses Android's text-to-speech and print services, and has no native `.so` libraries or third-party runtime dependencies. It uses one universal APK for 32-bit/64-bit Android phones. Older Android System WebView engines and emoji fonts can still affect rendering: test on real devices. Android 4.x is **not** supported.
 
-The android/ project is a minimal Java Android WebView shell, minSdk 21 / Android 5.0. The APK bundles the offline game assets, requires no Flutter and no Internet permission. One universal APK covers 32-bit/64-bit phones where the installed Android System WebView can render the app. Older devices may require a WebView update; emoji/font support varies. The GitHub Actions workflow compiles and publishes a sideloadable debug APK; no emulator runs. A successful build is not proof of real-device behavior.
+On every push affecting the app, `.github/workflows/android-apk.yml` builds a debug-signed sideload APK with GitHub Actions and publishes it to the `android-testing` GitHub Release. **No emulator runs.** Build success does not prove real-device compatibility. See [android/README.md](android/README.md) for detailed testing instructions.
 
-## Test
+## Use locally
 
-    node --test tests/*.test.js
+Serve the project folder over HTTP (e.g. `python3 -m http.server 8000`) or open `index.html` (service worker requires HTTPS/localhost). GitHub Pages is a hosting option. The offline asset cache uses `service-worker.js`.
 
-For APK download and testing instructions, see android/README.md.
+## Tests
+
+```sh
+node --test tests/*.test.js
+```
+
+The tests check content completeness, valid/invalid mission outcomes, age selection, completion persistence, original ABC lessons, worksheet generation, and Android build wiring.
+
+## V5: goal-based adult studio and simplified kids UX
+
+The latest experience ships a custom adult vocabulary engine: choose personal goals, browse 54 authored words or 15 idioms, see generated scenic artwork and per-word memory cues, practise meaning/synonyms/antonyms/real-world scenarios, assemble natural example sentences, then write an original sentence. Wrong answer feedback identifies specific errors instead of merely demanding a word count. Offline free-text feedback is deliberately limited: it is **not** an AI grammar evaluator. Lessons lead into saved-word arsenal, XP, streak and scheduled review.
+
+Child-friendly missions now use two touch choices for ages 4–6 and three for ages 7–13, with large illustrations, a single clear goal, spoken instructions, an immediate visual result and one prominent Next button. The original alphabet and worksheets remain accessible. Shared friend challenges for ages 6–13 are asynchronous invite links, **not live rooms**.
+
+See [PRODUCT_FEATURE_MAP.md](PRODUCT_FEATURE_MAP.md) for precise feature state, omissions, privacy and compatibility notes. App artwork includes model-generated image cutouts and distinct SVG illustrations. Android/Web offline asset bundles include all new code and image assets; CI should build the universal Android testing APK.

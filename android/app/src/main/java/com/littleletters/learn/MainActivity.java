@@ -1,6 +1,8 @@
 package com.littleletters.learn;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.content.Context;
 import android.os.Bundle;
 import android.print.PrintAttributes;
@@ -63,12 +65,17 @@ public final class MainActivity extends Activity {
     private final class LocalAssetClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            return !url.startsWith(ASSET_BASE);
+            if(url.startsWith(ASSET_BASE)) return false;
+            openApprovedLink(url);
+            return true;
         }
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            return !request.getUrl().toString().startsWith(ASSET_BASE);
+            String url = request.getUrl().toString();
+            if (url.startsWith(ASSET_BASE)) return false;
+            if (request.isForMainFrame()) openApprovedLink(url);
+            return true;
         }
 
         @Override
@@ -103,6 +110,14 @@ public final class MainActivity extends Activity {
         }
     }
 
+    private void openApprovedLink(String url) {
+        if (url == null || !url.startsWith("https://aditya130603.github.io/learning/")) return;
+        runOnUiThread(() -> {
+            try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url))); }
+            catch (Exception ignored) { }
+        });
+    }
+
     private final class NativeBridge {
         @JavascriptInterface
         public void speak(String text) {
@@ -114,6 +129,19 @@ public final class MainActivity extends Activity {
                 }
                 speech.stop();
                 speech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "word");
+            });
+        }
+
+        @JavascriptInterface
+        public void shareChallenge(String url) {
+            if (url == null || !url.startsWith("https://aditya130603.github.io/learning/#")) return;
+            runOnUiThread(() -> {
+                try {
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    share.setType("text/plain");
+                    share.putExtra(Intent.EXTRA_TEXT, url);
+                    startActivity(Intent.createChooser(share, "Share with a trusted friend"));
+                } catch (Exception ignored) { }
             });
         }
 
