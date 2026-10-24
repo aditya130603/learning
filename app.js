@@ -196,10 +196,11 @@
   }
   function render(){
     if(!BANK || !BANK.length){app.innerHTML='<p>Could not load alphabet words. Please refresh.</p>';return;}
-    app.innerHTML=Mayhem.getAge()?`${header()}<main class="main-content" id="main-content">${({home:landing,letters:allLetters,lesson,game,result:results,worksheets,grownups,library:()=>WordStudio.library('library'),dictionary:()=>LexiconExplorer.view(),idioms:()=>WordStudio.library('idioms'),review:WordStudio.review,'atlas-lesson':WordStudio.lesson,challenge:FriendChallenge.render,missions:()=>KidV5 && ['4-6','7-9','10-13'].includes(Mayhem.getAge())?KidV5.hub():Mayhem.hub(),'mission-play':()=>KidV5 && ['4-6','7-9','10-13'].includes(Mayhem.getAge())?KidV5.play():Mayhem.play(),profile:Mayhem.agePicker,goals:WordStudio.goals,arsenal:WordStudio.arsenal}[ui.page]||landing)()}</main><div id="live-msg" role="status" aria-live="polite" class="sr-only"></div>`:`<main class="welcome-screen">${Mayhem.welcome()}</main><div id="live-msg" class="sr-only" role="status" aria-live="polite"></div>`;
+    app.innerHTML=Mayhem.getAge()?`${header()}<main class="main-content" id="main-content">${({home:landing,letters:allLetters,lesson,game,result:results,worksheets,grownups,library:()=>WordStudio.library('library'),dictionary:()=>LexiconExplorer.view()+(window.WordLabV7?window.WordLabV7.lesson():''),idioms:()=>WordStudio.library('idioms'),review:WordStudio.review,'atlas-lesson':WordStudio.lesson,challenge:FriendChallenge.render,missions:()=>KidV5 && ['4-6','7-9','10-13'].includes(Mayhem.getAge())?KidV5.hub():Mayhem.hub(),'mission-play':()=>KidV5 && ['4-6','7-9','10-13'].includes(Mayhem.getAge())?KidV5.play():Mayhem.play(),profile:Mayhem.agePicker,goals:WordStudio.goals,arsenal:WordStudio.arsenal}[ui.page]||landing)()}</main><div id="live-msg" role="status" aria-live="polite" class="sr-only"></div>`:`<main class="welcome-screen">${Mayhem.welcome()}</main><div id="live-msg" class="sr-only" role="status" aria-live="polite"></div>`;
     printSheet.innerHTML=worksheetHTML();
   }
   app.addEventListener('click',ev=>{
+    const wordlab=ev.target.closest('[data-wl]');if(wordlab&&window.WordLabV7){Promise.resolve(window.WordLabV7.action(wordlab.dataset.wl)).then(()=>render());return;}
     const lex=ev.target.closest('[data-lx]');if(lex){const task=lex.dataset.lx;if(task==='speak')LexiconExplorer.speak();else if(task==='start')LexiconExplorer.start();else if(task==='stop')LexiconExplorer.stop();else if(task==='save')LexiconExplorer.toggleSave();else if(task.indexOf('sense:')===0)LexiconExplorer.select(task.split(':')[1]);else if(task.indexOf('open:')===0){LexiconExplorer.lookup(decodeURIComponent(task.slice(5))).then(()=>render());return;}render();return;}
     const adult=ev.target.closest('[data-v5]');
     if(adult){
@@ -275,7 +276,7 @@
     const key=ev.dataTransfer.getData('text/plain');
     if(/^\d+$/.test(key)){Mayhem.pickTile(key);render();}
   });
-  app.addEventListener('submit',ev=>{if(ev.target.id==='lx-recall-form'){ev.preventDefault();const i=ev.target.querySelector('#lx-recall-input');LexiconExplorer.grade(i?i.value:'');render();return;}if(ev.target.id==='lx-form'){ev.preventDefault();const input=ev.target.querySelector('#lx-input');LexiconExplorer.lookup(input?input.value:'').then(()=>render());return;}if(ev.target.id==='atlas-answer-form'){
+  app.addEventListener('submit',ev=>{if(ev.target.id==='wl-answer-form'){ev.preventDefault();const input=ev.target.querySelector('#wl-input');if(window.WordLabV7)window.WordLabV7.check(input?input.value:'');render();return;}if(ev.target.id==='lx-recall-form'){ev.preventDefault();const i=ev.target.querySelector('#lx-recall-input');LexiconExplorer.grade(i?i.value:'');render();return;}if(ev.target.id==='lx-form'){ev.preventDefault();const input=ev.target.querySelector('#lx-input');LexiconExplorer.lookup(input?input.value:'').then(()=>render());return;}if(ev.target.id==='atlas-answer-form'){
     ev.preventDefault();const input=ev.target.querySelector('#atlas-typed');if(input&&!WordStudio.ui.feedback){WordStudio.answer(input.value);render();}
   }});
   app.addEventListener('input',ev=>{
