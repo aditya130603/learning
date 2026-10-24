@@ -200,7 +200,7 @@
     printSheet.innerHTML=worksheetHTML();
   }
   app.addEventListener('click',ev=>{
-    const lex=ev.target.closest('[data-lx]');if(lex){const task=lex.dataset.lx;if(task==='speak')LexiconExplorer.speak();else if(task.indexOf('sense:')===0)LexiconExplorer.select(task.split(':')[1]);render();return;}
+    const lex=ev.target.closest('[data-lx]');if(lex){const task=lex.dataset.lx;if(task==='speak')LexiconExplorer.speak();else if(task==='start')LexiconExplorer.start();else if(task==='stop')LexiconExplorer.stop();else if(task==='save')LexiconExplorer.toggleSave();else if(task.indexOf('sense:')===0)LexiconExplorer.select(task.split(':')[1]);else if(task.indexOf('open:')===0){LexiconExplorer.lookup(decodeURIComponent(task.slice(5))).then(()=>render());return;}render();return;}
     const adult=ev.target.closest('[data-v5]');
     if(adult){
       const action=adult.dataset.v5;
@@ -275,7 +275,7 @@
     const key=ev.dataTransfer.getData('text/plain');
     if(/^\d+$/.test(key)){Mayhem.pickTile(key);render();}
   });
-  app.addEventListener('submit',ev=>{if(ev.target.id==='lx-form'){ev.preventDefault();const input=ev.target.querySelector('#lx-input');LexiconExplorer.lookup(input?input.value:'').then(()=>render());return;}if(ev.target.id==='atlas-answer-form'){
+  app.addEventListener('submit',ev=>{if(ev.target.id==='lx-recall-form'){ev.preventDefault();const i=ev.target.querySelector('#lx-recall-input');LexiconExplorer.grade(i?i.value:'');render();return;}if(ev.target.id==='lx-form'){ev.preventDefault();const input=ev.target.querySelector('#lx-input');LexiconExplorer.lookup(input?input.value:'').then(()=>render());return;}if(ev.target.id==='atlas-answer-form'){
     ev.preventDefault();const input=ev.target.querySelector('#atlas-typed');if(input&&!WordStudio.ui.feedback){WordStudio.answer(input.value);render();}
   }});
   app.addEventListener('input',ev=>{
