@@ -30,22 +30,22 @@ def distractors(term, sense, pool):
     meaning = safe(sense.get('d',''))
     own = tokens(meaning)
     excluded = {term.lower(), *(str(w).lower() for w in sense.get('s',[]))}
-    candidates=[]
     size=len(pool)
     if not size:return []
     start=hash_num(term+'|'+meaning)%size
+    # Coprime increment avoids repeatedly testing one candidate in uneven shards.
+    from math import gcd
     jump=131 if size>131 else 1
+    while gcd(jump,size)!=1:jump+=2
+    unique=[]
     for n in range(min(size,180)):
         other,definition=pool[(start+n*jump)%size]
-        if other.lower() in excluded or not definition or definition==meaning:
-            continue
-        common = len(own & tokens(definition))
-        # Avoid distractors which are near paraphrases; still not a proof of semantic distinctness.
-        if common>=2 or len(definition)<14 or len(definition)>180:continue
-        candidates.append((hash_num(term+'|'+meaning+'|'+other+'|'+definition),definition))
-    candidates.sort(key=lambda x:x[0]);unique=[]
-    for _, definition in candidates:
-        if definition not in unique:unique.append(definition)
+        if other.lower() in excluded or not definition or definition==meaning:continue
+        if len(definition)<14 or len(definition)>180:continue
+        ts=tokens(definition)
+        if len(own & ts)>=2:continue
+        if any(definition==existing or len(ts & tokens(existing))>=3 for existing in unique):continue
+        unique.append(definition)
         if len(unique)==2:break
     return unique
 
