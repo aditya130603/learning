@@ -1,0 +1,60 @@
+name: Android APK - universal Android 5+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - 'app.js'
+      - 'words.js'
+      - 'styles.css'
+      - 'index.html'
+      - 'assets/**'
+      - '.github/workflows/android-apk.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check learning logic
+        run: node --test tests/*.test.js
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Bundle offline website and launcher icon
+        run: |
+          mkdir -p android/app/src/main/assets/assets android/app/src/main/res/drawable-nodpi
+          cp index.html app.js words.js styles.css service-worker.js manifest.webmanifest android/app/src/main/assets/
+          cp -R assets/. android/app/src/main/assets/assets/
+          cp assets/icon-192.png android/app/src/main/res/drawable-nodpi/ic_launcher.png
+      - name: Build universal debug APK (Android API 21+)
+        run: gradle -p android :app:assembleDebug --stacktrace --no-daemon
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk little-letters-android5-plus.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Little-Letters-Android-5-plus
+          path: little-letters-android5-plus.apk
+          retention-days: 90
+      - name: Publish latest testing APK on Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view android-testing >/dev/null 2>&1; then
+            gh release upload android-testing little-letters-android5-plus.apk --clobber
+          else
+            gh release create android-testing little-letters-android5-plus.apk --target "$GITHUB_SHA" --title 'Little Letters - Android testing APK' --notes 'Universal debug-signed testing APK, Android 5.0 or later. No Flutter, no emulator, no third-party runtime dependencies. Lessons are offline.' --prerelease
+          fi

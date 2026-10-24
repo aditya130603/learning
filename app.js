@@ -35,6 +35,7 @@
   const btn=(label,action,cls='btn btn-primary',extra='')=>`<button class="${cls}" data-action="${action}" ${extra}>${label}</button>`;
   const title=(eyebrow,heading,description='')=>`<div class="titlegroup"><span class="eyebrow">${eyebrow}</span><h1>${heading}</h1>${description?`<p>${description}</p>`:''}</div>`;
   function speak(text){
+    if (window.LittleLettersAndroid && window.LittleLettersAndroid.speak) { window.LittleLettersAndroid.speak(text); return; }
     if (!('speechSynthesis' in window)) { announce('Audio is not supported in this browser.'); return; }
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
@@ -199,7 +200,7 @@
       case 'clear-tiles':if(ui.session&&!ui.session.answered){ui.session.picks=[];ui.session.message='';render();}break;
       case 'remove-tile':if(ui.session&&!ui.session.answered){ui.session.picks.pop();ui.session.message='';render();}break;
       case 'next-letter':selectLetter((ui.letter+1)%26);break;
-      case 'print':window.print();break;
+      case 'print':if(window.LittleLettersAndroid && window.LittleLettersAndroid.printWorksheet){window.LittleLettersAndroid.printWorksheet();}else{window.print();}break;
       case 'reset-progress':if(window.confirm('Erase all saved stars, letter progress and unlocked word levels on this device?')){data=initialProgress();try{localStorage.setItem(KEY,JSON.stringify(data));}catch{}render();}break;
     }
   });
@@ -210,7 +211,7 @@
     if(ev.target.id==='ws-type'){ui.worksheetType=ev.target.value;render();}
     if(ev.target.id==='ws-answers'){ui.worksheetAnswers=ev.target.checked;render();}
   });
-  if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')){
+  if(!window.LittleLettersAndroid && 'serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')){
     window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
   }
   render();

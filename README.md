@@ -33,7 +33,11 @@ Open `http://localhost:8000/`. Do not open `index.html` with a `file://` URL if 
 4. When deployment succeeds, the URL is **https://aditya130603.github.io/learning/**.
 5. Open the live website in Chrome on Android and choose **Install app** from the browser menu to add it to the home screen. On iPhone use Safari **Share → Add to Home Screen**. Installability depends on browser/device support and HTTPS.
 
-The web PWA can later be packaged into an Android APK using Capacitor or Android WebView if a Play Store-native build is preferred. This repository is the actual web/PWA source, **not** an APK.
+An **Android 5.0+ universal APK** is built automatically by GitHub Actions using a lightweight native Java WebView wrapper (not Flutter). Download the testing APK from [Releases](https://github.com/aditya130603/learning/releases/tag/android-testing). See [Android README](android/README.md) for compatibility details.
+
+## Android installation (APK)
+
+The GitHub Actions workflow **Android APK - universal Android 5+** builds a debug-signed APK on pushes to `main`. Go to the [testing APK release](https://github.com/aditya130603/learning/releases/tag/android-testing) or Actions artifacts and install the APK on Android 5 or later. The APK contains all the lessons for offline use, uses Android text-to-speech and supports worksheet printing. No Flutter or emulator is involved.
 
 ## Lessons and parental controls
 
