@@ -1,0 +1,66 @@
+{
+  "format": "word-mayhem-count-min-v1",
+  "model_bytes": 25165824,
+  "sources": [
+    {
+      "title": "UD English EWT v2.18 train",
+      "sentences": 10794
+    },
+    {
+      "title": "Jane Austen, Pride and Prejudice",
+      "sentences": 6860
+    },
+    {
+      "title": "Jane Austen, Emma",
+      "sentences": 8327
+    },
+    {
+      "title": "Charles Dickens, Great Expectations",
+      "sentences": 9196
+    },
+    {
+      "title": "Charles Dickens, A Tale of Two Cities",
+      "sentences": 7327
+    },
+    {
+      "title": "Arthur Conan Doyle, Sherlock Holmes",
+      "sentences": 6419
+    },
+    {
+      "title": "Mary Shelley, Frankenstein",
+      "sentences": 3235
+    },
+    {
+      "title": "Lewis Carroll, Alice in Wonderland",
+      "sentences": 1302
+    },
+    {
+      "title": "Herman Melville, Moby Dick",
+      "sentences": 8820
+    },
+    {
+      "title": "Mark Twain, Huckleberry Finn",
+      "sentences": 5901
+    },
+    {
+      "title": "H G Wells, The Time Machine",
+      "sentences": 1880
+    }
+  ],
+  "trained_sentences": 66374,
+  "trained_tokens": 1271033,
+  "trained_unigrams": 1271033,
+  "trained_bigrams": 1204659,
+  "trained_trigrams": 1138285,
+  "different_words": 33935,
+  "nonzero_counters": 1867895,
+  "counter_slots": 6291456,
+  "heldout_simple_corruption_ranking": {
+    "rank_correct": 1033,
+    "rank_wrong": 107,
+    "ties": 4,
+    "total": 1144,
+    "accuracy_excluding_ties": 0.906
+  },
+  "limitations": "Classical literary text is not modern learner writing. Rankings are weak evidence, not independent grammatical correctness. No real-world GEC benchmark has been passed."
+}
