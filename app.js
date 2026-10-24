@@ -188,7 +188,7 @@
   app.addEventListener('click',ev=>{
     const age=ev.target.closest('[data-wm-age]');if(age){Mayhem.setAge(age.dataset.wmAge);navigate('home');return;}
     const mission=ev.target.closest('[data-wm-mission]');if(mission){if(Mayhem.choose(mission.dataset.wmMission))navigate('mission-play');return;}
-    const tile=ev.target.closest('[data-wm-tile]');if(tile){Mayhem.tile(tile.dataset.wmTile);render();return;}
+    const wordTile=ev.target.closest('[data-wm-tile]');if(wordTile){Mayhem.tile(wordTile.dataset.wmTile);render();return;}
     const rm=ev.target.closest('[data-wm-remove]');if(rm){Mayhem.remove(rm.dataset.wmRemove);render();return;}
     const mean=ev.target.closest('[data-wm-mean]');if(mean){Mayhem.meaning(mean.dataset.wmMean);return;}
     const act=ev.target.closest('[data-wm-action]');if(act){ui.page=Mayhem.action(act.dataset.wmAction);render();return;}
