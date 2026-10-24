@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "Little Letters — Learn, Play, Write",
+  "short_name": "Little Letters",
+  "description": "Learn alphabet words with pictures, listening games, spelling and printable worksheets.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8f7fd",
+  "theme_color": "#7961e8",
+  "orientation": "portrait-primary",
+  "icons": [
+    {"src":"assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"},
+    {"src":"assets/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"assets/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}
+  ]
+}
