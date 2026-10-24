@@ -104,6 +104,7 @@ public final class MainActivity extends Activity {
             if (name.endsWith(".js")) return "application/javascript";
             if (name.endsWith(".svg")) return "image/svg+xml";
             if (name.endsWith(".png")) return "image/png";
+            if (name.endsWith(".webp")) return "image/webp";
             if (name.endsWith(".webmanifest")) return "application/manifest+json";
             if (name.endsWith(".json")) return "application/json";
             return "application/octet-stream";
