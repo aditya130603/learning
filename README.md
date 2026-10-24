@@ -65,3 +65,9 @@ Implemented checks: basic subject–verb agreement (pronouns and a curated set o
 - The APK build bundles both scripts with the other offline assets, and the website service worker caches them.
 
 **Limitations:** The statistical ranker is experimental and should not be trusted as a general grammar-quality probability. Spelling, phrasal verbs, arbitrary clauses, open-ended semantic entailment and nuanced idiom usage need separate evaluation and development. No user sentences are sent to a server.
+
+## GrammarCore Context v0.2 (24 MiB model)
+
+GrammarCore now has optional offline **trained phrase-frequency** evidence, used alongside its original grammar rules. The data generator is `training/build_context_model.py`; dataset provenance and limitations are in `grammar-data/SOURCES.md`. The 24 MiB `grammar-context.bin` is a binary count-min sketch built from observed public text; it is not a 24 MiB neural network. Web viewers fetch it on first adult writing lesson; Android apps bundle it locally. Do not treat higher phrase-frequency rank as proof of grammatical correctness.
+
+`node --test tests/*.test.js` executes existing and new tests. GitHub Actions downloads corpus and builds `grammar-context.bin` before building the offline APK; a guard prevents release when the source download fails or too few real sentences are observed. No emulator is involved.

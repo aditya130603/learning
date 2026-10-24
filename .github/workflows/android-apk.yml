@@ -15,6 +15,9 @@ on:
       - 'adult-v5.js'
       - 'grammar-core.js'
       - 'grammar-model.js'
+      - 'grammar-context.js'
+      - 'grammar-context.bin'
+      - 'grammar-data/**'
       - 'training/**'
       - 'kids-v5.js'
       - 'mayhem.js'
@@ -29,12 +32,21 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Train (or verify) full offline 24 MiB context model from attributed text
+        run: |
+          if [ -f grammar-context.bin ]; then
+            test "$(wc -c < grammar-context.bin)" -eq 25165824
+            echo 'Existing verified-size model reused.'
+          else
+            python3 training/build_context_model.py --output grammar-context.bin --report training/CONTEXT_REPORT.json
+          fi
+          test "$(wc -c < grammar-context.bin)" -eq 25165824
       - name: Check learning logic
         run: node --test tests/*.test.js
       - uses: actions/setup-java@v4
@@ -53,7 +65,7 @@ jobs:
       - name: Bundle offline website and launcher icon
         run: |
           mkdir -p android/app/src/main/assets/assets android/app/src/main/res/drawable-nodpi
-          cp index.html app.js words.js mission-content.js mayhem.js scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-core.js adult-v5.js kids-v5.js styles.css v3.css v5.css service-worker.js manifest.webmanifest android/app/src/main/assets/
+          cp index.html app.js words.js mission-content.js mayhem.js scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-context.js grammar-context.bin grammar-core.js adult-v5.js kids-v5.js styles.css v3.css v5.css service-worker.js manifest.webmanifest android/app/src/main/assets/
           cp -R assets/. android/app/src/main/assets/assets/
           cp assets/icon-192.png android/app/src/main/res/drawable-nodpi/ic_launcher.png
       - name: Build universal debug APK (Android API 21+)
@@ -65,6 +77,25 @@ jobs:
           name: Little-Letters-Android-5-plus
           path: little-letters-android5-plus.apk
           retention-days: 90
+      - name: Publish model as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrammarCore-Trained-Model-24MiB
+          path: |
+            grammar-context.bin
+            training/CONTEXT_REPORT.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Commit trained data to repository for PWA offline use
+        if: ${{ !cancelled() && success() }}
+        run: |
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.name 'github-actions[bot]'
+          git add grammar-context.bin training/CONTEXT_REPORT.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'data: publish trained 24 MiB grammar context counts'
+            git push origin HEAD:main
+          fi
       - name: Publish latest testing APK on Releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

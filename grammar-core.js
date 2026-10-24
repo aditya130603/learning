@@ -6,6 +6,7 @@
 (function(root){
 'use strict';
 var MODEL=root.GrammarCoreModel||{bias:0,weights:{}};
+var CONTEXT=root.GrammarContext||null;
 var irregularSubjects={children:'plural',people:'plural',men:'plural',women:'plural',feet:'plural',teeth:'plural',mice:'plural',data:'plural',everyone:'singular',someone:'singular',anyone:'singular',nobody:'singular',person:'singular',child:'singular',man:'singular',woman:'singular',news:'singular',analysis:'singular',business:'singular',success:'singular',class:'singular',glass:'singular',boss:'singular'};
 var verbs=['agree','allow','answer','argue','ask','avoid','begin','believe','bring','build','buy','call','carry','change','check','choose','claim','clarify','come','compare','complete','consider','create','decide','deliver','describe','design','develop','discuss','do','drink','eat','explain','feel','find','finish','fix','follow','get','give','go','grow','handle','have','help','hide','improve','include','influence','invest','keep','know','learn','lead','leave','listen','live','look','love','make','manage','mean','meet','mitigate','move','need','offer','open','organise','organize','pay','plan','play','prefer','prepare','present','protect','provide','read','receive','reduce','remember','respond','review','rise','run','say','save','see','sell','send','share','show','sit','solve','speak','start','stay','stop','study','suggest','support','take','talk','teach','tell','think','transform','try','understand','use','visit','wait','walk','want','watch','win','work','write'];
 var verbSet=Object.create(null);verbs.forEach(function(x){verbSet[x]=1;});
@@ -71,7 +72,8 @@ for(var i=issues.length-1;i>=0;i--){var issue=issues[i];var candidate=replace(se
 corrected=normaliseSpacing(corrected);
 var entry=opts.entry||null,target=(opts.target||opts.word||(entry&&entry.title)||'').trim();var hasTarget=true,lexiconNote='';
 if(target){var escaped=target.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');var rx=new RegExp('(?:^|[^a-z])'+escaped+'(?=$|[^a-z])','i');hasTarget=rx.test(sentence);if(!hasTarget)lexiconNote='Use “'+target+'” in your own sentence. '+(entry&&entry.example?'Example: '+entry.example:'');else lexiconNote='The target expression appears. The checker cannot independently establish that its meaning fits this scenario.';}
-return {text:sentence,issues:issues,suggested:corrected,hasTarget:hasTarget,target:target,lexiconNote:lexiconNote,score:score(sentence),suggestedScore:score(corrected),status:issues.length?'issues':!hasTarget?'missing-target':'review',canCertify:false,model:'GrammarCore hybrid 0.1'};
+var beforeContext=CONTEXT?CONTEXT.rank(sentence):null,afterContext=CONTEXT?CONTEXT.rank(corrected):null;
+return {context:{ready:beforeContext!==null,original:beforeContext,correction:afterContext,relative:beforeContext===null||afterContext===null?null:Number((afterContext-beforeContext).toFixed(4)),note:'Phrase frequency is weak evidence and cannot prove a sentence is grammatical.'},text:sentence,issues:issues,suggested:corrected,hasTarget:hasTarget,target:target,lexiconNote:lexiconNote,score:score(sentence),suggestedScore:score(corrected),status:issues.length?'issues':!hasTarget?'missing-target':'review',canCertify:false,model:'GrammarCore hybrid 0.1'};
 }
-root.GrammarCore={check:check,detect:detect,score:score,tokens:tokens,modelBytes:JSON.stringify(MODEL).length,version:'0.1.0'};
+root.GrammarCore={check:check,detect:detect,score:score,tokens:tokens,modelBytes:JSON.stringify(MODEL).length,version:'0.2.0'};
 })(typeof window!=='undefined'?window:globalThis);
