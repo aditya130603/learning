@@ -25,6 +25,9 @@ on:
       - 'scene-pack-v6.js'
       - 'lexicon-v6.js'
       - 'lexicon-v6.css'
+      - 'dictionary-study-v7.js'
+      - 'dictionary-study-v7.css'
+      - 'dictionary-lessons/**'
       - 'scripts/**'
       - 'dictionary/**'
       - 'mayhem.js'
@@ -56,6 +59,11 @@ jobs:
           test "$(wc -c < grammar-context.bin)" -eq 25165824
       - name: Build attributed offline dictionary (OEWN 2025)
         run: python3 scripts/build_wordnet.py --output dictionary
+      - name: Create source-grounded practice for every installed dictionary sense
+        run: |
+          python3 scripts/enrich_wordnet.py --dictionary dictionary --output dictionary-lessons
+          python3 tests/test_enrichment.py
+          python3 -c "import json; d=json.load(open('dictionary/meta.json')); r=json.load(open('dictionary-lessons/report.json')); assert r['counts']['terms']==d['entry_count'] and d['entry_count']>=100000, (d['entry_count'],r['counts']['terms']); print('Practice coverage verified:',r['counts']['terms'])"
       - name: Check learning logic
         run: node --test tests/*.test.js
       - uses: actions/setup-java@v4
@@ -74,10 +82,12 @@ jobs:
       - name: Bundle offline website and launcher icon
         run: |
           mkdir -p android/app/src/main/assets/assets android/app/src/main/res/drawable-nodpi
-          cp index.html app.js words.js mission-content.js mayhem.js scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-context.js grammar-context.bin grammar-core.js adult-v5.js kids-v5.js kids-polish-v6.js mission-expansion-v6.js scene-pack-v6.js lexicon-v6.js lexicon-v6.css styles.css v3.css v5.css service-worker.js manifest.webmanifest android/app/src/main/assets/
+          cp index.html dictionary-study-v7.js dictionary-study-v7.css app.js words.js mission-content.js mayhem.js scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-context.js grammar-context.bin grammar-core.js adult-v5.js kids-v5.js kids-polish-v6.js mission-expansion-v6.js scene-pack-v6.js lexicon-v6.js lexicon-v6.css styles.css v3.css v5.css service-worker.js manifest.webmanifest android/app/src/main/assets/
           cp -R assets/. android/app/src/main/assets/assets/
           mkdir -p android/app/src/main/assets/dictionary
           cp -R dictionary/. android/app/src/main/assets/dictionary/
+          mkdir -p android/app/src/main/assets/dictionary-lessons
+          cp -R dictionary-lessons/. android/app/src/main/assets/dictionary-lessons/
           cp assets/icon-192.png android/app/src/main/res/drawable-nodpi/ic_launcher.png
       - name: Build universal debug APK (Android API 21+)
         run: gradle -p android :app:assembleDebug --stacktrace --no-daemon

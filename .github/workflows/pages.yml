@@ -25,6 +25,11 @@ jobs:
         run: node --test tests/*.test.js
       - name: Build offline licensed WordNet search data
         run: python3 scripts/build_wordnet.py --output dictionary
+      - name: Create source-grounded practice for every installed dictionary sense
+        run: |
+          python3 scripts/enrich_wordnet.py --dictionary dictionary --output dictionary-lessons
+          python3 tests/test_enrichment.py
+          python3 -c "import json; d=json.load(open('dictionary/meta.json')); r=json.load(open('dictionary-lessons/report.json')); assert r['counts']['terms']==d['entry_count'] and d['entry_count']>=100000, (d['entry_count'],r['counts']['terms']); print('Practice coverage verified:',r['counts']['terms'])"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -80,3 +80,8 @@ GrammarCore now has optional offline **trained phrase-frequency** evidence, used
 - Adults have a separate Dictionary search using **Open English WordNet 2025**, CC BY 4.0. The licensed source is built into an A–Z sharded word-reference set by the CI pipeline. Senses, synonyms, POS and any original examples are provided where available. Not all words have idioms, antonyms, illustrations or authored missions. See [dictionary attribution](LICENSE-DICTIONARY.md).
 - Generate the dictionary locally via `python3 scripts/build_wordnet.py --output dictionary`. GitHub Pages must be enabled to publish the web build. Online kid friend challenges are asynchronous invite games, not real-time matchmaking.
 - Neural grammar correction remains deliberately deferred; GrammarCore is retained unchanged.
+
+
+## Word Lab v7 — source-grounded dictionary practice
+
+The build now creates auditable lesson plans for every OEWN dictionary sense: meaning recall, multiple-choice definition when safe alternatives are available, and cloze when an attested example uses the word exactly. Missing context or antonyms are not invented. A curated set of memory hooks and 12 illustrated scenes supplement high-value words. Generated words are not equal to 126,000 individually illustrated lessons. Review stays on-device. Read [WORDLAB_V7.md](WORDLAB_V7.md) and `dictionary-lessons/report.json` in the build output.
