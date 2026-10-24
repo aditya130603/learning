@@ -22,7 +22,8 @@ for(const moduleName of ['scene-art.js','lexicon-data.js','word-studio.js','frie
 vm.runInNewContext(fs.readFileSync(path.join(root,'mayhem.js'),'utf8'),context);
 vm.runInNewContext(fs.readFileSync(path.join(root,'app.js'),'utf8'),context);
 assert.match(app.innerHTML,/Who is playing today/);
-handlers.click({target:{closest:(q)=>q==='[data-wm-age]'?{dataset:{wmAge:'4-6'}}:null}});
+// Pick the guided childhood profile so all pre-existing ABC learning remains reachable.
+handlers.click({target:{closest:(q)=>q==='[data-age]'?{dataset:{age:'4-6'}}:null}});
 assert.match(app.innerHTML,/Ready to play/);
 function click(dataset){handlers.click({target:{closest:(selector)=>{
   if(selector==='[data-nav]'&&'nav' in dataset)return {dataset};

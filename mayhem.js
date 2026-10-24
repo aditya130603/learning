@@ -1,60 +1,56 @@
-/* Lightweight Word Mayhem mission player: runs without Internet or libraries. */
-(function(w){
-"use strict";
-var D=w.WordMayhemData,STORE="little-letters-mayhem-v1",saved={};
-var Art=w.SceneArt||{kid:function(id,type){var m=D.missions.find(function(x){return x.id===id;});return m?(type==='win'?m.win:type==='oops'?m.oops:m.base):'✨';}};
-try{saved=JSON.parse(localStorage.getItem(STORE))||{}}catch(e){}
-if(!saved||typeof saved!=="object")saved={};
-if(!saved.finished)saved.finished={};
-var current=null,explain=false,help=false;
-function save(){try{localStorage.setItem(STORE,JSON.stringify(saved))}catch(e){}}
-function e(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-function age(){return saved.age||null}
-function setAge(v){if(!D.ages.some(function(x){return x.id===v}))return false;saved.age=v;save();current=null;return true}
-function profile(){return D.ages.find(function(x){return x.id===age()})||D.ages[0]}
-function list(){return D.forAge(age())}
-function count(){return list().filter(function(m){return !!saved.finished[m.id]}).length}
-function speak(t){if(w.LittleLettersAndroid&&w.LittleLettersAndroid.speak){w.LittleLettersAndroid.speak(t);return;}if(!w.speechSynthesis)return;w.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="en-IN";u.rate=.78;w.speechSynthesis.speak(u)}
-function welcome(){
-return '<section class="wm-onboard"><div class="wm-spark">🌈 📚 🚀</div><span class="eyebrow">LITTLE LETTERS × WORD MAYHEM</span><h1>Who is playing today?</h1><p>Choose a learning stage. Change it any time.</p><div class="wm-agegrid">'+D.ages.map(function(a){
-return '<button class="wm-age" data-wm-age="'+a.id+'"><span>'+a.icon+'</span><b>Age '+a.label+'</b><strong>'+e(a.name)+'</strong><small>Tap to start →</small></button>'}).join('')+'</div><p class="wm-note">No sign-up. Progress stays on this device. Age stages are suggestions, not limits.</p></section>';
-}
-function agePage(){return '<div class="wm-agepage"><h1>Choose a learning stage</h1>'+welcome()+'</div>'}
-function choose(id){var m=list().find(function(x){return x.id===id});if(!m)return false;current={m:m,chosen:[],result:null};explain=false;help=false;return true}
-function next(){var m=list().find(function(x){return !saved.finished[x.id]})||list()[0];return m?choose(m.id):false}
-function hub(){
-var a=profile();return '<div class="wm-hub"><div class="wm-intro"><span class="eyebrow">WORD MAYHEM · '+e(a.name.toUpperCase())+'</span><h1>'+(age()==="4-6"?"Make a silly sentence!":age()==="18+"?"Words with impact.":"Your words change the story.")+'</h1><p>Build a sentence and watch the world react. Correct grammar can still lead to a funny mistake!</p><strong>🏅 '+count()+' / '+list().length+' missions solved</strong><br><button class="btn btn-primary" data-wm-action="next">▶ '+(count()?"Continue":"Start")+' adventure</button></div><div class="wm-grid">'+list().map(function(m,i){
-return '<button class="wm-level" data-wm-mission="'+e(m.id)+'"><span class="wm-level-art">'+Art.kid(m.id,null,m.name)+'</span><div><small>MISSION '+(i+1)+(saved.finished[m.id]?" · ✓ SOLVED":"")+'</small><b>'+e(m.name)+'</b><em>'+e(m.goal)+'</em></div><strong>→</strong></button>'}).join('')+'</div></div>';
-}
-var pics={The:"👉",cat:"🐱",frog:"🐸",duck:"🦆",jumps:"🐾",sleeps:"💤",jump:"👣",hops:"🦘",naps:"😴",hop:"🐾",swims:"🌊",swim:"💧"};
-function play(){
-if(!current)return hub();
-var m=current.m,c=current.chosen,r=current.result,small=age()==="4-6";
-var order=[2,0,4,1,3,6,5].filter(function(i){return i<m.tiles.length});
-var feedback="";
-if(r){
-var picture=r.type==="win"?m.win:r.type==="oops"?m.oops:"🔧 ✏️";
-feedback='<div class="wm-result wm-'+r.type+'" role="status"><span class="wm-result-art">'+Art.kid(m.id,r.type,m.name)+'</span><h2>'+(r.type==="win"?"Mission saved! 🎉":r.type==="oops"?"Silly surprise! 😅":"Try again")+'</h2><p>'+e(r.message)+'</p>'+(r.type==="oops"?"<small>Good grammar. The meaning changed the mission!</small>":r.type==="grammar"?"<small>Tap the red word to replace it.</small>":"")+'</div>';
-}
-return '<div class="wm-play '+(small?"wm-small":"")+'"><div class="wm-playtop"><button class="btn btn-ghost" data-wm-action="hub">← Missions</button><b>'+e(profile().name)+'</b></div><section class="wm-scene"><span class="eyebrow">MISSION</span><h1>'+e(m.name)+'</h1><div class="wm-illustration" aria-label="Story scene">'+Art.kid(m.id,r&&r.type,m.name)+'</div><p>🎯 '+e(m.goal)+'</p><button class="wm-hear" data-wm-action="hear">🔊 Listen</button></section><section class="wm-board"><div class="wm-boardheading"><h2>'+(small?"Tap words to make a sentence 👇":"Make the sentence happen")+'</h2><span>'+c.length+' / '+(3+m.object.length)+'</span></div><div class="wm-sentence" aria-label="Sentence being built">'+(c.length?c.map(function(t,i){return '<button data-wm-remove="'+i+'" class="wm-selected '+(r&&r.at===i&&["grammar","order","incomplete"].indexOf(r.type)!==-1?"wm-error":"")+'">'+e(t.word)+' ×</button>'}).join(""):'<span>Tap a word below to begin</span>')+'</div><div class="wm-tiles">'+order.map(function(i){var used=c.some(function(t){return t.key===i}),word=m.tiles[i];return '<button data-wm-tile="'+i+'" draggable="'+(!small)+'" class="wm-tile" '+(used?"disabled":"")+'>'+(small?'<span class="wm-pic">'+(pics[word]||"✨")+'</span>':"")+e(word)+'</button>'}).join('')+'</div><div class="wm-controls"><button class="btn btn-outline" data-wm-action="hint">💡 Hint</button><button class="btn btn-outline" data-wm-action="clear">↺ Clear</button><button class="btn btn-primary wm-go" data-wm-action="execute" '+(r&&r.type==="win"?"disabled":"")+'>▶ Make it happen</button></div>'+(help?'<p class="wm-hint">💡 '+e(m.meaning[m.winVerb]||"Choose an action that helps the mission.")+'</p>':"")+feedback+'</section><div class="wm-foot"><button class="text-link" data-wm-action="meaning">📖 Word meanings & pronunciation</button>'+(explain?'<div class="wm-meanings">'+Object.keys(m.meaning).map(function(k){return '<button data-wm-mean="'+e(k)+'"><b>'+e(k)+'</b> — '+e(m.meaning[k])+' 🔊</button>'}).join("")+'</div>':"")+'</div>'+(r&&r.type==="win"?'<button class="btn btn-primary wm-next" data-wm-action="next">Next mission →</button>':"")+'</div>';
-}
-function tile(key){if(!current||current.result&&current.result.type==="win")return;var i=Number(key);if(!Number.isInteger(i)||i<0||i>=current.m.tiles.length||current.chosen.some(function(x){return x.key===i}))return;current.chosen.push({word:current.m.tiles[i],key:i});current.result=null;if(age()==="4-6")speak(current.m.tiles[i])}
-function remove(i){if(!current)return;current.chosen.splice(Number(i),1);current.result=null}
-function action(a){
-if(a==="hub"){current=null;return "missions";}
-if(a==="next"){next();return "mission-play";}
-if(!current)return "missions";
-if(a==="hear"){speak(current.m.goal);return "mission-play";}
-if(a==="hint"){help=!help;return "mission-play";}
-if(a==="clear"){current.chosen=[];current.result=null;return "mission-play";}
-if(a==="meaning"){explain=!explain;return "mission-play";}
-if(a==="execute"){
-if(current.result&&current.result.type==="win")return "mission-play";
-var r=D.evaluate(current.m,current.chosen.map(function(x){return x.word}));current.result=r;
-if(r.type==="win"){saved.finished[current.m.id]=true;save();}
-speak(r.message);return "mission-play";
-}
-return "mission-play";
-}
-w.Mayhem={age:age,setAge:setAge,profile:profile,welcome:welcome,agePage:agePage,choose:choose,next:next,hub:hub,play:play,tile:tile,remove:remove,action:action,count:count,list:list,meaning:function(key){if(current&&current.m.meaning[key])speak(key+". "+current.m.meaning[key])}};
+/* Tap-to-build gameplay: authored offline missions, age profiles, specific grammar feedback. */
+(function(window){
+  'use strict';
+  var bank=window.WORD_MAYHEM, STORE='little-letters-mayhem-v1';
+  var saved={};try{saved=JSON.parse(localStorage.getItem(STORE))||{}}catch(e){};
+  if(!saved || typeof saved!=='object')saved={};
+  if(!saved.finished || typeof saved.finished!=='object')saved.finished={};
+  var current=null, notice='',activeMeaning=null;
+  var pictureWord={The:'👉',cat:'🐱',frog:'🐸',duck:'🦆',jumps:'🐾',sleeps:'💤',jump:'👣',hops:'🐸',naps:'😴',hop:'🦘',swims:'🌊',swim:'💦'};
+  function store(){try{localStorage.setItem(STORE,JSON.stringify(saved))}catch(e){}}
+  function safe(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function getAge(){return saved.age||null}
+  function chooseAge(age){if(!bank.ages.some(function(a){return a.id===age}))return false;saved.age=age;store();current=null;return true}
+  function info(){return bank.ages.find(function(a){return a.id===getAge()})||bank.ages[0]}
+  function count(){return bank.forAge(getAge()).filter(function(m){return saved.finished[m.id]}).length}
+  function select(id){var m=bank.forAge(getAge()).find(function(x){return x.id===id});if(!m)return false;current={mission:m,chosen:[],attempts:0,result:null,hinted:false};notice='';activeMeaning=null;return true}
+  function selectNext(){var list=bank.forAge(getAge());if(!list.length)return false;var next=list.find(function(m){return !saved.finished[m.id]})||list[0];return select(next.id)}
+  function speak(s){if(window.LittleLettersAndroid&&window.LittleLettersAndroid.speak){window.LittleLettersAndroid.speak(s);return}if(window.speechSynthesis){window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(s);u.lang='en-IN';u.rate=.78;window.speechSynthesis.speak(u)}}
+  function welcome(){return '<section class="age-onboard"><div class="age-symbol">🌈 📚 🚀</div><span class="eyebrow">LITTLE LETTERS × WORD MAYHEM</span><h1>Who is playing today?</h1><p>Choose a learning stage. You can switch at any time.</p><div class="age-grid">'+bank.ages.map(function(a){return '<button class="age-card" data-age="'+a.id+'"><span class="age-icon">'+a.icon+'</span><strong>Age '+a.label+'</strong><b>'+safe(a.name)+'</b><small>'+safe(a.description)+'</small><span class="age-arrow">Start →</span></button>'}).join('')+'</div><p class="parent-note">No sign-up. Learning progress stays on this device. Age bands are suggestions, not ability limits.</p></section>'}
+  function agePicker(){return '<div class="layout-flow"><h1>Change learning stage</h1><p class="subtext">Choose what feels comfortable. Your progress for each mission is kept.</p>'+welcome()+'</div>'}
+  function hub(){var age=getAge(),list=bank.forAge(age),a=info();return '<div class="mayhem-hub"><div class="mission-intro"><span class="eyebrow">WORD MAYHEM · '+safe(a.name.toUpperCase())+'</span><h1>'+(age==='4-6'?'Make a silly sentence!':age==='18+'?'Words with impact.':'Your words change the story.')+'</h1><p>'+(age==='4-6'?'Tap the word blocks. See what happens!':'Build a correct sentence, then watch your decision change the scene.')+'</p><div class="intro-progress">🏅 '+count()+' of '+list.length+' stories saved</div><button class="btn btn-primary mission-main" data-mayhem="next">'+(count()?'Continue adventures':'Play first mission')+' →</button></div><div class="mission-list">'+list.map(function(m,i){var done=saved.finished[m.id];return '<button class="mission-card" data-mission="'+safe(m.id)+'"><span class="mission-emoji">'+m.scene+'</span><span><small>MISSION '+(i+1)+(done?' · COMPLETED ✓':'')+'</small><b>'+safe(m.name)+'</b><em>'+safe(m.place)+'</em></span><strong>→</strong></button>'}).join('')+'</div><div class="mission-hint">✨ Correct grammar is needed to act. A correct but unhelpful action still plays out—sometimes hilariously.</div></div>'}
+  function shuffleTiles(m){
+    // Authored unique words: show them in a fixed, intentionally unsolved order.
+    var source=m.tiles.slice(), order=[2,0,4,1,3,6,5];
+    return order.filter(function(i){return i<source.length}).map(function(i){return {word:source[i],key:i}})
+  }
+  function play(){if(!current)return hub();var m=current.mission,c=current.chosen,r=current.result,locked=!!r,tiles=shuffleTiles(m);
+    var hint=current.hinted?'<p class="mayhem-tip">💡 '+safe(m.tip)+'</p>':'';
+    var feedback='';
+    if(r){var isWin=r.type==='win',isOops=r.type==='oops',isGrammar=r.type==='grammar';feedback='<div class="outcome '+(isWin?'outcome-good':isOops?'outcome-funny':'outcome-repair')+'" role="status"><div class="outcome-picture">'+(isWin?m.win:isOops?m.oops:'🔧 ✏️')+'</div><strong>'+(isWin?'MISSION SAVED! 🎉':isOops?'SILLY SURPRISE! 😅':isGrammar?'Fix the grammar':'Try another order')+'</strong><p>'+safe(r.message)+'</p>'+(isGrammar?'<small>See the red word? Change it, then try again.</small>':isOops?'<small>That sentence is grammatical, but its meaning changed the mission.</small>':'')+'</div>'}
+    return '<div class="mayhem-play '+(getAge()==='4-6'?'pre-reader':'')+'"><div class="mayhem-top"><button class="btn btn-ghost" data-mayhem="hub">← Adventures</button><span class="challenge-level">'+safe(info().name)+'</span></div><div class="stage-card"><span class="stage-place">📍 '+safe(m.place)+'</span><h1>'+safe(m.name)+'</h1><div class="stage-art" aria-label="'+safe(m.place)+'">'+(r && ['win','oops'].indexOf(r.type)!==-1?(r.type==='win'?m.win:m.oops):m.base)+'</div><p class="stage-goal">🎯 '+safe(m.goal)+'</p><button class="listen-mission" data-mayhem="hear">🔊 Hear the mission</button></div><div class="sentence-board"><div class="board-heading"><div><span class="eyebrow">MAKE YOUR SENTENCE</span><h2>'+(getAge()==='4-6'?'Tap the words 👇':'Choose words in the right order')+'</h2></div><span class="word-count">'+c.length+' / '+(m.object?5:3)+' words</span></div><div class="sentence-line">'+(c.length?c.map(function(tile,i){var err=r && ['grammar','order','incomplete'].indexOf(r.type)!==-1 && r.at===i;return '<button class="selected-word '+(err?'wrong-word':'')+'" data-remove="'+i+'" aria-label="Remove '+safe(tile.word)+'">'+safe(tile.word)+' <small>×</small></button>'}).join(''):'<span class="empty-sentence">'+(getAge()==='4-6'?'👆 Tap a word below':'Your sentence will appear here…')+'</span>')+'</div><div class="word-bank">'+tiles.map(function(t){var used=c.some(function(w){return w.key===t.key});return '<button class="word-tile '+(used?'tile-selected':'')+'" data-word-tile="'+t.key+'" draggable="'+(getAge()==='4-6'?'false':'true')+'" '+(used?'disabled':'')+'>'+(getAge()==='4-6'?'<span class="tile-picture" aria-hidden="true">'+(pictureWord[t.word]||'✨')+'</span>':'')+safe(t.word)+'</button>'}).join('')+'</div><div class="mission-actions"><button class="btn btn-outline" data-mayhem="hint">💡 Hint</button><button class="btn btn-outline" data-mayhem="clear">↺ Clear</button><button class="btn btn-primary mission-execute" data-mayhem="execute" '+(r&&r.type==='win'?'disabled':'')+'>▶ Make it happen</button></div>'+hint+feedback+'</div><div class="mayhem-footer"><button class="text-link" data-mayhem="meaning">📖 What do these words mean?</button>'+(activeMeaning?'<div class="meaning-panel">'+Object.keys(m.meaning).map(function(k){return '<button class="meaning-row" data-meaning-word="'+safe(k)+'"><b>'+safe(k)+'</b> — '+safe(m.meaning[k])+' 🔊</button>'}).join('')+'</div>':'')+'</div>'+(r&&r.type==='win'?'<button class="btn btn-primary mission-next" data-mayhem="next">Next adventure →</button>':'')+'</div>'}
+  function runAction(action){
+    if(action==='hub'){current=null;return 'hub'}
+    if(action==='next'){selectNext();return 'play'}
+    if(!current)return 'hub';
+    var m=current.mission;
+    if(action==='hear'){speak(m.goal);return 'play'}
+    if(action==='hint'){current.hinted=!current.hinted;return 'play'}
+    if(action==='clear'){current.chosen=[];current.result=null;return 'play'}
+    if(action==='meaning'){activeMeaning=!activeMeaning;return 'play'}
+    if(action==='execute'){
+      if(current.result&&current.result.type==='win')return 'play';
+      current.attempts++;
+      var result=bank.evaluate(m,current.chosen.map(function(t){return t.word}));
+      current.result=result;
+      if(result.type==='win'){saved.finished[m.id]=true;store();speak(m.winText)}
+      else if(result.type==='oops')speak(m.oopsText);
+      else speak(result.message);
+      return 'play';
+    }
+    return 'play';
+  }
+  function pickTile(id){if(!current || (current.result && current.result.type==='win'))return;var i=Number(id);if(current.chosen.some(function(t){return t.key===i}))return;current.chosen.push({word:current.mission.tiles[i],key:i});current.result=null;if(getAge()==='4-6')speak(current.mission.tiles[i])}
+  function removeTile(index){if(current){current.chosen.splice(Number(index),1);current.result=null}}
+  window.Mayhem={getAge:getAge,chooseAge:chooseAge,info:info,welcome:welcome,agePicker:agePicker,hub:hub,play:play,select:select,runAction:runAction,pickTile:pickTile,removeTile:removeTile,speak:speak,count:count,missions:function(){return bank.forAge(getAge())},meaningWord:function(w){if(current&&current.mission.meaning[w])speak(w+'. '+current.mission.meaning[w])}};
 })(window);

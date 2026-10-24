@@ -1,42 +1,46 @@
-/* Word Mayhem authored offline story missions. No third-party AI service. */
+/* Curated, deterministic Word Mayhem scenes. No model/API calls, available offline. */
 (function(root){
-"use strict";
-var ages=[
-{id:"4-6",label:"4–6",name:"Little explorers",icon:"🧸"},
-{id:"7-9",label:"7–9",name:"Word adventurers",icon:"🚀"},
-{id:"10-13",label:"10–13",name:"Story makers",icon:"🧩"},
-{id:"14-17",label:"14–17",name:"Language lab",icon:"⚡"},
-{id:"18+",label:"18+",name:"Everyday mastery",icon:"🎯"}];
-var rows=[
-["kitten","4-6","Wake the kitten","🐱","Help the kitten reach breakfast.","cat","jumps","sleeps","jump","", "🌤️ 🥣","🐱 🐾 🥣","😴 🐱 🥣","The kitten hops up for breakfast!","The kitten naps through breakfast.","jumps:move up quickly|sleeps:rest"],
-["frog","4-6","Cross the puddle","🐸","Help the frog cross the water.","frog","hops","naps","hop","","🌧️ 💧","🐸 💦 🌿","🐸 💤 💧","Boing! The frog hops across!","The frog naps by the puddle.","hops:small jumps|naps:short sleeps"],
-["duck","4-6","Duck on the pond","🦆","Help the duck move through the water.","duck","swims","sleeps","swim","","🦆 🏞️","🦆 🌊 🌼","🦆 💤 🏞️","The duck swims across!","The duck falls asleep.","swims:moves through water|sleeps:rests"],
-["wedding","7-9","Save the wedding cake","🐧","Get the cake to the wedding safely.","penguin","carries","eats","carry","the cake","🐧 🎂 💒","🐧 🎂 💒 🎉","🐧 😋 🍰","The penguin delivers the cake!","Oops! The penguin eats the cake.","carries:moves something safely|eats:has food"],
-["balloon","7-9","Birthday balloon","🤖","Fill the balloon for the party.","robot","inflates","pops","inflate","the balloon","🤖 🎈 🎊","🤖 🎈 🎉","🤖 💥 😲","Balloon inflated! Party time!","Pop! The balloon bursts.","inflates:fills with air|pops:bursts"],
-["puppy","7-9","Puppy rescue","🐶","Bring the ball back.","puppy","fetches","buries","fetch","the ball","🐶 🌳 ⚽","🐶 ⚽ 🥳","🐶 🦴 🌳","The puppy fetches the ball!","The puppy buries the ball.","fetches:brings back|buries:hides underground"],
-["pirate","10-13","The pirate puzzle","🏴‍☠️","Keep the treasure away from rivals.","pirate","hides","sells","hide","the treasure","🏴‍☠️ 🗺️ 💎","🏴‍☠️ 🏝️ 🔐","🏴‍☠️ 💰 🥷","The pirate hides the treasure.","The pirate sells the treasure!","hides:puts out of sight|sells:trades for money"],
-["spaceship","10-13","Space station rescue","👩‍🚀","Make the broken spaceship safe again.","astronaut","repairs","abandons","repair","the spaceship","👩‍🚀 🚀 🛠️","👩‍🚀 🛠️ 🚀 ✨","👩‍🚀 🚀 💨","Spaceship repaired! Mission saved.","The astronaut abandons the ship!","repairs:fixes something broken|abandons:leaves behind"],
-["library","10-13","Library chaos","📚","Put all the books in order.","student","organizes","scatters","organize","the books","📚 🧑‍🎓 🌀","📚 📖 ✨","📚 🎉 🤹","The books are organized!","Books scattered everywhere!","organizes:puts in order|scatters:spreads around"],
-["storm","14-17","Storm warning","🌩️","Protect the town before a storm.","officer","issues","ignores","issue","the warning","🌩️ 🏙️ 📡","🏙️ 🛡️ 🌤️","🌪️ 🏙️","The town receives the warning.","The officer ignores the warning.","issues:formally sends out|ignores:does not notice"],
-["science","14-17","Lab experiment","🧪","Check the results before publishing.","researcher","verifies","invents","verify","the results","🧪 📈 🔬","🧪 ✅ 📊","🧪 🤯 ❌","The results are verified!","The researcher invents results.","verifies:checks accuracy|invents:makes up"],
-["budget","18+","Save the project budget","📊","Reduce financial harm to the project.","manager","mitigates","exaggerates","mitigate","the losses","📊 💸 🧑‍💼","📊 🛡️ 💼","📊 📉 😱","The manager mitigates the losses.","The manager exaggerates the losses.","mitigates:makes harm less severe|exaggerates:overstates"],
-["terms","18+","Close the partnership","🤝","Reach fair terms with a partner.","team","negotiates","rejects","negotiate","the terms","🤝 📝 💬","🤝 ✅ 📄","😠 💥 📄","Both sides agree on the terms!","The team rejects the terms.","negotiates:discusses to agree|rejects:refuses"],
-["crisis","18+","Calm the customer","📞","Handle the concern professionally.","advisor","acknowledges","dismisses","acknowledge","the concern","📞 😟 🧑‍💼","📞 🙂 🌟","📞 😤 🔥","The concern is acknowledged.","The advisor dismisses the concern.","acknowledges:recognizes as important|dismisses:rejects without consideration"]];
-var missions=rows.map(function(r){
-var obj=r[9]?r[9].split(" "):[];
-var meaning={};r[15].split("|").forEach(function(part){var a=part.split(":");meaning[a[0]]=a.slice(1).join(":")});
-return {id:r[0],age:r[1],name:r[2],scene:r[3],goal:r[4],subject:r[5],winVerb:r[6],oopsVerb:r[7],badVerb:r[8],object:obj,base:r[10],win:r[11],oops:r[12],winText:r[13],oopsText:r[14],meaning:meaning,tiles:["The",r[5],r[6],r[7],r[8]].concat(obj)};
-});
-function evaluate(m,list){
-var t=list.map(function(w){return String(w).toLowerCase()});
-var suffix=m.object.map(function(w){return w.toLowerCase()});
-var make=function(verb){return ["the",m.subject,verb].concat(suffix)};
-var equals=function(pattern){return t.length===pattern.length&&t.every(function(w,i){return w===pattern[i]})};
-if(equals(make(m.badVerb)))return {type:"grammar",at:2,message:"One "+m.subject+" needs “"+m.winVerb+"”, not “"+m.badVerb+"”."};
-if(equals(make(m.winVerb)))return {type:"win",message:m.winText};
-if(equals(make(m.oopsVerb)))return {type:"oops",message:m.oopsText};
-if(t.length!==3+suffix.length)return {type:"incomplete",at:Math.max(0,t.length-1),message:"Build a "+(3+suffix.length)+"-word sentence first."};
-var good=make(m.winVerb);return {type:"order",at:t.findIndex(function(w,i){return w!==good[i]})===-1?0:t.findIndex(function(w,i){return w!==good[i]}),message:"Put the words in order: who acts, what they do, then the object."};
-}
-root.WordMayhemData={ages:ages,missions:missions,evaluate:evaluate,forAge:function(age){return missions.filter(function(m){return m.age===age})}};
-})(window);
+  'use strict';
+  var ages=[
+    {id:'4-6',label:'4–6',name:'Little explorers',icon:'🧸',description:'Big pictures, sounds & first sentences'},
+    {id:'7-9',label:'7–9',name:'Word adventurers',icon:'🚀',description:'Reading, spelling & silly missions'},
+    {id:'10-13',label:'10–13',name:'Story makers',icon:'🧩',description:'Grammar, word choices & consequences'},
+    {id:'14-17',label:'14–17',name:'Language lab',icon:'⚡',description:'Stronger vocabulary & clearer expression'},
+    {id:'18+',label:'18+',name:'Everyday mastery',icon:'🎯',description:'Confident, precise real-world English'}
+  ];
+  /* Three-word beginner missions and progressively longer, authored sentences.
+     'bad' is a grammatically plausible but wrong-for-the-goal action. */
+  var missions=[
+    {id:'kitten',age:'4-6',name:'Wake the kitten',place:'Cozy bedroom',goal:'Help the kitten reach breakfast.',scene:'🐱',base:'🌤️ 🥣',win:'🐱 🐾 🥣',oops:'😴 🐱 🥣',tiles:['The','cat','jumps','sleeps','jump'],winVerb:'jumps',oopsVerb:'sleeps',badVerb:'jump',subject:'cat',subjectHint:'a single cat',winText:'The kitten hops up for breakfast!',oopsText:'The kitten naps through breakfast. Oh no!',rule:'One cat needs jumps, not jump.',meaning:{jumps:'moves up quickly',sleeps:'rests with closed eyes'},tip:'Who? The cat. What does it do? Jumps!'},
+    {id:'frog',age:'4-6',name:'Cross the puddle',place:'Rainy garden',goal:'Help the frog cross the water.',scene:'🐸',base:'🌧️ 💧',win:'🐸 💦 🌿',oops:'🐸 💤 💧',tiles:['The','frog','hops','naps','hop'],winVerb:'hops',oopsVerb:'naps',badVerb:'hop',subject:'frog',subjectHint:'one frog',winText:'Boing! The frog hops across!',oopsText:'The frog has a nap beside the puddle.',rule:'We say the frog hops. Add -s for one frog.',meaning:{hops:'makes small jumps',naps:'has a short sleep'},tip:'Look at the frog. How will it move?'},
+    {id:'duck',age:'4-6',name:'Duck on the pond',place:'Sunny pond',goal:'Help the duck move across the pond.',scene:'🦆',base:'🦆 🏞️',win:'🦆 🌊 🌼',oops:'🦆 💤 🏞️',tiles:['The','duck','swims','sleeps','swim'],winVerb:'swims',oopsVerb:'sleeps',badVerb:'swim',subject:'duck',subjectHint:'one duck',winText:'Splish splash! The duck swims!',oopsText:'The duck falls asleep by the water.',rule:'One duck swims. Add -s to swim.',meaning:{swims:'moves through water',sleeps:'rests'},tip:'Water + duck = swims!'},
+    {id:'wedding',age:'7-9',name:'Save the wedding cake',place:'Penguin wedding',goal:'Get the cake safely to the wedding.',scene:'🐧',base:'🐧 🎂 💒',win:'🐧 🎂 💒 🎉',oops:'🐧 😋 🍰 💒',tiles:['The','penguin','carries','eats','carry','the','cake'],winVerb:'carries',oopsVerb:'eats',badVerb:'carry',subject:'penguin',object:['the','cake'],subjectHint:'one penguin',winText:'Cake delivered! The penguin saves the wedding.',oopsText:'Crunch! The penguin eats the wedding cake.',rule:'One penguin carries the cake, not carry.',meaning:{carries:'holds and moves something',eats:'puts food in its mouth'},tip:'Which action moves the cake without eating it?'},
+    {id:'balloon',age:'7-9',name:'Party balloon',place:'Robot birthday',goal:'Fill the balloon for a birthday party.',scene:'🤖',base:'🤖 🎈 🎊',win:'🤖 🎈 🎉',oops:'🤖 💥 😲',tiles:['The','robot','inflates','pops','inflate','the','balloon'],winVerb:'inflates',oopsVerb:'pops',badVerb:'inflate',subject:'robot',object:['the','balloon'],subjectHint:'one robot',winText:'The robot inflates the balloon. Party time!',oopsText:'POP! The robot pops it instead!',rule:'One robot inflates, not inflate.',meaning:{inflates:'fills something with air',pops:'makes something burst'},tip:'Inflate means fill with air.'},
+    {id:'puppy',age:'7-9',name:'Puppy rescue',place:'Park adventure',goal:'Help the puppy find the ball.',scene:'🐶',base:'🐶 🌳 ⚽',win:'🐶 ⚽ 🥳',oops:'🐶 🦴 🌳',tiles:['The','puppy','fetches','buries','fetch','the','ball'],winVerb:'fetches',oopsVerb:'buries',badVerb:'fetch',subject:'puppy',object:['the','ball'],subjectHint:'one puppy',winText:'The puppy fetches the ball. Good dog!',oopsText:'The puppy buries the ball. Where did it go?',rule:'We say the puppy fetches. Add -es.',meaning:{fetches:'goes and brings something back',buries:'hides something underground'},tip:'Fetch = bring back.'},
+    {id:'pirate',age:'10-13',name:'The pirate puzzle',place:'Treasure island',goal:'Keep the treasure away from the rivals.',scene:'🏴‍☠️',base:'🏴‍☠️ 🗺️ 💎',win:'🏴‍☠️ 🏝️ 💎 🔐',oops:'🏴‍☠️ 💰 🥷',tiles:['The','pirate','hides','sells','hide','the','treasure'],winVerb:'hides',oopsVerb:'sells',badVerb:'hide',subject:'pirate',object:['the','treasure'],subjectHint:'one pirate',winText:'Treasure hidden! The rivals find nothing.',oopsText:'The pirate sells the treasure. Mission failed!',rule:'For one pirate, use hides, not hide.',meaning:{hides:'puts out of sight',sells:'exchanges for money'},tip:'Protect the treasure; don’t trade it away.'},
+    {id:'spaceship',age:'10-13',name:'Space station rescue',place:'Orbit above Earth',goal:'Make the broken spaceship safe again.',scene:'👩‍🚀',base:'👩‍🚀 🚀 🛠️',win:'👩‍🚀 🛠️ 🚀 ✨',oops:'👩‍🚀 🚀 💨',tiles:['The','astronaut','repairs','abandons','repair','the','spaceship'],winVerb:'repairs',oopsVerb:'abandons',badVerb:'repair',subject:'astronaut',object:['the','spaceship'],subjectHint:'one astronaut',winText:'The astronaut repairs the ship. Mission saved!',oopsText:'The astronaut abandons the ship. Oops!',rule:'Use repairs when the subject is one astronaut.',meaning:{repairs:'fixes something broken',abandons:'leaves something behind'},tip:'Which verb means to fix?'},
+    {id:'library',age:'10-13',name:'Library chaos',place:'School library',goal:'Return the books to their proper place.',scene:'📚',base:'📚 🧑‍🎓 🌀',win:'📚 📖 ✨',oops:'📚 🎉 🤹',tiles:['The','student','organizes','scatters','organize','the','books'],winVerb:'organizes',oopsVerb:'scatters',badVerb:'organize',subject:'student',object:['the','books'],subjectHint:'one student',winText:'The student organizes the books. Neat!',oopsText:'The student scatters the books everywhere!',rule:'The student organizes, not organize.',meaning:{organizes:'arranges in order',scatters:'spreads in different directions'},tip:'Organize means put in order.'},
+    {id:'storm',age:'14-17',name:'Storm warning',place:'Control tower',goal:'Protect the town before the storm arrives.',scene:'🌩️',base:'🌩️ 🏙️ 📡',win:'🏙️ 🛡️ 🌤️',oops:'🌩️ 🌪️ 🏙️',tiles:['The','officer','issues','ignores','issue','the','warning'],winVerb:'issues',oopsVerb:'ignores',badVerb:'issue',subject:'officer',object:['the','warning'],subjectHint:'one officer',winText:'Warning issued. The town prepares in time.',oopsText:'Warning ignored. People are caught off guard.',rule:'The singular officer issues the warning.',meaning:{issues:'formally sends out',ignores:'pays no attention to'},tip:'In an emergency, communicating quickly matters.'},
+    {id:'science',age:'14-17',name:'Lab experiment',place:'Science lab',goal:'Check the results before publishing them.',scene:'🧪',base:'🧪 📈 🔬',win:'🧪 ✅ 📊',oops:'🧪 🤯 ❌',tiles:['The','researcher','verifies','invents','verify','the','results'],winVerb:'verifies',oopsVerb:'invents',badVerb:'verify',subject:'researcher',object:['the','results'],subjectHint:'one researcher',winText:'Results verified. The report is trustworthy!',oopsText:'The researcher invents results. Disaster!',rule:'Use verifies with one researcher.',meaning:{verifies:'checks that something is accurate',invents:'makes something up'},tip:'Verify is stronger than just look at.'},
+    {id:'budget',age:'18+',name:'Save the project budget',place:'Boardroom decision',goal:'Reduce financial harm to the project.',scene:'📊',base:'📊 💸 🧑‍💼',win:'📊 🛡️ 💼',oops:'📊 📉 😱',tiles:['The','manager','mitigates','exaggerates','mitigate','the','losses'],winVerb:'mitigates',oopsVerb:'exaggerates',badVerb:'mitigate',subject:'manager',object:['the','losses'],subjectHint:'one manager',winText:'The manager mitigates the losses. Risk reduced.',oopsText:'The manager exaggerates the losses. Panic spreads.',rule:'With one manager, use mitigates.',meaning:{mitigates:'makes a negative impact less severe',exaggerates:'makes something seem bigger than it is'},tip:'Useful collocation: mitigate losses or risks.'},
+    {id:'terms',age:'18+',name:'Close the partnership',place:'Negotiation room',goal:'Reach a balanced agreement with the partner.',scene:'🤝',base:'🤝 📝 💬',win:'🤝 ✅ 📄',oops:'😠 💥 📄',tiles:['The','team','negotiates','rejects','negotiate','the','terms'],winVerb:'negotiates',oopsVerb:'rejects',badVerb:'negotiate',subject:'team',object:['the','terms'],subjectHint:'one team (treated as singular)',winText:'Terms negotiated. Both sides agree!',oopsText:'All terms rejected. The partnership collapses.',rule:'Here team is singular: the team negotiates.',meaning:{negotiates:'discusses to reach an agreement',rejects:'refuses to accept'},tip:'Negotiate terms is a common professional phrase.'},
+    {id:'crisis',age:'18+',name:'Calm the customer',place:'Customer service',goal:'Handle a customer concern professionally.',scene:'📞',base:'📞 😟 🧑‍💼',win:'📞 🙂 🌟',oops:'📞 😤 🔥',tiles:['The','advisor','acknowledges','dismisses','acknowledge','the','concern'],winVerb:'acknowledges',oopsVerb:'dismisses',badVerb:'acknowledge',subject:'advisor',object:['the','concern'],subjectHint:'one advisor',winText:'Concern acknowledged. The customer feels heard.',oopsText:'Concern dismissed. The customer gets angrier.',rule:'Use acknowledges with the singular advisor.',meaning:{acknowledges:'recognizes something as important or true',dismisses:'treats as unimportant'},tip:'Acknowledge concerns is respectful and specific.'}
+  ];
+  function evaluate(m,raw){
+    var tokens=raw.map(function(t){return String(t).toLowerCase()});
+    var expected=['the',m.subject,m.winVerb.toLowerCase()].concat((m.object||[]).map(function(t){return t.toLowerCase()}));
+    var other=['the',m.subject,m.oopsVerb.toLowerCase()].concat((m.object||[]).map(function(t){return t.toLowerCase()}));
+    var bad=['the',m.subject,m.badVerb.toLowerCase()].concat((m.object||[]).map(function(t){return t.toLowerCase()}));
+    if(tokens.length===bad.length && tokens.every(function(x,i){return x===bad[i]}))return {type:'grammar',at:2,message:m.rule};
+    if(tokens.length===expected.length && tokens.every(function(x,i){return x===expected[i]}))return {type:'win',message:m.winText};
+    if(tokens.length===other.length && tokens.every(function(x,i){return x===other[i]}))return {type:'oops',message:m.oopsText};
+    if(tokens.length===0)return {type:'incomplete',at:-1,message:'Tap some words to make a sentence.'};
+    if(tokens.length!==expected.length)return {type:'incomplete',at:tokens.length-1,message:'This mission needs '+expected.length+' words. Check the sentence length.'};
+    var at=tokens.findIndex(function(t,i){return t!==expected[i] && t!==other[i]});
+    if(at===-1)at=0;
+    return {type:'order',at:at,message:at===2?'Choose an action word that works with '+m.subject+'.':'Put the words in order: who is acting, what they do, and the object.'};
+  }
+  var api={ages:ages,missions:missions,evaluate:evaluate,forAge:function(age){return missions.filter(function(m){return m.age===age})}};
+  root.WORD_MAYHEM=api;
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;
+})(typeof window==='undefined'?globalThis:window);
