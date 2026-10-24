@@ -5,6 +5,8 @@ on:
     paths:
       - 'android/**'
       - 'app.js'
+      - 'mission-content.js'
+      - 'mayhem.js'
       - 'words.js'
       - 'styles.css'
       - 'index.html'
@@ -40,7 +42,7 @@ jobs:
       - name: Bundle offline website and launcher icon
         run: |
           mkdir -p android/app/src/main/assets/assets android/app/src/main/res/drawable-nodpi
-          cp index.html app.js words.js styles.css service-worker.js manifest.webmanifest android/app/src/main/assets/
+          cp index.html app.js words.js mission-content.js mayhem.js styles.css service-worker.js manifest.webmanifest android/app/src/main/assets/
           cp -R assets/. android/app/src/main/assets/assets/
           cp assets/icon-192.png android/app/src/main/res/drawable-nodpi/ic_launcher.png
       - name: Build universal debug APK (Android API 21+)

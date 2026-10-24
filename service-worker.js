@@ -1,5 +1,5 @@
-const CACHE = 'little-letters-v1';
-const ASSETS = ['./','./index.html','./app.js','./words.js','./styles.css','./manifest.webmanifest','./assets/icon.svg','./assets/icon-192.png','./assets/icon-512.png'];
+const CACHE = 'little-letters-v2';
+const ASSETS = ['./','./index.html','./app.js','./words.js','./mission-content.js','./mayhem.js','./styles.css','./manifest.webmanifest','./assets/icon.svg','./assets/icon-192.png','./assets/icon-512.png'];
 self.addEventListener('install', event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });

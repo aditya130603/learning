@@ -15,8 +15,12 @@ window.setTimeout=fn=>timeouts.push(fn);
 const context={window,document:{getElementById:(id)=>id==='app'?app:id==='print-sheet'?sheet:{textContent:''}},localStorage:{getItem:k=>local.get(k)||null,setItem:(k,v)=>local.set(k,v)},Date:FakeDate,navigator:{},location:{protocol:'file:',hostname:''},setTimeout:fn=>timeouts.push(fn),console,Math};
 let timeouts=[];
 vm.runInNewContext(fs.readFileSync(path.join(root,'words.js'),'utf8'),context);
+vm.runInNewContext(fs.readFileSync(path.join(root,'mission-content.js'),'utf8'),context);
+vm.runInNewContext(fs.readFileSync(path.join(root,'mayhem.js'),'utf8'),context);
 vm.runInNewContext(fs.readFileSync(path.join(root,'app.js'),'utf8'),context);
-assert.match(app.innerHTML,/Hello, little learner/);
+assert.match(app.innerHTML,/Who is playing today/);
+handlers.click({target:{closest:(q)=>q==='[data-wm-age]'?{dataset:{wmAge:'4-6'}}:null}});
+assert.match(app.innerHTML,/Ready to play/);
 function click(dataset){handlers.click({target:{closest:(selector)=>{
   if(selector==='[data-nav]'&&'nav' in dataset)return {dataset};
   if(selector==='[data-letter]'&&'letter' in dataset)return {dataset};

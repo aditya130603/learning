@@ -1,67 +1,33 @@
-# Little Letters — Learn, Play, Write
+# Little Letters × Word Mayhem
 
-A joyful, privacy-friendly alphabet learning app for Class 1 children. No account, ads, AI subscription, database or backend needed.
+An offline-friendly, age-adaptive English learning experience. No Flutter and no third-party runtime dependencies.
 
-## What works in V1
+## Choose a learning stage
 
-- 26 letters, with 3 beginner words first (78 words), followed by 2 extras per letter (130 total entries).
-- Picture-word lesson cards with optional text hiding and speech (device text-to-speech).
-- Three games: picture matching, picture-to-word identification and tap-to-spell letter tile building.
-- Stars and progress stored locally, independently for each letter. Parents can mark words written independently on paper (tracked separately from tile spelling).
-- Extra 2 words unlock after completing the spelling game on **two different local calendar days**; a grown-up can override this.
-- Printable A4 worksheets: trace-and-copy, missing letter, picture spelling, with optional answers and 3- or 5-word level.
-- Responsive phone/tablet/desktop UI and installable Progressive Web App, including offline asset caching after first load.
-- No personal data collection. Browser storage deletion resets progress.
+At first launch choose 4–6, 7–9, 10–13, 14–17, or 18+. Stages are recommendations, not ability tests; change stage at any time.
 
-**Teaching note:** The letter X has two accessible beginning-X words (x-ray and xylophone); box, fox and six are ending-X sound examples, *not* words beginning with X. Some emojis are conceptual hints rather than precise object illustrations. Adult supervision helps.
+- 4–6: a picture-first home screen with three enormous tap targets, visual word tiles, sound assistance and three-word stories.
+- 7–9: picture games, spelling and funny simple sentence missions.
+- 10–13: mission-first UX, stronger vocabulary, authored grammar hints and consequence-driven sentence puzzles.
+- 14–17: school-oriented vocabulary, warnings and science scenarios.
+- 18+: workplace English challenges around mitigating losses, negotiating terms and responding to concerns.
 
-## Run locally
+## Word Mayhem playable integration
 
-This is a static HTML/CSS/JavaScript app with no npm dependencies.
+Fourteen curated offline missions. Tap tiles to build a sentence (desktop browsers also support drag-and-drop), then choose Make it happen. The scene changes to a successful or funny outcome. An authored subject–verb error stops execution and highlights the incorrect word; the player can repair and retry. Word meanings and pronunciation are available.
 
-```bash
-python3 -m http.server 8000
-```
+Scope: These are authored sentence challenges, not an unrestricted AI grammar engine. The illustrations are emoji-based placeholders pending a custom art pass. Multiplayer, coins/shop, free-form sentence parsing and generated scenes are not included in this first integration.
 
-Open `http://localhost:8000/`. Do not open `index.html` with a `file://` URL if you want offline service-worker support.
+## Original alphabet learning preserved
 
-## GitHub setup / live website
+All 26 letters and 130 beginner words. Start with 3 short words and unlock 2 more after spelling practice on two separate days (or by parent override). Includes picture recognition, picture-to-word matching, spelling with letters, TTS, stars and A4 writing worksheets, plus a parent handwriting checklist. Existing device progress data is preserved.
 
-1. This project lives in **[aditya130603/learning](https://github.com/aditya130603/learning)**.
-2. Go to **Settings → Pages → Build and deployment → Source: GitHub Actions** (one-time setup).
-3. On `main`, the **Publish Little Letters** workflow tests and deploys the app. Check **Actions** for the deployment result.
-4. When deployment succeeds, the URL is **https://aditya130603.github.io/learning/**.
-5. Open the live website in Chrome on Android and choose **Install app** from the browser menu to add it to the home screen. On iPhone use Safari **Share → Add to Home Screen**. Installability depends on browser/device support and HTTPS.
+## Older phone support
 
-An **Android 5.0+ universal APK** is built automatically by GitHub Actions using a lightweight native Java WebView wrapper (not Flutter). Download the testing APK from [Releases](https://github.com/aditya130603/learning/releases/tag/android-testing). See [Android README](android/README.md) for compatibility details.
+The android/ project is a minimal Java Android WebView shell, minSdk 21 / Android 5.0. The APK bundles the offline game assets, requires no Flutter and no Internet permission. One universal APK covers 32-bit/64-bit phones where the installed Android System WebView can render the app. Older devices may require a WebView update; emoji/font support varies. The GitHub Actions workflow compiles and publishes a sideloadable debug APK; no emulator runs. A successful build is not proof of real-device behavior.
 
-## Android installation (APK)
+## Test
 
-The GitHub Actions workflow **Android APK - universal Android 5+** builds a debug-signed APK on pushes to `main`. Go to the [testing APK release](https://github.com/aditya130603/learning/releases/tag/android-testing) or Actions artifacts and install the APK on Android 5 or later. The APK contains all the lessons for offline use, uses Android text-to-speech and supports worksheet printing. No Flutter or emulator is involved.
+    node --test tests/*.test.js
 
-## Lessons and parental controls
-
-1. Choose a letter and speak the three words together.
-2. Do the picture game, picture-to-word recognition, then the word-builder.
-3. Complete word-building again on another calendar day to unlock words 4 and 5.
-4. Use **For grown-ups** to unlock 5 words early, mark independent handwriting on paper, view progress or reset device progress.
-5. Generate an A4 worksheet under **Worksheets**, then use your browser's Print / Save as PDF option.
-
-## Tech / architecture
-
-- `index.html` – app shell
-- `words.js` – editable word bank: all letters and words
-- `app.js` – routing, game rules, local progress, worksheet generation, accessibility
-- `styles.css` – responsive kid-friendly UI and A4 print CSS
-- `assets/` – PWA icon resources
-- `service-worker.js` – local offline cache of static assets
-- `.github/workflows/pages.yml` – GitHub Pages deployment
-- `tests/smoke.test.js` – lightweight data and static-asset smoke tests
-
-## Limits of this version
-
-- No cross-device sync or cloud backups; data stays on one device/browser.
-- Device speech synthesis may not support a natural English-India voice, and pronunciation quality varies by operating system.
-- Emoji pictures may render differently by device; illustrated SVG picture assets would be a sensible future improvement.
-- Tiles help with spelling, but handwriting is practised on paper via printable worksheets.
-- No age diagnostics, formal curriculum alignment certification or dyslexia screening.
+For APK download and testing instructions, see android/README.md.

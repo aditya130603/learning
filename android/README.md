@@ -24,3 +24,7 @@ gradle -p android :app:assembleDebug
 ## Real-device test checklist
 
 Record Android version, model and Android System WebView version. Then test: installation, offline launch, navigation, letter sound, picture-matching, word-building, two-day unlock, progress after force-close, worksheet print/save-as-PDF, and screen display on small phones. A separate older-device build will only be needed if a concrete incompatibility appears.
+
+## Word Mayhem stages
+
+The build bundles `mission-content.js` and `mayhem.js` offline. It uses tap-first gameplay for old phones and optional browser drag-and-drop. Age stages: 4–6, 7–9, 10–13, 14–17, 18+. No Flutter dependencies. The existing universal APK workflow remains unchanged except for new bundled JavaScript files.
