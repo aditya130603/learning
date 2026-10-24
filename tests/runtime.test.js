@@ -16,6 +16,9 @@ const context={window,document:{getElementById:(id)=>id==='app'?app:id==='print-
 let timeouts=[];
 vm.runInNewContext(fs.readFileSync(path.join(root,'words.js'),'utf8'),context);
 vm.runInNewContext(fs.readFileSync(path.join(root,'mission-content.js'),'utf8'),context);
+for(const moduleName of ['scene-art.js','lexicon-data.js','word-studio.js','friend-challenge.js']){
+  vm.runInNewContext(fs.readFileSync(path.join(root,moduleName),'utf8'),context);
+}
 vm.runInNewContext(fs.readFileSync(path.join(root,'mayhem.js'),'utf8'),context);
 vm.runInNewContext(fs.readFileSync(path.join(root,'app.js'),'utf8'),context);
 assert.match(app.innerHTML,/Who is playing today/);

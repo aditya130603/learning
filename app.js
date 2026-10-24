@@ -2,6 +2,8 @@
   'use strict';
   const BANK = window.WORD_BANK;
   const Mayhem = window.Mayhem;
+  const WordStudio = window.WordStudio;
+  const FriendChallenge = window.FriendChallenge;
   const KEY = 'little-letters-progress-v1';
   const TODAY = () => {
     const d = new Date();
@@ -32,7 +34,7 @@
   const nextRecommended = () => Math.max(0,BANK.findIndex((_,i)=>!learned(i)));
   const cleanWord = s=>s.toUpperCase().replace(/[^A-Z]/g,'');
   const esc = s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const icon=(name)=>({home:'⌂',letters:'Aa',worksheets:'▤',grownups:'♧',missions:'🎭',profile:'👤'}[name]||'✦');
+  const icon=(name)=>({home:'⌂',letters:'Aa',worksheets:'▤',grownups:'♧',missions:'🎭',profile:'👤',library:'◈',idioms:'❞',review:'↻',challenge:'⚔'}[name]||'✦');
   const btn=(label,action,cls='btn btn-primary',extra='')=>`<button class="${cls}" data-action="${action}" ${extra}>${label}</button>`;
   const title=(eyebrow,heading,description='')=>`<div class="titlegroup"><span class="eyebrow">${eyebrow}</span><h1>${heading}</h1>${description?`<p>${description}</p>`:''}</div>`;
   function speak(text){
@@ -55,10 +57,11 @@
   function header(){
     const age=Mayhem.age(),little=age==='4-6',older=['10-13','14-17','18+'].includes(age);
     const nav=(name,label)=>'<button class="nav-item '+(ui.page===name||(name==='missions'&&ui.page==='mission-play')||(name==='letters'&&['lesson','game','result'].includes(ui.page))?'active':'')+'" data-nav="'+name+'" aria-label="'+label+'"><span class="nav-icon">'+icon(name)+'</span><span>'+label+'</span></button>';
-    return '<header class="topbar"><div class="brand"><div class="brand-mark">Aa<span class="mark-star">✦</span></div><div><b>little<span>letters</span></b><small>WORD MAYHEM · LEARN & PLAY</small></div></div><div class="topright"><div class="star-pill">'+(little||age==='7-9'?'⭐':'🏅')+' <b>'+(little||age==='7-9'?totalStars():Mayhem.count())+'</b></div><button class="wm-profile" data-nav="profile">'+Mayhem.profile().icon+' '+Mayhem.profile().label+' ⌄</button></div></header><aside class="sidebar"><div class="nav-caption">YOUR ADVENTURES</div>'+nav('home','Home')+nav('missions',little?'Silly stories':'Word Mayhem')+nav('letters',older?'Word basics':'ABC Garden')+nav('worksheets','Worksheets')+nav('grownups','For grown-ups')+nav('profile','Change age')+'<div class="side-note"><span>🌈</span><b>Words make stories happen!</b></div></aside><nav class="mobile-nav" aria-label="Main navigation">'+nav('home','Home')+nav('missions','Missions')+nav('letters','ABC')+nav('profile','Profile')+'</nav>';
+    return '<header class="topbar"><div class="brand"><div class="brand-mark">Aa<span class="mark-star">✦</span></div><div><b>little<span>letters</span></b><small>WORD MAYHEM · LEARN & PLAY</small></div></div><div class="topright"><div class="star-pill">'+(little||age==='7-9'?'⭐':'🏅')+' <b>'+(little||age==='7-9'?totalStars():Mayhem.count())+'</b></div><button class="wm-profile" data-nav="profile">'+Mayhem.profile().icon+' '+Mayhem.profile().label+' ⌄</button></div></header><aside class="sidebar"><div class="nav-caption">YOUR ADVENTURES</div>'+nav('home','Home')+nav('missions',little?'Silly stories':'Word Mayhem')+nav('letters',older?'Word basics':'ABC Garden')+(age==='18+'||age==='14-17'?nav('library','Word Atlas')+nav('idioms','Idioms')+nav('review','Daily review'):nav('challenge','Friend challenge'))+nav('worksheets','Worksheets')+nav('grownups','For grown-ups')+nav('profile','Change age')+'<div class="side-note"><span>🌈</span><b>Words make stories happen!</b></div></aside><nav class="mobile-nav" aria-label="Main navigation">'+nav('home','Home')+(age==='18+'||age==='14-17'?nav('library','Atlas')+nav('idioms','Idioms'):nav('missions','Missions')+nav('challenge','Friends'))+nav('letters','ABC')+nav('profile','Profile')+'</nav>';
   }
   function landing(){
     const age=Mayhem.age(),small=age==='4-6',early=age==='7-9';
+    if(age==='18+'||age==='14-17')return WordStudio.home();
     const idx=nextRecommended(),L=BANK[idx];
     if(small)return '<div class="wm-kidhome layout-flow"><div class="wm-kidintro"><div><span class="eyebrow">HELLO, EXPLORER! 🌈</span><h1>Ready to play?</h1><p>Look. Listen. Tap. Learn!</p></div><span>'+L.words[0].emoji+'</span></div><div class="wm-bigbuttons"><button data-action="start-recommended"><span>👀</span><b>Learn letter '+L.letter+'</b><small>Look and listen</small></button><button data-action="start-match-home"><span>🧩</span><b>Find the picture</b><small>Listen and tap</small></button><button data-nav="missions"><span>🎭</span><b>Silly stories</b><small>Make words do magic!</small></button></div><div class="wm-kidfoot"><span>⭐ '+totalStars()+' happy stars</span><button class="btn btn-outline" data-nav="letters">🔤 All letters</button></div></div>';
     const n=Mayhem.count(),max=Mayhem.list().length;
@@ -182,17 +185,31 @@
   }
   function render(){
     if(!BANK || !BANK.length){app.innerHTML='<p>Could not load alphabet words. Please refresh.</p>';return;}
-    app.innerHTML=Mayhem.age()?`${header()}<main class="main-content" id="main-content">${({home:landing,letters:allLetters,lesson,game,result:results,worksheets,grownups,missions:Mayhem.hub,'mission-play':Mayhem.play,profile:Mayhem.agePage}[ui.page]||landing)()}</main><div id="live-msg" role="status" aria-live="polite" class="sr-only"></div>`:`<main class="wm-welcome">${Mayhem.welcome()}</main><div id="live-msg" role="status" aria-live="polite" class="sr-only"></div>`;
+    app.innerHTML=Mayhem.age()?`${header()}<main class="main-content" id="main-content">${({home:landing,letters:allLetters,lesson,game,result:results,worksheets,grownups,library:()=>WordStudio.library('library'),idioms:()=>WordStudio.library('idioms'),review:WordStudio.review,'atlas-lesson':WordStudio.lesson,challenge:FriendChallenge.render,missions:Mayhem.hub,'mission-play':Mayhem.play,profile:Mayhem.agePage}[ui.page]||landing)()}</main><div id="live-msg" role="status" aria-live="polite" class="sr-only"></div>`:`<main class="wm-welcome">${Mayhem.welcome()}</main><div id="live-msg" role="status" aria-live="polite" class="sr-only"></div>`;
     printSheet.innerHTML=worksheetHTML();
   }
   app.addEventListener('click',ev=>{
+    const pickAtlas=ev.target.closest('[data-atlas-pick]');
+    if(pickAtlas){WordStudio.pick(pickAtlas.dataset.atlasPick,pickAtlas.dataset.atlasKind);navigate('atlas-lesson');return;}
+    const option=ev.target.closest('[data-atlas-opt]');
+    if(option){const q=WordStudio.question();if(q&&!WordStudio.ui.feedback){WordStudio.answer(q.options[Number(option.dataset.atlasOpt)]);render();}return;}
+    const actionAtlas=ev.target.closest('[data-atlas]');
+    if(actionAtlas){WordStudio.action(actionAtlas.dataset.atlas);ui.page=WordStudio.ui.view==='lesson'?'atlas-lesson':WordStudio.ui.view==='home'?'home':WordStudio.ui.view;render();return;}
+    const category=ev.target.closest('[data-atlas-cat]');
+    if(category){WordStudio.setCategory(category.dataset.atlasCat);render();return;}
+    const tier=ev.target.closest('[data-challenge-tier]');
+    if(tier){FriendChallenge.tier(tier.dataset.challengeTier);render();return;}
+    const answerChallenge=ev.target.closest('[data-challenge-answer]');
+    if(answerChallenge){FriendChallenge.answer(answerChallenge.dataset.challengeAnswer);render();return;}
+    const challengeAction=ev.target.closest('[data-challenge]');
+    if(challengeAction){FriendChallenge.click(challengeAction.dataset.challenge);render();return;}
     const age=ev.target.closest('[data-wm-age]');if(age){Mayhem.setAge(age.dataset.wmAge);navigate('home');return;}
     const mission=ev.target.closest('[data-wm-mission]');if(mission){if(Mayhem.choose(mission.dataset.wmMission))navigate('mission-play');return;}
     const wordTile=ev.target.closest('[data-wm-tile]');if(wordTile){Mayhem.tile(wordTile.dataset.wmTile);render();return;}
     const rm=ev.target.closest('[data-wm-remove]');if(rm){Mayhem.remove(rm.dataset.wmRemove);render();return;}
     const mean=ev.target.closest('[data-wm-mean]');if(mean){Mayhem.meaning(mean.dataset.wmMean);return;}
     const act=ev.target.closest('[data-wm-action]');if(act){ui.page=Mayhem.action(act.dataset.wmAction);render();return;}
-    const nav=ev.target.closest('[data-nav]'); if(nav){navigate(nav.dataset.nav);return;}
+    const nav=ev.target.closest('[data-nav]'); if(nav){if(['library','idioms','review'].includes(nav.dataset.nav))WordStudio.view(nav.dataset.nav);navigate(nav.dataset.nav);return;}
     const pickLetter=ev.target.closest('[data-letter]');if(pickLetter){selectLetter(pickLetter.dataset.letter);return;}
     const talk=ev.target.closest('[data-speak]');if(talk){speak(talk.dataset.speak);return;}
     const choice=ev.target.closest('[data-choice]');if(choice){choosePicture(Number(choice.dataset.choice));return;}
@@ -223,6 +240,13 @@
   app.addEventListener('dragstart',ev=>{const b=ev.target.closest('[data-wm-tile]');if(b&&!b.disabled&&ev.dataTransfer)ev.dataTransfer.setData('text/plain',b.dataset.wmTile);});
   app.addEventListener('dragover',ev=>{if(ev.target.closest('.wm-sentence'))ev.preventDefault();});
   app.addEventListener('drop',ev=>{if(ev.target.closest('.wm-sentence')&&ev.dataTransfer){ev.preventDefault();const i=ev.dataTransfer.getData('text/plain');if(/^\d+$/.test(i)){Mayhem.tile(i);render();}}});
+  app.addEventListener('submit',ev=>{if(ev.target.id==='atlas-answer-form'){
+    ev.preventDefault();const input=ev.target.querySelector('#atlas-typed');if(input&&!WordStudio.ui.feedback){WordStudio.answer(input.value);render();}
+  }});
+  app.addEventListener('input',ev=>{if(ev.target.id==='atlas-search'){
+    WordStudio.setSearch(ev.target.value);const mirror=document.createElement('div');mirror.innerHTML=WordStudio.library(WordStudio.ui.view);
+    const fresh=mirror.querySelector('#atlas-gallery'),old=document.querySelector('#atlas-gallery');if(fresh&&old)old.innerHTML=fresh.innerHTML;
+  }});
   app.addEventListener('change',ev=>{
     if(ev.target.id==='paper-letter'){ui.letter=Number(ev.target.value);render();}
     if(ev.target.matches('[data-paper-index]')){const w=BANK[ui.letter].words[Number(ev.target.dataset.paperIndex)].text;modify(ui.letter,d=>{const paper=new Set(d.paper||[]);ev.target.checked?paper.add(w):paper.delete(w);d.paper=[...paper];});render();}
@@ -232,6 +256,10 @@
   });
   if(!window.LittleLettersAndroid && 'serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')){
     window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+  }
+  if(FriendChallenge.initHash()){
+    if(!Mayhem.age())Mayhem.setAge(FriendChallenge.state.tier==='10-13'?'10-13':'7-9');
+    ui.page='challenge';
   }
   render();
 })();

@@ -1,5 +1,7 @@
 # Little Letters × Word Mayhem
 
+**New in v3:** 31 advanced vocabulary lessons, 12 idioms, illustrated missions, six-step meaningful word practice, spaced reviews and link-based friend challenges for ages 6–13. See [NEW_IN_V3.md](NEW_IN_V3.md) for feature boundaries, child safety notes and Android build instructions.
+
 An offline-friendly, age-adaptive English learning experience. No Flutter and no third-party runtime dependencies.
 
 ## Choose a learning stage
