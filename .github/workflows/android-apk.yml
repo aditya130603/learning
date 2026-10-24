@@ -20,6 +20,13 @@ on:
       - 'grammar-data/**'
       - 'training/**'
       - 'kids-v5.js'
+      - 'kids-polish-v6.js'
+      - 'mission-expansion-v6.js'
+      - 'scene-pack-v6.js'
+      - 'lexicon-v6.js'
+      - 'lexicon-v6.css'
+      - 'scripts/**'
+      - 'dictionary/**'
       - 'mayhem.js'
       - 'words.js'
       - 'styles.css'
@@ -47,6 +54,8 @@ jobs:
             python3 training/build_context_model.py --output grammar-context.bin --report training/CONTEXT_REPORT.json
           fi
           test "$(wc -c < grammar-context.bin)" -eq 25165824
+      - name: Build attributed offline dictionary (OEWN 2025)
+        run: python3 scripts/build_wordnet.py --output dictionary
       - name: Check learning logic
         run: node --test tests/*.test.js
       - uses: actions/setup-java@v4
@@ -65,8 +74,10 @@ jobs:
       - name: Bundle offline website and launcher icon
         run: |
           mkdir -p android/app/src/main/assets/assets android/app/src/main/res/drawable-nodpi
-          cp index.html app.js words.js mission-content.js mayhem.js scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-context.js grammar-context.bin grammar-core.js adult-v5.js kids-v5.js styles.css v3.css v5.css service-worker.js manifest.webmanifest android/app/src/main/assets/
+          cp index.html app.js words.js mission-content.js mayhem.js scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-context.js grammar-context.bin grammar-core.js adult-v5.js kids-v5.js kids-polish-v6.js mission-expansion-v6.js scene-pack-v6.js lexicon-v6.js lexicon-v6.css styles.css v3.css v5.css service-worker.js manifest.webmanifest android/app/src/main/assets/
           cp -R assets/. android/app/src/main/assets/assets/
+          mkdir -p android/app/src/main/assets/dictionary
+          cp -R dictionary/. android/app/src/main/assets/dictionary/
           cp assets/icon-192.png android/app/src/main/res/drawable-nodpi/ic_launcher.png
       - name: Build universal debug APK (Android API 21+)
         run: gradle -p android :app:assembleDebug --stacktrace --no-daemon

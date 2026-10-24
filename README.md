@@ -71,3 +71,12 @@ Implemented checks: basic subject–verb agreement (pronouns and a curated set o
 GrammarCore now has optional offline **trained phrase-frequency** evidence, used alongside its original grammar rules. The data generator is `training/build_context_model.py`; dataset provenance and limitations are in `grammar-data/SOURCES.md`. The 24 MiB `grammar-context.bin` is a binary count-min sketch built from observed public text; it is not a 24 MiB neural network. Web viewers fetch it on first adult writing lesson; Android apps bundle it locally. Do not treat higher phrase-frequency rank as proof of grammatical correctness.
 
 `node --test tests/*.test.js` executes existing and new tests. GitHub Actions downloads corpus and builds `grammar-context.bin` before building the offline APK; a guard prevents release when the source download fails or too few real sentences are observed. No emulator is involved.
+
+
+## V6 — illustrated worlds and broader adult vocabulary
+
+- Expanded curriculum: 32 new authored stories across the three kids' stages. Ages 4–6 have one clear Play story action and simple two-choice stories; 7–13 groups available missions into small themed worlds. This is a curated course, not a claim to every possible language level.
+- A new 12-panel custom story illustration pack complements the existing original illustrations. Not every word has custom artwork.
+- Adults have a separate Dictionary search using **Open English WordNet 2025**, CC BY 4.0. The licensed source is built into an A–Z sharded word-reference set by the CI pipeline. Senses, synonyms, POS and any original examples are provided where available. Not all words have idioms, antonyms, illustrations or authored missions. See [dictionary attribution](LICENSE-DICTIONARY.md).
+- Generate the dictionary locally via `python3 scripts/build_wordnet.py --output dictionary`. GitHub Pages must be enabled to publish the web build. Online kid friend challenges are asynchronous invite games, not real-time matchmaking.
+- Neural grammar correction remains deliberately deferred; GrammarCore is retained unchanged.

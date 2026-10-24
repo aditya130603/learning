@@ -23,6 +23,8 @@ jobs:
           node-version: "22"
       - name: Run tests
         run: node --test tests/*.test.js
+      - name: Build offline licensed WordNet search data
+        run: python3 scripts/build_wordnet.py --output dictionary
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
