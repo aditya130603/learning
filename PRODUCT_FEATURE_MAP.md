@@ -38,3 +38,13 @@
 ## Learning principle
 
 Make every session answer **What does this word mean? What is it like and unlike? When is it natural? Can I use it? Will I remember it tomorrow?** For younger children, keep screens focused on a single action, reward understanding, and avoid high cognitive-load controls.
+
+### GrammarCore v0.1 (October 2026)
+- [x] Custom local grammar checks with learner-facing explanations
+- [x] Candidate sentence corrections and source word identification
+- [x] Small trained n-gram ranker packaged as JavaScript data; reproducible synthetic training and honest evaluation report
+- [x] Offline integration into the adult free-writing coach and tile-based scenario feedback
+- [x] Integrated into GitHub Pages and Android asset/caching pipelines
+- [ ] Real-world independent English-learner benchmark and error analysis
+- [ ] Broad spelling and syntax coverage, detailed semantic fit, nuanced register classification
+- [ ] Independent physical-device Android 5–9 performance and compatibility testing

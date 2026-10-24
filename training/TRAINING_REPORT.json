@@ -1,0 +1,7 @@
+{
+  "synthetic_pair_holdout_accuracy": 0.921,
+  "holdout_samples": 1200,
+  "feature_count": 1552,
+  "model_bytes": 40202,
+  "note": "These are generated examples; accuracy is NOT a real-world grammar benchmark."
+}

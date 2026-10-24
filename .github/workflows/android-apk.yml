@@ -13,6 +13,9 @@ on:
       - 'v3.css'
       - 'v5.css'
       - 'adult-v5.js'
+      - 'grammar-core.js'
+      - 'grammar-model.js'
+      - 'training/**'
       - 'kids-v5.js'
       - 'mayhem.js'
       - 'words.js'
@@ -50,7 +53,7 @@ jobs:
       - name: Bundle offline website and launcher icon
         run: |
           mkdir -p android/app/src/main/assets/assets android/app/src/main/res/drawable-nodpi
-          cp index.html app.js words.js mission-content.js mayhem.js scene-art.js lexicon-data.js word-studio.js friend-challenge.js adult-v5.js kids-v5.js styles.css v3.css v5.css service-worker.js manifest.webmanifest android/app/src/main/assets/
+          cp index.html app.js words.js mission-content.js mayhem.js scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-core.js adult-v5.js kids-v5.js styles.css v3.css v5.css service-worker.js manifest.webmanifest android/app/src/main/assets/
           cp -R assets/. android/app/src/main/assets/assets/
           cp assets/icon-192.png android/app/src/main/res/drawable-nodpi/ic_launcher.png
       - name: Build universal debug APK (Android API 21+)

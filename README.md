@@ -51,3 +51,17 @@ The latest experience ships a custom adult vocabulary engine: choose personal go
 Child-friendly missions now use two touch choices for ages 4–6 and three for ages 7–13, with large illustrations, a single clear goal, spoken instructions, an immediate visual result and one prominent Next button. The original alphabet and worksheets remain accessible. Shared friend challenges for ages 6–13 are asynchronous invite links, **not live rooms**.
 
 See [PRODUCT_FEATURE_MAP.md](PRODUCT_FEATURE_MAP.md) for precise feature state, omissions, privacy and compatibility notes. App artwork includes model-generated image cutouts and distinct SVG illustrations. Android/Web offline asset bundles include all new code and image assets; CI should build the universal Android testing APK.
+
+## GrammarCore v0.1 (offline prototype)
+
+The Android APK and website now ship **GrammarCore**, a specialised **on-device hybrid checker**, with no Laya, cloud AI, paid API, or runtime model download. It contains hand-authored explanations for certain grammar mistakes and a separately trained, quantised-style (rounded floating-point) statistical word n-gram ranker. It is trained on synthetically generated correct/incorrect examples; the model helps compare suggested edits but the **explicit rules** determine whether an error is shown. It is not an open-ended LLM and does not yet reliably check every possible English sentence or vocabulary nuance.
+
+Implemented checks: basic subject–verb agreement (pronouns and a curated set of nouns), indefinite articles (including common silent-H and /juː/ exceptions), double comparisons, repeated words, plus target vocabulary presence and suggested improvements. GrammarCore explains which word to change and offers a corrected sentence when a supported error is detected. When no error is found, the app explicitly **does not claim** that an unrestricted sentence is fully correct or contextually appropriate.
+
+- Browser/Android integration: `grammar-model.js` (learned weights) → `grammar-core.js` (inference, rules, explanations) → `adult-v5.js` (feedback UI).
+- Training script: `training/train_grammar_ranker.py`, requires scikit-learn on the *developer's machine only* (never on the phone).
+- Documented synthetic evaluation (not general-English accuracy): `training/TRAINING_REPORT.json`.
+- Regression tests: `node --test tests/*.test.js`, including known-valid examples to guard against false corrections.
+- The APK build bundles both scripts with the other offline assets, and the website service worker caches them.
+
+**Limitations:** The statistical ranker is experimental and should not be trusted as a general grammar-quality probability. Spelling, phrasal verbs, arbitrary clauses, open-ended semantic entailment and nuanced idiom usage need separate evaluation and development. No user sentences are sent to a server.
