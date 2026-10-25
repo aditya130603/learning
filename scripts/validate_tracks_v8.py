@@ -37,3 +37,4 @@ if __name__=='__main__':
     report=check(root,root/args.dictionary)
     dst=root/args.output;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_text(json.dumps(report,indent=2),encoding='utf-8')
     print(json.dumps({k:{'levels':v['levels'],'wordnet_verified':v['attested_in_wordnet']} for k,v in report['tracks'].items()},indent=2))
+    print('WordNet targets needing substitution:', json.dumps({k:v for k,v in report['missing_terms'].items() if v}, ensure_ascii=False))

@@ -72,3 +72,18 @@ test('offline idiom lesson and adult roadmap can begin with no dictionary fetch'
  assert.match(r.view(),/break the ice/);
  assert.match(r.view(),/help people feel comfortable/);
 });
+
+test('idiom course has one distinct usage example per level',()=>{
+ const {window}=load(['adult-100-data.js']);const arr=window.WordMayhemTracksV8.idioms;
+ assert.equal(arr.length,100);arr.forEach(x=>assert.ok(x.example.includes(' '),x.term));
+ assert.equal(new Set(arr.map(x=>x.example)).size,100);
+});
+test('adult completion cannot be bypassed after missing target word',async()=>{
+ const env=load(['adult-100-data.js','adult-roadmap-v8.js']);const r=env.window.AdultRoadmapV8;
+ r.choose('idioms');await r.start(()=>{});r.handle('next');
+ let n=-1;const view=r.view();const labels=[...view.matchAll(/data-ar="answer:(\d)"/g)].map(m=>Number(m[1]));
+ for(const k of labels){r.handle('answer:'+k);if(r.view().includes('See the word in context.')){n=k;break;}}
+ assert.notEqual(n,-1);r.handle('next');r.handle('writing','I said a completely unrelated sentence.');
+ assert.doesNotMatch(r.view(),/data-ar="finish"/);
+ r.handle('finish');assert.equal(r.position('idioms'),0);
+});

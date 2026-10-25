@@ -26,7 +26,7 @@ Six selectable goals, each with **100 distinct targeted words/idioms**:
 - Everyday smart English
 - Idioms and expressions
 
-Each level progresses through a definition (from Open English WordNet for single words, or our hand-written idiom glossary), meaning recall, an attested example when the dictionary provides one, and original writing using the target term. Invalid/missing entries are never assigned an invented definition. A published coverage report identifies unavailable WordNet targets. Missing terms can fall back to a labeled verified entry from the same dictionary section rather than trap the learner on a blank screen.
+Each level progresses through a definition (from Open English WordNet for single words, or our hand-written idiom glossary with 100 independently written usage examples), meaning recall, an attested example when the dictionary provides one, and original writing using the target term. Invalid/missing entries are never assigned an invented definition. A published coverage report identifies unavailable WordNet targets. Missing terms can fall back to a labeled verified entry from the same dictionary section rather than trap the learner on a blank screen.
 
 **Content truth:** Most levels share thematic artwork; only selected vocabulary has individually generated mnemonic art. Generic themed imagery is identified as such. Synonym and example gaps are shown transparently instead of being filled with unverifiable examples. The offline grammar checker is cautious and cannot certify naturalness or word meaning in arbitrary sentences.
 
