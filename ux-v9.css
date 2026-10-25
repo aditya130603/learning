@@ -1,0 +1,82 @@
+/* Word Mayhem v9: small Android screen and child-first interaction fixes. */
+html,body,#app{max-width:100%;min-width:0;overflow-x:hidden}
+#app .main-content,#app .main-content>*{min-width:0;max-width:100%}
+#app .v5-root,#app .ar-root,#app .gj-root{width:100%;max-width:100%;min-width:0;overflow-wrap:anywhere}
+#app .v5-root *,#app .ar-root *{min-width:0}
+#app .v5-hero,#app .v5-hero-text,#app .v5-hero-visual{min-width:0;max-width:100%}
+#app .v5-root h1,#app .v5-root h2{overflow-wrap:anywhere;word-break:normal}
+#app .v5-hero-visual img,#app .v5-book img{max-width:100%}
+#app .v5-homehero{background:linear-gradient(135deg,#142943,#091625);border:1px solid #32465f;border-radius:24px;padding:clamp(20px,4vw,34px);display:grid;gap:20px;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);overflow:hidden}
+#app .v5-homehero h1{font-size:clamp(32px,5vw,51px);line-height:1.08;letter-spacing:-.05em;margin:12px 0;overflow-wrap:normal}
+#app .v5-homehero .v9-sub{color:#cfdae8;line-height:1.55;font-size:14px}
+#app .v9-wordpreview{border-radius:21px;border:1px solid #9b815c66;background:radial-gradient(circle at 100% 0%,#334268 0%,transparent 55%),#091b2e;padding:22px;display:flex;flex-direction:column;justify-content:center;gap:9px;min-width:0;overflow:hidden;box-shadow:inset 0 1px #ffffff1a}
+#app .v9-wordpreview .v9-wordlabel{font-size:10px;font-weight:800;color:#f1c984;letter-spacing:.14em}
+#app .v9-wordpreview h2{font-family:Georgia,serif;font-size:clamp(25px,4vw,38px);font-weight:700;color:#ffdf9d;margin:0;line-height:1.2}
+#app .v9-wordpreview p{color:#d8e5f2;font-size:14px;margin:0;line-height:1.5}
+#app .v9-wordpreview blockquote{color:#c9e1d3;font-size:13px;margin:4px 0 0;padding-left:12px;border-left:3px solid #64cfaa;line-height:1.5}
+#app .v9-adultshortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0 0}
+#app .v9-adultshortcuts button{border:1px solid #334d68;background:#13283f;border-radius:17px;color:#f9f4e9;text-align:left;padding:19px;display:flex;flex-direction:column;gap:7px;min-height:117px}
+#app .v9-adultshortcuts b{font-size:16px}
+#app .v9-adultshortcuts span{font-size:12px;color:#a8bace;line-height:1.4}
+#app .v9-fallback-art{background:linear-gradient(145deg,#183b57,#0c2034);border-radius:17px;padding:22px;display:flex;flex-direction:column;justify-content:center;gap:12px;min-height:190px;text-align:left}
+#app .v9-fallback-art strong{font-family:Georgia,serif;color:#ffdb9e;font-size:clamp(24px,4vw,40px);line-height:1.16;overflow-wrap:anywhere}
+#app .v9-fallback-art p{font-size:13px;color:#e5f2ed;line-height:1.5;margin:0}
+/* Actual age cards have .age-* classes. The previous stylesheet only styled .wm-*. */
+.welcome-screen{padding:clamp(16px,4vw,32px);max-width:100%;overflow:hidden}
+.age-onboard{max-width:900px;margin:auto;padding:clamp(16px,3vw,30px);background:#fff;border-radius:26px;box-shadow:0 14px 35px #312b6220;color:#26243c;min-width:0;overflow:hidden}
+.age-onboard .age-symbol{font-size:30px;margin:0 0 8px}
+.age-onboard .eyebrow{letter-spacing:.11em;font-size:11px;font-weight:800;color:#6553b8}
+.age-onboard h1{font-size:clamp(29px,6vw,50px);line-height:1.14;letter-spacing:-.04em;margin:7px 0 8px;color:#272240}
+.age-onboard>p{font-size:14px;line-height:1.5;margin:0 0 18px;color:#655f78}
+.age-onboard .age-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.age-onboard .age-card{display:grid;grid-template-columns:62px minmax(0,1fr);column-gap:12px;align-items:center;min-width:0;min-height:119px;border:1px solid #e1def1;border-radius:19px;background:#f7f5ff;color:#2e294d;padding:16px;text-align:left;overflow:hidden;box-shadow:0 3px 10px #2820560d}
+.age-onboard .age-card:nth-child(2){background:#eefaff}.age-onboard .age-card:nth-child(3){background:#fff9e9}.age-onboard .age-card:nth-child(4){background:#fff1f4}.age-onboard .age-card:nth-child(5){background:#effbf4}
+.age-onboard .age-icon{grid-row:1/5;display:grid;place-items:center;width:60px;height:60px;border-radius:18px;background:#fff;font-size:34px}
+.age-onboard .age-card strong{font-size:19px;line-height:1.2;color:#202039;overflow-wrap:normal}
+.age-onboard .age-card b{font-size:14px;line-height:1.3}
+.age-onboard .age-card small{font-size:12px;color:#67617d;line-height:1.35}
+.age-onboard .age-arrow{font-size:12px;color:#5443b5;font-weight:900;margin-top:4px}
+.age-onboard .parent-note{font-size:12px;color:#68647c;margin:10px 0 0}
+.age-onboard .age-card:focus-visible{outline:4px solid #907de8;outline-offset:3px}
+.gj-root .gj-oneword .gj-letter{margin:0 auto 7px}
+.gj-root .gj-oneword .gj-spell-pic{font-size:clamp(70px,18vw,115px);margin:3px auto 8px}
+.gj-root .gj-oneword h1{text-transform:capitalize;font-size:clamp(32px,8vw,48px);margin:3px 0 15px}
+.gj-root .gj-oneword h2{font-size:21px;line-height:1.3;color:#4f479e;margin:19px 0 10px}
+.gj-root .gj-threefacts{padding:0;list-style:none;display:grid;gap:10px;margin:0 0 18px;counter-reset:fact}
+.gj-root .gj-threefacts li{counter-increment:fact;display:flex;align-items:flex-start;text-align:left;gap:13px;background:#f5f5ff;padding:14px;border:1px solid #e8e4fb;border-radius:15px;color:#292840;font-size:clamp(15px,3.8vw,18px);line-height:1.5}
+.gj-root .gj-threefacts li:before{content:counter(fact);font-weight:900;color:#604ace;min-width:27px;height:27px;border-radius:10px;background:#e0d9ff;display:grid;place-items:center}
+.gj-root .gj-oneword .gj-timer{align-items:center;gap:6px}
+.gj-root .gj-oneword .gj-timer span{font-size:14px;line-height:1.4}
+.gj-root .gj-oneword .gj-timer strong{font-variant-numeric:tabular-nums}
+.gj-root .gj-oneword .gj-speak{margin:5px auto 12px;display:block}
+@media(max-width:600px){
+  .welcome-screen{padding:12px 10px 90px}
+  .age-onboard{padding:18px 13px;border-radius:18px}
+  .age-onboard .age-grid{grid-template-columns:1fr;gap:10px}
+  .age-onboard .age-card{min-height:96px;padding:12px;grid-template-columns:50px minmax(0,1fr);gap:4px 12px}
+  .age-onboard .age-icon{width:49px;height:49px;font-size:28px;border-radius:14px}
+  .age-onboard .age-card strong{font-size:17px}
+  .age-onboard .age-card small{font-size:11px}
+  #app .main-content{padding-left:0;padding-right:0;min-width:0;max-width:100%}
+  #app .v5-root{padding:16px 12px 88px;max-width:100vw;overflow:hidden}
+  #app .v5-homehero{display:flex;flex-direction:column;padding:18px;border-radius:17px;gap:16px}
+  #app .v5-homehero h1{font-size:clamp(31px,9.2vw,39px);letter-spacing:-.045em}
+  #app .v5-homehero .v5-actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}
+  #app .v5-homehero .v5-actions button{width:100%}
+  #app .v9-wordpreview{padding:17px;min-height:152px}
+  #app .v9-adultshortcuts{grid-template-columns:1fr 1fr;gap:9px}
+  #app .v9-adultshortcuts button{padding:13px;min-height:110px}
+  #app .v9-adultshortcuts b{font-size:14px}
+  #app .v5-hero{grid-template-columns:minmax(0,1fr)!important;max-width:100%;overflow:hidden}
+  #app .v5-hero-text{min-width:0;padding:18px}
+  #app .v5-hero-text h1{font-size:clamp(29px,8vw,38px);overflow-wrap:anywhere}
+  #app .v5-root .v5-hero-visual{min-width:0;width:100%;max-height:240px}
+  #app .v5-root .v5-hubtiles{grid-template-columns:1fr}
+  #app .v5-root .v5-goalgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #app .v5-root .v5-lesson-content,#app .v5-root .v5-card{max-width:100%}
+  #app .v5-root .v5-top{font-size:10px;letter-spacing:0;flex-wrap:wrap}
+  #app .v5-root .v5-intro h1{font-size:clamp(30px,8vw,36px)}
+  #app .gj-root{padding:10px 12px 90px}
+  #app .gj-card{max-width:100%;min-width:0}
+  #app .gj-root .gj-threefacts li{padding:10px 12px}
+}

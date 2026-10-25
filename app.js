@@ -206,7 +206,7 @@
   }
   app.addEventListener('click',ev=>{
     const guided=ev.target.closest('[data-gj]');
-    if(guided&&GuidedJourney){if(guided.dataset.gj==='to-stories')ui.page='missions';GuidedJourney.action(guided.dataset.gj,render);render();return;}
+    if(guided&&GuidedJourney){if(guided.dataset.gj==='to-stories')ui.page='missions';GuidedJourney.action(guided.dataset.gj,render);return;}
     const adultPath=ev.target.closest('[data-ar]');
     if(adultPath&&AdultRoadmap){const action=adultPath.dataset.ar;
       if(action==='open'||action==='back'){ui.page='adult-catalog';render();return;}

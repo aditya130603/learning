@@ -73,9 +73,9 @@ function current(){return words()[st().index];}
 function readSeconds(){return age()==='4-6'?60:age()==='7-9'?45:35;}
 function speak(s){if(root.LittleLettersAndroid&&root.LittleLettersAndroid.speak){root.LittleLettersAndroid.speak(s);return;}if(root.speechSynthesis&&typeof SpeechSynthesisUtterance!=='undefined'){root.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(s);u.lang='en-IN';u.rate=0.78;root.speechSynthesis.speak(u);}}
 function stopClock(){if(clock!==null){clearInterval(clock);clock=null;}if(autoMove!==null){clearTimeout(autoMove);autoMove=null;}}
-function schedule(render){stopClock();var s=st();if(s.phase!=='study')return;
+function schedule(render){var s=st();if(s.phase!=='study'){if(clock!==null){clearInterval(clock);clock=null;}return;}if(clock!==null){clearInterval(clock);clock=null;}
 if(!s.expires||s.expires<Date.now()-300000)s.expires=Date.now()+readSeconds()*1000;
-function tick(){var el=document.getElementById('gj-countdown'),left=Math.max(0,Math.ceil((s.expires-Date.now())/1000));if(el)el.textContent=''+left+'s';if(left<=0){stopClock();s.phase='recognize';s.index=0;delete s.expires;save();render();}}
+function tick(){var el=document.getElementById('gj-countdown'),left=Math.max(0,Math.ceil((s.expires-Date.now())/1000));if(el)el.textContent=''+left+'s';if(left<=0){stopClock();s.phase='recognize';delete s.expires;save();render();}}
 tick();if(s.phase==='study')clock=setInterval(tick,250);
 }
 function choices(){var s=st(),target=current(),pool=WORDS[s.letter].words.filter(function(w){return w.text!==target.text;});pool=pool.concat(WORDS[(s.letter+1)%26].words.slice(0,3));var list=[target].concat(pool.slice(0,age()==='4-6'?2:3));var seed=(s.letter*17+s.index*13+s.group*3)%list.length;return list.slice(seed).concat(list.slice(0,seed));}
@@ -85,10 +85,10 @@ for(var i=arr.length-1;i>0;i--){var j=(i*7+seed*3+5)%(i+1),tmp=arr[i];arr[i]=arr
 return arr.map(function(ch,i){return {ch:ch,key:i};});}
 function shufflePersist(){var s=st(),target=current()&&current().text;if(!target)return [];if(!s.tileTarget||s.tileTarget!==target){s.tileTarget=target;s.tiles=letters();s.picked=[];save();}return s.tiles;}
 function clearTiles(){var s=st();s.picked=[];s.note='';save();}
-function afterWord(){var s=st();s.note='';s.index++;s.picked=[];s.tileTarget='';if(s.index>=words().length){if(s.group===0){s.group=1;s.phase='study';s.index=0;s.expires=0;}else{s.completedLetters=Math.max(s.completedLetters,s.letter+1);s.letter++;s.group=0;s.phase=s.letter>=26?'complete':'study';s.index=0;s.expires=0;}}else{s.phase='recognize';}save();}
+function afterWord(){var s=st();s.note='';s.index++;s.picked=[];s.tileTarget='';if(s.index>=words().length){if(s.group===0){s.group=1;s.phase='study';s.index=0;s.expires=0;}else{s.completedLetters=Math.max(s.completedLetters,s.letter+1);s.letter++;s.group=0;s.phase=s.letter>=26?'complete':'study';s.index=0;s.expires=0;}}else{s.phase='study';s.expires=0;}save();}
 function advance(render){stopClock();autoMove=setTimeout(function(){autoMove=null;afterWord();render();},650);}
 function handle(raw,render){var a=String(raw).split(':'),cmd=a[0],s=st();
-if(cmd==='ready'&&s.phase==='study'){stopClock();s.phase='recognize';s.index=0;delete s.expires;save();render();return;}
+if(cmd==='ready'&&s.phase==='study'){return;}
 if(cmd==='listen'){speak(a[1]==='goal'?(current()?current().text:''):a.slice(1).join(':'));return;}
 if(cmd==='picture'&&s.phase==='recognize'){var selected=a.slice(1).join(':'),right=current().text===selected;s.note=right?'Correct! Now build the word.':'Try again. Look closely at the picture.';if(right){s.phase='spell';s.note='';}save();render();return;}
 if(cmd==='tile'&&s.phase==='spell'){if(s.note==='⭐ Great spelling!')return;var key=Number(a[1]),ts=shufflePersist();if(ts[key]&&!s.picked.includes(key)){s.picked.push(key);s.note='';}var desired=current().text.replace(/[^a-z]/gi,'').toLowerCase();if(s.picked.length===desired.length){var formed=s.picked.map(function(i){return ts[i].ch;}).join('');if(formed===desired){s.note='⭐ Great spelling!';s.stars++;save();render();advance(render);return;}s.note='Not quite. Try the letters again.';s.picked=[];}
@@ -97,7 +97,13 @@ if(cmd==='undo'&&s.phase==='spell'){s.picked.pop();s.note='';save();render();ret
 if(cmd==='restart'){stopClock();var tier=age();delete progress.age[tier];save();render();return;}
 }
 function progressBar(){var s=st(),stage=s.group===0?0:3;var score=s.completedLetters*5+stage+s.index;return '<div class="gj-progress"><b>Letter '+Math.min(26,s.letter+1)+' of 26</b><span>⭐ '+s.stars+'</span></div><div class="gj-progressbar"><i style="width:'+Math.round(Math.min(130,score)/130*100)+'%"></i></div>';}
-function card(){var s=st(),L=WORDS[s.letter];if(!L)return '';var w=words();return '<div class="gj-card"><div class="gj-letter">'+L.letter+' <small>'+L.letter.toLowerCase()+'</small></div><h1>Look, listen & remember</h1><p>Read these words. The game starts when the timer ends.</p><div class="gj-facts">'+w.map(function(item,j){var idx=s.group===0?j:j+3;return '<div class="gj-fact"><span class="gj-pic" aria-hidden="true">'+item.emoji+'</span><div><strong>'+esc(item.text)+'</strong><p>'+esc(FACTS[s.letter][idx])+'</p></div><button aria-label="Hear '+esc(item.text)+'" data-gj="listen:'+esc(item.text)+'">🔊</button></div>';}).join('')+'</div><div class="gj-timer"><span>Reading time</span><strong id="gj-countdown">'+readSeconds()+'s</strong></div><button class="gj-main" data-gj="ready">I’m ready to play →</button></div>';}
+function card(){var s=st(),L=WORDS[s.letter],w=current();if(!L||!w)return '';
+var idx=s.group===0?s.index:s.index+3;
+var facts=[FACTS[s.letter][idx]],extra=root.WordFactsV9&&root.WordFactsV9.get?root.WordFactsV9.get(L.letter,w.text):[];
+if(extra.length<2&&idx===0)extra=EXTRA_FACTS[s.letter].slice();
+while(extra.length<2)extra.push('The word '+w.text.toUpperCase()+' has '+w.text.replace(/[^a-z]/gi,'').length+' letters.');
+facts=facts.concat(extra.slice(0,2));
+return '<div class="gj-card gj-oneword"><span class="gj-label">LETTER '+L.letter+' · WORD '+(idx+1)+' OF 5</span><div class="gj-letter">'+L.letter+' <small>'+L.letter.toLowerCase()+'</small></div><div class="gj-spell-pic" aria-hidden="true">'+w.emoji+'</div><h1>'+esc(w.text)+'</h1><button class="gj-speak" data-gj="listen:'+esc(w.text)+'">🔊 Hear the word</button><h2>Three things to remember</h2><ol class="gj-threefacts">'+facts.map(function(f){return '<li>'+esc(f)+'</li>';}).join('')+'</ol><div class="gj-timer"><span>Look and remember · then the game begins</span><strong id="gj-countdown">'+readSeconds()+'s</strong></div></div>';}
 function recognize(){var s=st(),w=current();if(!w)return '';
 return '<div class="gj-card"><span class="gj-label">PICTURE CHALLENGE · '+(s.index+1)+'/'+words().length+'</span><h1>Find <em>'+esc(w.text)+'</em></h1><button class="gj-speak" data-gj="listen:'+esc(w.text)+'">🔊 Hear the word</button><div class="gj-choices">'+choices().map(function(c){return '<button class="gj-choice" data-gj="picture:'+esc(c.text)+'" aria-label="'+esc(c.text)+'"><span>'+c.emoji+'</span><b>'+esc(c.text)+'</b></button>';}).join('')+'</div><p class="gj-note" role="status">'+esc(s.note||'Tap the matching picture.')+'</p></div>';}
 function spell(){var s=st(),w=current(),tiles=shufflePersist();if(!w)return '';
