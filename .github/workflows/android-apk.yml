@@ -19,6 +19,7 @@ on:
       - 'word-facts-v9.js'
       - 'ux-v9.js'
       - 'ux-v9.css'
+      - 'tests/**'
       - 'progression-v8.css'
       - 'grammar-core.js'
       - 'grammar-model.js'
