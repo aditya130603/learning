@@ -4,6 +4,8 @@
   const Mayhem = window.Mayhem;
   const WordStudio = window.WordStudioV5 || window.WordStudio;
   const KidV5 = window.KidV5;
+  const GuidedJourney = window.GuidedJourneyV8;
+  const AdultRoadmap = window.AdultRoadmapV8;
   const LexiconExplorer = window.LexiconExplorer;
   const FriendChallenge = window.FriendChallenge;
   const KEY = 'little-letters-progress-v1';
@@ -54,17 +56,19 @@
     const live = document.getElementById('live-msg');
     if(live) live.textContent=message;
   }
-  function navigate(page){ui.page=page;ui.session=null;ui.showWords=true;window.scrollTo({top:0});render();}
+  function navigate(page){if(GuidedJourney)GuidedJourney.stop();ui.page=page;ui.session=null;ui.showWords=true;window.scrollTo({top:0});render();}
   function selectLetter(index){ui.letter=Math.min(25,Math.max(0,Number(index)));ui.page='lesson';ui.showWords=true;ui.session=null;window.scrollTo({top:0});render();}
   function header(){
     const age=Mayhem.getAge(),small=age==='4-6',newer=age==='10-13'||age==='14-17'||age==='18+';
+    if(age==='4-6')return '<header class="gj-compacthead"><strong>🌈 Little Letters</strong><button data-nav="profile" aria-label="Switch age">⚙ Grown-ups</button></header>';
     const nav=(name,label)=>`<button class="nav-item ${ui.page===name||(ui.page==='mission-play'&&name==='missions')||((ui.page==='lesson'||ui.page==='game'||ui.page==='result')&&name==='letters')?'active':''}" data-nav="${name}" aria-label="${label}"><span class="nav-icon">${icon(name)}</span><span>${label}</span></button>`;
     return `<header class="topbar"><div class="brand"><div class="brand-mark">Aa<span class="mark-star">✦</span></div><div><b>little<span>letters</span></b><small>WORD MAYHEM · LEARN TO PLAY</small></div></div><div class="topright"><div class="star-pill">${small||age==='7-9'?'⭐':'🏅'} <b>${small||age==='7-9'||age==='10-13'?(KidV5?KidV5.state.stars:totalStars()):Mayhem.count()}</b></div><button class="age-pill" data-nav="profile">${Mayhem.info().icon} ${Mayhem.info().label} <span>⌄</span></button></div></header><aside class="sidebar"><div class="nav-caption">${small?'PLAYROOM':'YOUR ADVENTURES'}</div>${nav('home','Home')}${nav('missions',small?'Silly stories':'Word Mayhem')}${nav('letters',newer?'Word basics':'ABC Garden')}${age==='18+'||age==='14-17'?nav('library','Word Studio')+nav('dictionary','Dictionary')+nav('idioms','Idioms')+nav('review','Review'):age==='4-6'?'':nav('challenge','Friend challenge')}${age==='4-6'?'':nav('worksheets','Worksheets')}${age==='4-6'?'':nav('grownups','For grown-ups')}${nav('profile','Change age')}<div class="side-note"><span>🌈</span><b>Every word<br>opens a door.</b><p>Learn by doing, not by memorising everything at once.</p></div></aside><nav class="mobile-nav" aria-label="Main navigation">${nav('home','Home')}${age==='18+'||age==='14-17'?nav('library','Words')+nav('review','Review'):nav('missions',small?'Stories':'Mayhem')+(small?'':nav('challenge','Friends'))}${nav('letters','ABC')}${nav('profile','Profile')}</nav>`;
   }
   function landing(){
     const age=Mayhem.getAge();
-    if(age==='18+'||age==='14-17')return WordStudio.home();
+    if(age==='18+'||age==='14-17')return WordStudio.home()+'<div class="ar-root ar-quick"><button class="ar-primary" data-ar="open">Explore all six 100-level learning paths →</button></div>';
     if(!age) return Mayhem.welcome();
+    if(GuidedJourney)return GuidedJourney.view();
     if(KidV5) return KidV5.hub();
     const beginner=age==='4-6', early=age==='7-9';
     if(beginner){
@@ -196,10 +200,18 @@
   }
   function render(){
     if(!BANK || !BANK.length){app.innerHTML='<p>Could not load alphabet words. Please refresh.</p>';return;}
-    app.innerHTML=Mayhem.getAge()?`${header()}<main class="main-content" id="main-content">${({home:landing,letters:allLetters,lesson,game,result:results,worksheets,grownups,library:()=>WordStudio.library('library'),dictionary:()=>LexiconExplorer.view()+(window.WordLabV7?window.WordLabV7.lesson():''),idioms:()=>WordStudio.library('idioms'),review:WordStudio.review,'atlas-lesson':WordStudio.lesson,challenge:FriendChallenge.render,missions:()=>KidV5 && ['4-6','7-9','10-13'].includes(Mayhem.getAge())?KidV5.hub():Mayhem.hub(),'mission-play':()=>KidV5 && ['4-6','7-9','10-13'].includes(Mayhem.getAge())?KidV5.play():Mayhem.play(),profile:Mayhem.agePicker,goals:WordStudio.goals,arsenal:WordStudio.arsenal}[ui.page]||landing)()}</main><div id="live-msg" role="status" aria-live="polite" class="sr-only"></div>`:`<main class="welcome-screen">${Mayhem.welcome()}</main><div id="live-msg" class="sr-only" role="status" aria-live="polite"></div>`;
+    app.innerHTML=Mayhem.getAge()?`${header()}<main class="main-content" id="main-content">${({home:landing,letters:()=>GuidedJourney&&['4-6','7-9','10-13'].includes(Mayhem.getAge())?GuidedJourney.alphabet():allLetters(),lesson,game,result:results,worksheets,grownups,library:()=>WordStudio.library('library'),dictionary:()=>LexiconExplorer.view()+(window.WordLabV7?window.WordLabV7.lesson():''),'adult-catalog':()=>AdultRoadmap?AdultRoadmap.catalog():'','adult-path':()=>AdultRoadmap?AdultRoadmap.view():'',idioms:()=>WordStudio.library('idioms'),review:WordStudio.review,'atlas-lesson':WordStudio.lesson,challenge:FriendChallenge.render,missions:()=>GuidedJourney&&['4-6','7-9','10-13'].includes(Mayhem.getAge())?GuidedJourney.view():Mayhem.hub(),'mission-play':()=>GuidedJourney&&['4-6','7-9','10-13'].includes(Mayhem.getAge())?GuidedJourney.view():Mayhem.play(),profile:Mayhem.agePicker,goals:WordStudio.goals,arsenal:WordStudio.arsenal}[ui.page]||landing)()}</main><div id="live-msg" role="status" aria-live="polite" class="sr-only"></div>`:`<main class="welcome-screen">${Mayhem.welcome()}</main><div id="live-msg" class="sr-only" role="status" aria-live="polite"></div>`;
     printSheet.innerHTML=worksheetHTML();
+    if(GuidedJourney&&['4-6','7-9','10-13'].includes(Mayhem.getAge())&&(ui.page==='letters'||(Mayhem.getAge()==='4-6'&&['home','missions','mission-play'].includes(ui.page))))GuidedJourney.schedule(render);
   }
   app.addEventListener('click',ev=>{
+    const guided=ev.target.closest('[data-gj]');
+    if(guided&&GuidedJourney){if(guided.dataset.gj==='to-stories')ui.page='missions';GuidedJourney.action(guided.dataset.gj,render);render();return;}
+    const adultPath=ev.target.closest('[data-ar]');
+    if(adultPath&&AdultRoadmap){const action=adultPath.dataset.ar;
+      if(action==='open'||action==='back'){ui.page='adult-catalog';render();return;}
+      ui.page='adult-path';AdultRoadmap.handle(action,'',render);render();return;}
+
     const wordlab=ev.target.closest('[data-wl]');if(wordlab&&window.WordLabV7){Promise.resolve(window.WordLabV7.action(wordlab.dataset.wl)).then(()=>render());return;}
     const lex=ev.target.closest('[data-lx]');if(lex){const task=lex.dataset.lx;if(task==='speak')LexiconExplorer.speak();else if(task==='start')LexiconExplorer.start();else if(task==='stop')LexiconExplorer.stop();else if(task==='save')LexiconExplorer.toggleSave();else if(task.indexOf('sense:')===0)LexiconExplorer.select(task.split(':')[1]);else if(task.indexOf('open:')===0){LexiconExplorer.lookup(decodeURIComponent(task.slice(5))).then(()=>render());return;}render();return;}
     const adult=ev.target.closest('[data-v5]');
@@ -276,7 +288,7 @@
     const key=ev.dataTransfer.getData('text/plain');
     if(/^\d+$/.test(key)){Mayhem.pickTile(key);render();}
   });
-  app.addEventListener('submit',ev=>{if(ev.target.id==='wl-answer-form'){ev.preventDefault();const input=ev.target.querySelector('#wl-input');if(window.WordLabV7)window.WordLabV7.check(input?input.value:'');render();return;}if(ev.target.id==='lx-recall-form'){ev.preventDefault();const i=ev.target.querySelector('#lx-recall-input');LexiconExplorer.grade(i?i.value:'');render();return;}if(ev.target.id==='lx-form'){ev.preventDefault();const input=ev.target.querySelector('#lx-input');LexiconExplorer.lookup(input?input.value:'').then(()=>render());return;}if(ev.target.id==='atlas-answer-form'){
+  app.addEventListener('submit',ev=>{if(ev.target.id==='ar-write-form'&&AdultRoadmap){ev.preventDefault();const input=ev.target.querySelector('#ar-writing');AdultRoadmap.handle('writing',input?input.value:'',render);render();return;}if(ev.target.id==='wl-answer-form'){ev.preventDefault();const input=ev.target.querySelector('#wl-input');if(window.WordLabV7)window.WordLabV7.check(input?input.value:'');render();return;}if(ev.target.id==='lx-recall-form'){ev.preventDefault();const i=ev.target.querySelector('#lx-recall-input');LexiconExplorer.grade(i?i.value:'');render();return;}if(ev.target.id==='lx-form'){ev.preventDefault();const input=ev.target.querySelector('#lx-input');LexiconExplorer.lookup(input?input.value:'').then(()=>render());return;}if(ev.target.id==='atlas-answer-form'){
     ev.preventDefault();const input=ev.target.querySelector('#atlas-typed');if(input&&!WordStudio.ui.feedback){WordStudio.answer(input.value);render();}
   }});
   app.addEventListener('input',ev=>{
