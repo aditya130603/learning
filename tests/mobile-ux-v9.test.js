@@ -17,7 +17,7 @@ test('all 130 words have two extra authored facts',()=>{
 });
 test('one word at a time with exactly three facts',()=>{
  const {g}=boot(),html=g.alphabet();
- assert.match(html,/Ants have six legs/);assert.match(html,/Ants live together in colonies/);
+ assert.match(html,/Ants have six legs/);assert.match(html,/Ants are tiny insects/);
  assert.equal((html.match(/<li>/g)||[]).length,3);
  assert.doesNotMatch(html,/An apple grows on a tree/);
 });
