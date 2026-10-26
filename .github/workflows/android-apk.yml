@@ -16,6 +16,7 @@ on:
       - 'adult-100-data.js'
       - 'adult-roadmap-v8.js'
       - 'guided-v8.js'
+      - 'mnemonic-scenes-v13.js'
       - 'adult-placement-v13.js'
       - 'live-kids-v13.js'
       - 'learning-v13.css'
@@ -98,7 +99,7 @@ jobs:
       - name: Bundle offline website and launcher icon
         run: |
           mkdir -p android/app/src/main/assets/assets android/app/src/main/res/drawable-nodpi
-          cp index.html app.js words.js mission-content.js mayhem.js adult-placement-v13.js live-kids-v13.js learning-v13.css dictionary-study-v7.js dictionary-study-v7.css scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-context.js grammar-context.bin grammar-core.js adult-v5.js kids-v5.js kids-polish-v6.js guided-v8.js kids-journey-v10.js kids-journey-v10.css word-facts-v9.js ux-v9.js ux-v9.css adult-100-data.js adult-roadmap-v8.js progression-v8.css mission-expansion-v6.js scene-pack-v6.js lexicon-v6.js lexicon-v6.css styles.css v3.css v5.css service-worker.js manifest.webmanifest android/app/src/main/assets/
+          cp index.html app.js words.js mission-content.js mayhem.js mnemonic-scenes-v13.js adult-placement-v13.js live-kids-v13.js learning-v13.css dictionary-study-v7.js dictionary-study-v7.css scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-context.js grammar-context.bin grammar-core.js adult-v5.js kids-v5.js kids-polish-v6.js guided-v8.js kids-journey-v10.js kids-journey-v10.css word-facts-v9.js ux-v9.js ux-v9.css adult-100-data.js adult-roadmap-v8.js progression-v8.css mission-expansion-v6.js scene-pack-v6.js lexicon-v6.js lexicon-v6.css styles.css v3.css v5.css service-worker.js manifest.webmanifest android/app/src/main/assets/
           cp -R assets/. android/app/src/main/assets/assets/
           mkdir -p android/app/src/main/assets/dictionary
           cp -R dictionary/. android/app/src/main/assets/dictionary/
