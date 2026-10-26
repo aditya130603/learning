@@ -27,7 +27,7 @@ test('higher placement scores select advanced material and all six tracks contai
 });
 test('renaissance mnemonic honours Dead Rani revival rather than displaying a generic word-world image',()=>{
  const e=boot(['adult-placement-v13.js']);const a=e.window.AdultPlacementV13;
- a.state.page='lesson';a.state.band='B1';a.state.goal='rare';a.state.done.rare=a.terms('rare','B1').indexOf('renaissance');
+ e.window.WordStudioV5.items.push({title:'renaissance',meaning:'A revival of art or activity.'});a.state.page='lesson';a.state.band='B1';a.state.goal='rare';a.state.done.rare=a.terms('rare','B1').indexOf('renaissance');
  a.load(()=>{});
  const h=a.view();
  assert.match(h,/DEAD RANI/);assert.match(h,/BREATH/);assert.match(h,/renaissance.webp/);
