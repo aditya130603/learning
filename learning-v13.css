@@ -87,3 +87,8 @@
  body.kid-live .k13-panel p.k13-def{font-size:12px}
  body.kid-live .k13-top{margin:2px 0}
 }
+
+/* The child visibly blows the balloon up on interaction, not a static swap. */
+@keyframes k13-inflate{0%{transform:scale(.44,.48)}60%{transform:scale(1.07,1.05)}100%{transform:scale(1,1)}}
+.k13-active .k13-svg ellipse[fill="#f56d94"]{transform-origin:184px 174px;animation:k13-inflate .75s cubic-bezier(.18,.72,.25,1) both}
+@media(prefers-reduced-motion:reduce){.k13-active .k13-svg ellipse[fill="#f56d94"]{animation:none}}
