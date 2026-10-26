@@ -62,3 +62,22 @@ test('adult and child new core screens link to the installed offline app shell',
  }
  assert.match(src,/AdultPlacement.handle/);assert.match(src,/LiveKids.handle/);
 });
+
+test('curated adult hooks have meaning-relevant memory pictures and no duplicate words',()=>{
+ const e=boot(['mnemonic-scenes-v13.js','curated-memory-v13.js']);
+ const memories=e.window.CuratedMemoryV13;
+ assert.ok(memories.count>=38);
+ assert.equal(new Set(memories.terms).size,memories.count);
+ assert.match(memories.get('renaissance').hook,/DEAD RANI/);
+ assert.match(memories.get('perspicacious').hook,/Percy the SPY/);
+ assert.match(e.window.MnemonicScenesV13.render('renaissance'),/AWAKE/);
+ assert.match(e.window.MnemonicScenesV13.render('perspicacious'),/<svg/);
+});
+test('new adult mnemonic source is bundled for offline android and page use',()=>{
+ const html=fs.readFileSync(path.join(dir,'index.html'),'utf8');
+ const workflow=fs.readFileSync(path.join(dir,'.github/workflows/android-apk.yml'),'utf8');
+ const sw=fs.readFileSync(path.join(dir,'service-worker.js'),'utf8');
+ for(const file of ['curated-memory-v13.js','mnemonic-scenes-v13.js']){
+   assert.ok(html.includes(file));assert.ok(workflow.includes(file));assert.ok(sw.includes(file));
+ }
+});
