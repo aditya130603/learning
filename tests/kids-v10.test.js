@@ -50,7 +50,7 @@ test('every fact is individually tappable for non-reading children',()=>{const e
 
 // Revision milestone tests: after E, J, O, T and Y, review all 25 words.
 test('after completing E, child gets A–E milestone instead of opening F early',()=>{
- const e=setup();e.state.letter=4;e.state.completedLetters=4;e.state.phase='letter-win';
+ const e=setup();e.api.state();e.state.letter=4;e.state.completedLetters=4;e.state.phase='letter-win';
  e.action('v10:finish');
  assert.equal(e.state.letter,5);assert.equal(e.state.clusterStart,0);assert.equal(e.state.phase,'cluster-ready');
  assert.match(e.api.alphabet(),/Super Five Challenge/);
@@ -61,7 +61,7 @@ test('after completing E, child gets A–E milestone instead of opening F early'
 });
 test('all five-letter boundaries trigger milestones, but A to B remains automatic',()=>{
  for(const letter of [0,1,4,9,14,19,24]){
-   const e=setup();e.state.letter=letter;e.state.phase='letter-win';e.state.completedLetters=letter;
+   const e=setup();e.api.state();e.state.letter=letter;e.state.phase='letter-win';e.state.completedLetters=letter;
    e.action('v10:finish');
    assert.equal(e.state.letter,letter+1);
    if((letter+1)%5===0){assert.equal(e.state.phase,'cluster-ready');assert.equal(e.state.clusterStart,letter-4);}
@@ -69,7 +69,7 @@ test('all five-letter boundaries trigger milestones, but A to B remains automati
  }
 });
 test('every A–E word must pass a picture challenge and scrambled spelling before F unlocks',()=>{
- const e=setup();e.state.letter=4;e.state.completedLetters=4;e.state.phase='letter-win';e.action('v10:finish');
+ const e=setup();e.api.state();e.state.letter=4;e.state.completedLetters=4;e.state.phase='letter-win';e.action('v10:finish');
  e.action('v10:cluster-start');
  assert.equal(e.state.phase,'cluster-pick');
  for(let i=0;i<25;i++){
@@ -89,6 +89,6 @@ test('every A–E word must pass a picture challenge and scrambled spelling befo
  assert.equal(e.state.clusterStart,undefined);
 });
 test('at Z, completing its five-word test finishes the alphabet without an extra partial milestone',()=>{
- const e=setup();e.state.letter=25;e.state.phase='letter-win';e.state.completedLetters=25;
+ const e=setup();e.api.state();e.state.letter=25;e.state.phase='letter-win';e.state.completedLetters=25;
  e.action('v10:finish');assert.equal(e.state.letter,26);assert.equal(e.state.phase,'complete');
 });
