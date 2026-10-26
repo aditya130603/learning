@@ -47,3 +47,48 @@ test('old progress structure is migrated without clearing letter/index and keeps
  assert.ok(e.storage.has('wm-guided-v8'));
 });
 test('every fact is individually tappable for non-reading children',()=>{const e=setup();const html=e.api.alphabet();assert.equal((html.match(/data-gj="v10:fact:[0-2]"/g)||[]).length,3);e.action('v10:fact:0');assert.equal(e.state.phase,'read');});
+
+// Revision milestone tests: after E, J, O, T and Y, review all 25 words.
+test('after completing E, child gets A–E milestone instead of opening F early',()=>{
+ const e=setup();e.state.letter=4;e.state.completedLetters=4;e.state.phase='letter-win';
+ e.action('v10:finish');
+ assert.equal(e.state.letter,5);assert.equal(e.state.clusterStart,0);assert.equal(e.state.phase,'cluster-ready');
+ assert.match(e.api.alphabet(),/Super Five Challenge/);
+ assert.equal(e.api.clusterQuestions().length,25);
+ const entries=e.api.clusterQuestions().map(x=>x.letter+':'+x.wordIndex);
+ assert.equal(new Set(entries).size,25);
+ for(let i=0;i<5;i++)assert.equal(entries.filter(x=>x.startsWith(i+':')).length,5);
+});
+test('all five-letter boundaries trigger milestones, but A to B remains automatic',()=>{
+ for(const letter of [0,1,4,9,14,19,24]){
+   const e=setup();e.state.letter=letter;e.state.phase='letter-win';e.state.completedLetters=letter;
+   e.action('v10:finish');
+   assert.equal(e.state.letter,letter+1);
+   if((letter+1)%5===0){assert.equal(e.state.phase,'cluster-ready');assert.equal(e.state.clusterStart,letter-4);}
+   else assert.equal(e.state.phase,'read');
+ }
+});
+test('every A–E word must pass a picture challenge and scrambled spelling before F unlocks',()=>{
+ const e=setup();e.state.letter=4;e.state.completedLetters=4;e.state.phase='letter-win';e.action('v10:finish');
+ e.action('v10:cluster-start');
+ assert.equal(e.state.phase,'cluster-pick');
+ for(let i=0;i<25;i++){
+   const q=e.api.clusterQuestion();const w=e.words[q.letter].words[q.wordIndex];
+   assert.match(e.api.alphabet(),/Super Five/i);
+   e.action('v10:cluster-picture:wrong');assert.equal(e.state.phase,'cluster-pick');
+   e.action('v10:cluster-picture:'+w.text);assert.equal(e.state.phase,'cluster-build');
+   e.api.alphabet();
+   for(const ch of w.text.replace(/[^a-z]/gi,'')){const t=e.state.tiles.find(t=>t.ch===ch&&!e.state.picked.includes(t.key));assert.ok(t,'Tile '+ch+' for '+w.text);e.action('v10:cluster-tile:'+t.key);}
+   assert.equal(e.state.phase,'cluster-word-win');
+   e.flushOne();
+   assert.equal(e.state.clusterIndex,i+1);
+ }
+ assert.equal(e.state.phase,'cluster-win');
+ e.api.schedule(()=>{});e.flushOne();
+ assert.equal(e.state.phase,'read');assert.equal(e.state.letter,5);assert.equal(e.state.completedLetters,5);
+ assert.equal(e.state.clusterStart,undefined);
+});
+test('at Z, completing its five-word test finishes the alphabet without an extra partial milestone',()=>{
+ const e=setup();e.state.letter=25;e.state.phase='letter-win';e.state.completedLetters=25;
+ e.action('v10:finish');assert.equal(e.state.letter,26);assert.equal(e.state.phase,'complete');
+});

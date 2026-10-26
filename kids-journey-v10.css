@@ -8,3 +8,11 @@
 @media(max-width:370px){.kj-root{padding:8px 8px 95px}.kj-panel{padding:17px 10px}.kj-choices{gap:5px}.kj-choices button{min-height:123px}.kj-fact{padding:10px;gap:8px}.kj-fact span{flex-basis:32px;height:32px}.kj-fact p{font-size:14px}}
 @media(prefers-reduced-motion:reduce){.kj-root *{transition:none!important}}
 .kj-fact{width:100%;text-align:left;font-family:inherit;cursor:pointer}.kj-fact em{margin-left:auto;font-style:normal;font-size:20px}.kj-fact:active{background:#ece6ff}.kj-fact:focus-visible{outline:3px solid #6e54df;outline-offset:2px}
+
+/* Five-letter milestones: large, single-purpose controls for 4–6 year-olds. */
+.kj-cluster-letters{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:22px auto}
+.kj-cluster-letters span{display:grid;place-items:center;min-width:48px;min-height:56px;padding:8px;border-radius:15px;background:linear-gradient(140deg,#ffe9a4,#ffbe58);color:#4e367a;font-size:26px;font-weight:1000;box-shadow:0 4px 0 #db9a34}
+.kj-cluster-intro p,.kj-cluster-test p{max-width:480px;margin:12px auto;font-size:16px}
+.kj-cluster-test .kj-choices{margin-top:20px}
+.kj-cluster-test .kj-tiles button{min-width:42px}
+@media(max-width:380px){.kj-cluster-letters span{min-width:42px;min-height:52px;font-size:23px}.kj-cluster-test .kj-tiles button{min-width:38px}}
