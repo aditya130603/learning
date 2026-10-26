@@ -46,3 +46,4 @@ test('old progress structure is migrated without clearing letter/index and keeps
  const e=setup();e.api.state();assert.equal(e.state.phase,'read');e.state.index=2;e.state.group=0;e.action('v10:next');assert.equal(e.state.phase,'pick');assert.equal(e.state.index,2);
  assert.ok(e.storage.has('wm-guided-v8'));
 });
+test('every fact is individually tappable for non-reading children',()=>{const e=setup();const html=e.api.alphabet();assert.equal((html.match(/data-gj="v10:fact:[0-2]"/g)||[]).length,3);e.action('v10:fact:0');assert.equal(e.state.phase,'read');});
