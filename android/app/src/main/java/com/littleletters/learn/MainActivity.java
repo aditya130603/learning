@@ -18,6 +18,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
+import java.util.ArrayList;
+import android.speech.RecognizerIntent;
+import android.speech.tts.UtteranceProgressListener;
+import org.json.JSONObject;
 
 /** An offline Android shell; all JS and images come from app/src/main/assets. */
 public final class MainActivity extends Activity {
@@ -26,6 +30,13 @@ public final class MainActivity extends Activity {
     private TextToSpeech speech;
     private volatile boolean speechReady;
     private String queuedSpeech;
+    private volatile String coachEndpoint = "";
+    private int recognitionGeneration = -1;
+    private static final int VOICE_REQUEST = 4601;
+    private void js(String code) { runOnUiThread(() -> { if(webView != null) webView.evaluateJavascript(code, null); }); }
+    private void speechEnded(String id) {
+        if(id != null && id.startsWith("coach:")) js("window.SpeakingCompanion && window.SpeakingCompanion.nativeSpeechEnd(" + id.substring(6) + ")");
+    }
 
     @Override
     public void onCreate(Bundle state) {
@@ -52,6 +63,11 @@ public final class MainActivity extends Activity {
                     speech.setLanguage(Locale.US);
                 }
                 speech.setSpeechRate(0.80f);
+                speech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override public void onStart(String id) { }
+                    @Override public void onDone(String id) { speechEnded(id); }
+                    @Override public void onError(String id) { speechEnded(id); }
+                });
                 speechReady = true;
                 if (queuedSpeech != null) {
                     speech.speak(queuedSpeech, TextToSpeech.QUEUE_FLUSH, null, "word");
@@ -81,7 +97,11 @@ public final class MainActivity extends Activity {
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
             String url = request.getUrl().toString();
-            if (!url.startsWith(ASSET_BASE)) return denied();
+            if (!url.startsWith(ASSET_BASE)) {
+                // Never permit remote scripts, navigation or arbitrary subresources.
+                if (url.equals(coachEndpoint) && ("POST".equals(request.getMethod()) || "OPTIONS".equals(request.getMethod()))) return null;
+                return denied();
+            }
             String path = request.getUrl().getPath();
             if (path == null || !path.startsWith("/assets/")) return denied();
             String name = path.substring("/assets/".length());
@@ -120,6 +140,34 @@ public final class MainActivity extends Activity {
     }
 
     private final class NativeBridge {
+        @JavascriptInterface public void configureCoach(String endpoint) {
+            if(endpoint == null) return;
+            Uri uri = Uri.parse(endpoint);
+            if("https".equals(uri.getScheme()) && uri.getHost() != null && uri.getUserInfo() == null && "/v1/coach".equals(uri.getPath()) && uri.getQuery() == null) coachEndpoint = endpoint;
+        }
+        @JavascriptInterface public void stopSpeech() { runOnUiThread(() -> { queuedSpeech = null; if(speech != null) speech.stop(); }); }
+        @JavascriptInterface public void speakCompanion(String text, int id) {
+            if(text == null || text.length() > 2400) return;
+            runOnUiThread(() -> {
+                if(speech == null || !speechReady) { js("window.SpeakingCompanion.nativeSpeechEnd("+id+")"); return; }
+                speech.stop(); speech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "coach:"+id);
+            });
+        }
+        @JavascriptInterface public void listen(int id) {
+            runOnUiThread(() -> {
+                recognitionGeneration = id;
+                if(speech != null) speech.stop();
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-IN");
+                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak English. You can edit the transcript before sending.");
+                intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+                try { startActivityForResult(intent, VOICE_REQUEST); }
+                catch(Exception e) { voiceResult(id, "", "Voice recognition is unavailable. Type your reply instead."); }
+            });
+        }
+        @JavascriptInterface public void stopListening() { runOnUiThread(() -> { recognitionGeneration = -1; finishActivity(VOICE_REQUEST); }); }
+
         @JavascriptInterface
         public void speak(String text) {
             if (text == null || text.length() > 160) return;
@@ -162,6 +210,21 @@ public final class MainActivity extends Activity {
         }
     }
 
+    private void voiceResult(int id, String text, String error) {
+        js("window.SpeakingCompanion && window.SpeakingCompanion.nativeResult(" + id + "," + JSONObject.quote(text) + "," + JSONObject.quote(error) + ")");
+    }
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode != VOICE_REQUEST || recognitionGeneration < 0) return;
+        int id=recognitionGeneration; recognitionGeneration=-1;
+        ArrayList<String> results=data == null ? null : data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+        if(resultCode == RESULT_OK && results != null && !results.isEmpty()) voiceResult(id, results.get(0), "");
+        else voiceResult(id, "", "No speech received or recognition cancelled. Try again or type.");
+    }
+    @Override protected void onStop() {
+        if(speech != null) speech.stop();
+        super.onStop();
+    }
     @Override
     public void onBackPressed() {
         if (webView == null) {

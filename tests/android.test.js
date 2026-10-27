@@ -12,7 +12,9 @@ test('universal Android APK keeps old-phone compatibility', () => {
   const web = read('app.js');
   assert.match(gradle, /minSdk\s+21\b/);
   assert.doesNotMatch(gradle, /dependencies\s*\{/);
-  assert.doesNotMatch(manifest, /uses-permission.*INTERNET/i);
+  assert.match(manifest, /uses-permission.*INTERNET/i);
+  assert.match(java, /url.equals\(coachEndpoint\)/);
+  assert.match(java, /RecognizerIntent.ACTION_RECOGNIZE_SPEECH/);
   assert.match(java, /setDomStorageEnabled\(true\)/);
   assert.match(java, /TextToSpeech/);
   assert.match(java, /printWorksheet\(\)/);

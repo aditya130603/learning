@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- No INTERNET permission: all educational content is bundled in the APK. -->
+    <!-- Curriculum remains bundled. Network is opt-in for the configured coach endpoint only. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <queries>
+        <intent><action android:name="android.speech.action.RECOGNIZE_SPEECH" /></intent>
         <intent><action android:name="android.intent.action.TTS_SERVICE" /></intent>
     </queries>
     <application

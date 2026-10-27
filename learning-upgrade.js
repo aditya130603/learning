@@ -1,0 +1,67 @@
+(function(root){'use strict';
+const C=root.LearningCore,D=root.LearningContent,A=root.LearningArt,KEY='wm-learning-v14';
+let state;try{state=JSON.parse(localStorage.getItem(KEY));}catch(_){}state=Object.assign({stats:{},wordStats:{},letter:'A',sound:true,motion:false,level:'auto'},state||{});
+let ui={page:'home',phase:'experience',mission:null,answer:'',hint:false,feedback:null,word:null,choices:[],wordStage:0};
+let repaint=()=>{};
+const age=()=>root.Mayhem.getAge(),adult=()=>['14-17','18+'].includes(age());
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const button=(label,action,primary=false)=>'<button class="wm-'+(primary?'primary':'secondary')+'" data-learn="'+esc(action)+'">'+esc(label)+'</button>';
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function say(t){if(!state.sound)return;root.Mayhem.speak(t);}
+function record(id,outcome){state.stats[id]=C.record(state.stats[id],outcome);save();}
+function list(){const n=state.level==='starter'?3:state.level==='stretch'?7:age()==='7-9'?3:age()==='10-13'?5:7;return D.missions.slice(0,n);}
+function choose(){const ms=list(),due=ms.filter(m=>state.stats[m.id]&&state.stats[m.id].due<=Date.now());return due.sort((a,b)=>state.stats[a.id].due-state.stats[b.id].due)[0]||ms.find(m=>!state.stats[m.id])||ms.slice().sort((a,b)=>(state.stats[a.id]?.due||0)-(state.stats[b.id]?.due||0))[0];}
+function start(){ui={page:'practice',phase:'experience',mission:choose(),answer:'',hint:false,feedback:null};if(state.stats[ui.mission.id]?.recall>0)ui.phase='recall';}
+function task(){return ui.phase==='transfer'?Object.assign({},ui.mission,ui.mission.transfer):ui.mission;}
+function check(){const t=task();ui.feedback=C.evaluate(ui.answer,t);if(ui.feedback.grammar==='error'||ui.feedback.task==='mismatch'){record(ui.mission.id,{correct:false});ui.hint=true;}if(ui.feedback.task==='complete')record(ui.mission.id,{correct:true,independent:!ui.hint&&ui.phase!=='experience',mode:ui.phase,context:ui.mission.id+':'+ui.phase});}
+function feedback(){const r=ui.feedback;if(!r)return '';return '<div class="wm-feedback" role="status"><strong>'+esc(r.grammar==='error'?'Let’s fix this part':r.grammar==='acceptable'?'Valid English':'Not graded offline')+'</strong><p>'+esc(r.message)+'</p>'+r.issues.map(i=>'<p><mark>'+esc(i.word)+'</mark> → <strong>'+esc(i.replacement)+'</strong></p>').join('')+(r.issues.length?'<p>'+esc(r.suggested)+'</p>':'')+(r.grammar==='unknown'?button('Compare with a model','model')+button('Get online feedback','online'):'')+'</div>';}
+function home(){const s=Object.values(state.stats),due=s.filter(x=>x.due<=Date.now()).length;return '<span class="wm-kicker">YOUR DAILY PRACTICE</span><h1>'+(age()==='4-6'?'Little words, new discoveries.':'Make your words do something.')+'</h1><p>'+(age()==='4-6'?'Look, listen, remember — then meet a new word.':'Watch a story change. Remember it. Tell it your own way.')+'</p>'+A.scene({subject:'robot',action:'inflates',object:'balloon'},false)+'<p>'+due+' concepts ready for review · '+s.filter(x=>x.mastered).length+' independently recalled across days and situations</p>'+button(age()==='4-6'?'Explore picture words':'Start today’s practice',age()==='4-6'?'words':'start',true)+'<div class="wm-links">'+button('Talk with your AI companion · 10–15 min','talk')+button('Learners & settings','settings')+'</div><details><summary>More learning activities</summary><div class="wm-links"><button data-nav="adult-catalog" '+(!adult()?'hidden':'')+'>Vocabulary pathway</button><button data-nav="missions">Original story adventures</button><button data-nav="letters">Alphabet & spelling</button><button data-nav="review">Word review</button></div></details>';}
+function practice(){
+const m=ui.mission,t=task(),experience=ui.phase==='experience';
+const art=ui.feedback?.meaning||t.scene;
+let html='<span class="wm-kicker">'+esc(experience?'1 · EXPERIENCE':ui.phase==='recall'?'2 · REMEMBER':'3 · USE IT SOMEWHERE NEW')+'</span><h1>'+esc(m.title)+'</h1>'+A.scene(art||{situation:m.id},!!ui.feedback&&ui.feedback.grammar==='acceptable')+'<p class="wm-prompt">'+esc(t.prompt)+'</p>';
+if(experience){html+='<blockquote>'+esc(m.example)+'</blockquote><p>'+esc(m.why)+'</p>'+button('Hear the example','hear')+button('Hide it — I’m ready to remember','recall',true);}
+else {
+html+='<label for="wm-answer">Your sentence</label><textarea id="wm-answer" rows="3" maxlength="600" placeholder="Build it below or write your own…">'+esc(ui.answer)+'</textarea>';
+if(ui.phase==='recall'&&ui.scaffold&&!ui.feedback)html+='<div class="wm-tiles">'+m.tiles.slice().sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase())).map((t,i)=>button(t,'tile:'+i)).join('')+'</div>';
+html+=feedback();
+html+=ui.feedback?.task==='complete'?button(ui.phase==='recall'?'Try a changed situation':'Save and finish',ui.phase==='recall'?'transfer':'finish',true):button('Make it happen','check',true);
+}
+html+='<div class="wm-links">'+(!experience?button('Show a hint','hint')+(ui.phase==='recall'?button('Use word tiles','scaffold'):'')+button('Clear sentence','clear'):'')+button('Pause practice','home')+'</div>';
+if(ui.hint)html+='<p class="wm-hint">'+esc(m.why)+' '+esc(ui.phase==='transfer'?'Think about who acts, the time, and the goal.':m.example)+'</p>';
+if(ui.feedback?.grammar==='unknown')html+='<p>Continue without a score if your wording is outside the offline examples.</p>'+button('Keep this as ungraded practice','finish');
+return html;
+}
+function prepareWord(){const last=ui.word?.id,p=D.pool.filter(w=>w.letter===state.letter),queue=C.select(p,state.wordStats);ui.word=queue.find(w=>w.id!==last)||queue[0]||p[0];ui.wordStage=0;ui.answer='';ui.feedback=null;ui.hint=false;const others=D.pool.filter(w=>w.text!==ui.word.text).sort(()=>Math.random()-.5).slice(0,2);ui.choices=[ui.word,...others].sort(()=>Math.random()-.5);}
+function wordRecord(o){state.wordStats[ui.word.id]=C.record(state.wordStats[ui.word.id],o);save();}
+function words(){const w=ui.word;if(!w)return '';return '<span class="wm-kicker">LETTER '+esc(w.letter)+' · '+['MEET','FIND','REMEMBER','USE'][Math.min(3,ui.wordStage)]+'</span><h1>'+esc(ui.wordStage===0?w.text:ui.wordStage===1?'Find '+w.text:ui.wordStage===2?'What is this?':'Use your new word')+'</h1>'+(ui.wordStage!==1?'<div class="wm-picture" role="img" aria-label="'+esc(ui.wordStage===2?'Picture to name':w.text)+'">'+w.emoji+'</div>':'')+(ui.wordStage===0?'<p>'+esc(w.sound)+'</p>'+button('Hear '+w.text,'word-hear')+button('Ready to find it','word-find',true):ui.wordStage===1?'<div class="wm-picture-options">'+ui.choices.map((x,i)=>'<button data-learn="word-pick:'+i+'" aria-label="'+esc(x.text)+'"><span aria-hidden="true">'+x.emoji+'</span></button>').join('')+'</div>':ui.wordStage===2?'<p>Say its name before revealing it. A grown-up can check, or type it below.</p><label for="wm-answer">Name this picture</label><input id="wm-answer" value="'+esc(ui.answer)+'" autocomplete="off">'+button('Check my word','word-check',true)+button('Reveal for a grown-up to check','word-reveal')+(ui.hint?'<p>'+esc(w.text)+'</p>'+button('Said it correctly before reveal','word-remembered')+button('Needed help this time','word-help'):''):'<p>Say a little sentence using “'+esc(w.text)+'”. Can you find it in a book or around you?</p>'+button('We used it in a sentence','word-used',true)+button('We need more practice','word-help'))+(ui.feedback?'<p role="status">'+esc(ui.feedback)+'</p>':'')+'<div class="wm-links">'+button('Another picture word','word-next')+button('Choose a letter','settings')+button('Home','home')+'</div>';}
+function settings(){return '<h1>Learners & settings</h1><p>Existing progress belongs to Learner 1. Each learner has separate activity history.</p><label for="wm-profile">Current learner</label><select id="wm-profile">'+root.Learners.list().map(p=>'<option value="'+esc(p.id)+'" '+(p.id===root.Learners.active()?'selected':'')+'>'+esc(p.name)+'</option>').join('')+'</select><label for="wm-name">Add a nickname (optional, stays here)</label><input id="wm-name" maxlength="30">'+button('Create separate learner','add-profile')+'<label for="wm-level">Practice challenge</label><select id="wm-level">'+[['auto','Age-appropriate'],['starter','Start simpler'],['stretch','Try more complex situations']].map(x=>'<option value="'+x[0]+'" '+(state.level===x[0]?'selected':'')+'>'+x[1]+'</option>').join('')+'</select><label for="wm-letter">Picture-word letter</label><select id="wm-letter">'+Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map(l=>'<option '+(state.letter===l?'selected':'')+'>'+l+'</option>').join('')+'</select><p>New words arrive gradually after repeated independent recall. A correct picture choice alone does not unlock everything.</p>'+button(state.sound?'Sound: on':'Sound: off','sound')+button(state.motion?'Reduced motion: on':'Reduced motion: use device setting','motion')+button('Reset picture-word difficulty for this letter','reset-words')+'<details><summary>Companion setup & parent controls</summary>'+root.SpeakingCompanion.settings()+'</details>'+button('Save settings','save-settings',true)+button('Back to practice','home');}
+function view(render){repaint=render;document.documentElement.classList.toggle('wm-reduced',state.motion);return '<section class="wm-learning">'+(ui.page==='home'?home():ui.page==='practice'?practice():ui.page==='words'?words():ui.page==='talk'?root.SpeakingCompanion.view(render):settings())+'</section>';}
+function handle(raw,render){repaint=render;const parts=raw.split(':'),cmd=parts[0],v=parts[1],input=document.getElementById('wm-answer');if(input)ui.answer=input.value;
+if(cmd==='home'){root.SpeakingCompanion.pause();ui={page:'home'};}
+if(cmd==='start')start();if(cmd==='settings')ui.page='settings';if(cmd==='talk')ui.page='talk';
+if(cmd==='recall'){ui.phase='recall';ui.answer='';ui.feedback=null;}if(cmd==='transfer'){ui.phase='transfer';ui.scaffold=false;ui.answer='';ui.feedback=null;ui.hint=false;}
+if(cmd==='online'){
+const current=ui;ui.feedback.message='Checking your sentence…';render();
+root.SpeakingCompanion.evaluate(ui.answer,task()).then(result=>{if(ui!==current||ui.page!=='practice')return;ui.feedback=result;if(result.task==='complete'&&result.grammar==='acceptable')record(ui.mission.id,{correct:true,independent:!ui.hint,mode:ui.phase,context:ui.mission.id+':'+ui.phase});render();}).catch(error=>{if(ui!==current)return;ui.feedback.message=error.message;render();});return;
+}
+if(cmd==='check'&&ui.feedback?.task!=='complete')check();if(cmd==='clear'){ui.answer='';ui.feedback=null;}
+if(cmd==='tile'){ui.hint=true;ui.answer+=(ui.answer?' ':'')+ui.mission.tiles.slice().sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()))[Number(v)];ui.feedback=null;}
+if(cmd==='scaffold'){ui.scaffold=true;ui.hint=true;}
+if(cmd==='hint'||cmd==='model'){ui.hint=true;if(cmd==='model')ui.feedback.message='One possible model: '+(task().answers[0]||ui.mission.example)+' Other correct wording is also possible.';}if(cmd==='hear')say(ui.mission.example);
+if(cmd==='finish'){ui.page='home';}
+if(cmd==='words'){ui.page='words';prepareWord();}if(cmd==='word-next')prepareWord();if(cmd==='word-hear')say(ui.word.text);if(cmd==='word-find'){wordRecord({mode:'exposure'});ui.wordStage=1;}
+if(cmd==='word-pick'){const ok=ui.choices[Number(v)].id===ui.word.id;wordRecord({mode:'recognition',correct:ok});if(!ok)ui.hint=true;ui.feedback=ok?'Now remember it without seeing the word.':'Listen again and look carefully.';if(ok)ui.wordStage=2;}
+if(cmd==='word-check'){const ok=C.normal(ui.answer)===C.normal(ui.word.text);wordRecord({mode:'recall',correct:ok,independent:!ui.hint,context:'picture'});ui.feedback=ok?'You remembered it!':'Have another look. This one needs more practice.';if(ok)ui.wordStage=3;}
+if(cmd==='word-reveal')ui.hint=true;
+if(cmd==='word-remembered'){wordRecord({mode:'recall',correct:true,independent:true,context:'spoken-parent-checked'});ui.wordStage=3;}
+if(cmd==='word-used'){wordRecord({mode:'transfer',correct:true,independent:!ui.hint,context:'own-sentence-parent-checked'});prepareWord();}
+if(cmd==='word-help'){wordRecord({correct:false});prepareWord();}
+if(cmd==='sound'){state.sound=!state.sound;if(!state.sound)root.SpeakingCompanion.stopSpeech();save();}
+if(cmd==='motion'){state.motion=!state.motion;save();}
+if(cmd==='add-profile')root.Learners.add(document.getElementById('wm-name').value);
+if(cmd==='reset-words'){const letter=document.getElementById('wm-letter').value;if(confirm('Reset picture-word difficulty for '+letter+' for this learner only?')){Object.keys(state.wordStats).filter(k=>k.startsWith(letter+':')).forEach(k=>delete state.wordStats[k]);save();}}
+if(cmd==='save-settings'){state.letter=document.getElementById('wm-letter').value;state.level=document.getElementById('wm-level').value;root.SpeakingCompanion.saveSettings();save();const id=document.getElementById('wm-profile').value;if(id!==root.Learners.active())root.Learners.select(id);ui.page='home';}
+render();}
+root.LearningUpgrade={view,handle,record,state,pause:()=>root.SpeakingCompanion.pause()};
+})(window);

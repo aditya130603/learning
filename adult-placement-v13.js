@@ -117,7 +117,7 @@ if(cmd==='next'&&phase<2){phase++;repaint();return;}
 if(cmd==='meaning'&&phase===2){var correct=(3-n()%3)%3;if(Number(k)===correct){phase=3;feedback='';}else feedback='Try again. Think of the memory scene.';repaint();return;}
 if(cmd==='writing'&&phase===3){draft=String(value||'').trim();passed=false;if(!draft){feedback='Please write your own sentence.';repaint();return;}
 if(draft.toLowerCase().indexOf(cur.title.toLowerCase())<0){feedback='Include '+cur.title+' in your sentence.';repaint();return;}
-if(root.GrammarCore&&typeof root.GrammarCore.check==='function'){var check=root.GrammarCore.check(draft,{entry:{title:cur.title,meaning:cur.meaning}});if(check.issues&&check.issues.length){feedback=check.issues[0].explanation||'Check the grammar carefully.';repaint();return;}}
+if(root.GrammarCore&&typeof root.GrammarCore.check==='function'){var check=root.GrammarCore.check(draft,{entry:{title:cur.title,meaning:cur.meaning}});if(check.issues&&check.issues.length){feedback=check.issues.map(function(i){return i.word+' → '+i.replacement+'. '+i.explanation;}).join(' ')+' Try: '+check.suggested;repaint();return;}}
 passed=true;feedback='No obvious grammar issue. This offline check cannot guarantee the word fits your intended meaning; compare it with the example.';repaint();return;}
 if(cmd==='finish'&&phase===3&&passed){st.done[st.goal]=Math.min(30,n()+1);if(st.saved.indexOf(cur.title)<0)st.saved.push(cur.title);persist();fetchWord(repaint);repaint();}
 }
