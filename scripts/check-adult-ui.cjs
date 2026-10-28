@@ -1,29 +1,9 @@
-// Run against a local HTTP server. Requires Playwright; no Android emulator.
+// Headless web checks only; native voice/inference are mocked here.
 const {chromium}=require('playwright'),assert=require('node:assert/strict');
-(async()=>{
- const browser=await chromium.launch({headless:true,...(process.env.UI_BROWSER?{executablePath:process.env.UI_BROWSER}:{}),args:['--no-sandbox']});
- try {for(const offline of [false,true]){
- const page=await browser.newPage({viewport:{width:360,height:740}}),errors=[];
- page.on('pageerror',e=>errors.push(e.message));
- await page.addInitScript(offline=>{localStorage.setItem('little-letters-mayhem-v1',JSON.stringify({age:'18+',finished:{}}));if(offline)window.LittleLettersAndroid={isOfflineBuild:()=>true,offlineStatus:()=>JSON.stringify({installed:false,message:'Model not installed.'}),cancelOffline(){},unloadOffline(){}};},offline);
- await page.goto(process.env.UI_URL||'http://localhost:8123');
- await page.getByRole('heading',{name:'A little English, every day.'}).waitFor();
- assert.doesNotMatch(await page.locator('.mobile-nav').innerText(),/ABC/);
- const setup=page.getByRole('button',{name:'Set up AI companion',exact:true});
- const box=await setup.boundingBox();assert(box.y+box.height<660,'Setup should appear above bottom navigation');
- await setup.click();await page.getByRole('heading',{name:'Choose your companion'}).waitFor();
- if(offline)assert.equal(await page.getByRole('button',{name:'Download & enable · 345 MB',exact:true}).count(),1);
- else assert.equal(await page.locator('#coach-url').count(),1);
- await page.locator('.mobile-nav [data-nav="settings"]').click();
- assert.equal(await page.locator('#wm-letter').isVisible(),false);
- await page.locator('.mobile-nav [data-nav="home"]').click();
- await page.getByRole('button',{name:'Continue practice →'}).click();
- assert.equal(await page.locator('h1').innerText(),'Everyday routines');
- await page.locator('.mobile-nav [data-nav="talk"]').click();
- await page.getByRole('button',{name:'Set up AI companion',exact:true}).click();
- await page.setViewportSize({width:320,height:640});
- assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'No horizontal overflow');
- assert.deepEqual(errors,[]);await page.close();
- }console.log('Adult home, routing, standard/offline setup, small-screen overflow: PASS (native bridge mocked).');}
- finally{await browser.close();}
-})().catch(error=>{console.error(error);process.exit(1)});
+(async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.UI_BROWSER,args:['--no-sandbox']});try{
+for(const width of [320,360,412]){const page=await browser.newPage({viewport:{width,height:820}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.addInitScript(()=>{localStorage.setItem('little-letters-mayhem-v1',JSON.stringify({age:'18+',finished:{}}));window.LittleLettersAndroid={isOfflineBuild:()=>true,offlineStatus:()=>JSON.stringify({installed:true}),cancelOffline(){},unloadOffline(){}};localStorage.setItem('wm-companion-v14',JSON.stringify({allowed:true}));});
+await page.goto(process.env.UI_URL||'http://localhost:8123');await page.getByRole('heading',{name:'Your everyday English'}).waitFor();
+for(const route of ['adult-catalog','review','settings','talk','home']){await page.locator('.mobile-nav [data-nav="'+route+'"]').click();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width+' '+route);if(route==='adult-catalog'){const b=await page.locator('.ap-answers').boundingBox();assert(b.y<480,'Quiz answers should not sit under a giant gap');}if(route==='review')await page.getByRole('heading',{name:'Review',exact:true}).waitFor();if(route==='settings'){await page.getByRole('button',{name:/Age group:/}).click();assert.equal(await page.getByText('Who is playing today?').count(),0);await page.getByRole('button',{name:'← Back',exact:true}).click();await page.getByRole('button',{name:'Save preferences'}).click();}if(route==='talk'){await page.locator('#coach-draft').fill('She go to school every day.');await page.getByRole('button',{name:'Check my sentence'}).click();assert.match(await page.locator('.wm-feedback').innerText(),/She goes/);await page.locator('.coach-practice-card').evaluate(el=>el.open=false);const b=await page.locator('#coach-draft').boundingBox();assert(b.y<650,'editor reachable');}}
+await page.screenshot({path:'/tmp/adult-home-'+width+'.png',fullPage:true});assert.deepEqual(errors,[]);await page.close();}
+console.log('PASS: home, quiz spacing, review, adult age picker, settings save, speaking feedback, 320/360/412px overflow. Native bridge mocked.');}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});

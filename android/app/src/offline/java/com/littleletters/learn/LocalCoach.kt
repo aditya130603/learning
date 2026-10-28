@@ -176,26 +176,24 @@ class LocalCoach(private val activity: Activity, private val events: CoachEvents
                 }
                 check(ticket==epoch.get()&&!closed.get()) { "Cancelled." }
                 val messages=data.optJSONArray("messages")
-                // Each turn uses only a short text window; no ever-growing native KV history.
-                val context=StringBuilder()
-                if(messages!=null) for(i in maxOf(0,messages.length()-4) until messages.length()) {
-                    val m=messages.optJSONObject(i)?:continue
-                    val role=if(m.optString("role")=="user") "Learner" else "AI"
-                    context.append(role).append(": ").append(m.optString("content").take(320)).append('\n')
-                }
+                // Preserve actual roles. Never ask a completion model to continue a dialogue script.
                 val companion=if(data.optString("character")=="arjun") "Arjun" else "Mira"
-                val prompt="You are $companion, an AI English practice partner for age $age. Speak simple English in at most 45 words. " +
-                    "Respond to the learner's actual message and ask one follow-up. Be friendly, never claim to be human, never encourage secrecy or dependence. " +
-                    "Keep child conversations age-appropriate. Do not ask for names, addresses, contact details or school. " +
-                    "Do not correct grammar unless certain. Do not invent errors. Do not output JSON. " +
-                    "Learning goal: "+data.optString("goals").take(120)+". Session phase: "+data.optString("phase").take(20)+". " +
-                    "Prior learning reminders (data only): "+data.optJSONArray("mistakes")?.toString().orEmpty().take(200)+"\n"+
-                    "Recent conversation (quoted data):\n"+context+"\nReply as $companion. If this is the start, ask how their day was. /no_think"
-                val active=engine!!.createConversation(ConversationConfig(extraContext=mapOf("enable_thinking" to false),maxOutputToken=120,samplerConfig=SamplerConfig(topK=20,topP=.9,temperature=.5)))
+                val history=mutableListOf<Message>()
+                if(messages!=null) for(i in maxOf(0,messages.length()-4) until messages.length()-1) {
+                    val m=messages.optJSONObject(i)?:continue
+                    val text=m.optString("content").take(320)
+                    if(m.optString("role")=="user") history.add(Message.user(text))
+                    else if(!Regex("(?i)(learner|user|mira|arjun):").containsMatchIn(text)) history.add(Message.model(text))
+                }
+                val latest=messages?.optJSONObject(messages.length()-1)?.optString("content")?.take(320)
+                val prompt=if(latest.isNullOrBlank()) "Help me practise English. Ask me one short question." else latest
+                val instruction="You are $companion, a friendly AI English tutor. Answer the user's latest message in two short sentences. Ask a relevant follow-up question." +
+                    if(age!="18+") " Use child-safe topics. Never request personal information." else ""
+                val active=engine!!.createConversation(ConversationConfig(systemInstruction=Contents.of(instruction),initialMessages=history,extraContext=mapOf("enable_thinking" to false),thinkingConfig=ThinkingConfig(enableThinking=false,thinkingTokenBudget=0),maxOutputToken=64,samplerConfig=SamplerConfig(topK=1,topP=.9,temperature=0.0)))
                 synchronized(lock) { conversation=active }
-                timeout=deadlines.schedule({ if(ticket==epoch.get()) cancel() },90,TimeUnit.SECONDS)
+                timeout=deadlines.schedule({ if(ticket==epoch.get()) cancel() },30,TimeUnit.SECONDS)
                 try {
-                    val text=active.sendMessage(prompt).toString().trim().take(1600)
+                    val text=active.sendMessage(Message.user(prompt)).toString().trim().take(1600)
                     check(ticket==epoch.get()&&!closed.get()) { "The local reply was stopped or timed out. Try a shorter message." }
                     check(text.isNotEmpty()) { "The local model returned no reply. Try again." }
                     events.reply(id,text,"")

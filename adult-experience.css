@@ -1,0 +1,54 @@
+/* Adult surface contract: all reachable adult routes share these tokens. */
+body.adult-layout{--ae-bg:#f7f7f2;--ae-card:#fff;--ae-ink:#263b32;--ae-muted:#607068;--ae-line:#dde5dc;--ae-accent:#3d654e;--ae-soft:#edf3ed;background:var(--ae-bg);color:var(--ae-ink);font-family:system-ui,-apple-system,sans-serif}
+body.adult-layout #app .main-content{max-width:820px;padding:88px 18px 104px;min-height:100dvh;margin:0 auto}
+body.adult-layout #app .main-content :is(.ae-root,.wm-learning,.ap-screen,.v5-root,.atlas-root,.ar-root){width:100%;max-width:760px;margin:0 auto;padding:0;min-height:0;height:auto;overflow:visible;background:none;border:0;border-radius:0;box-shadow:none;font:16px/1.5 system-ui,-apple-system,sans-serif;color:var(--ae-ink);--ink:var(--ae-ink);--muted:var(--ae-muted);--night:var(--ae-card);--gold:var(--ae-accent);--line:var(--ae-line)}
+body.adult-layout #app :is(.ae-root,.wm-learning,.ap-screen,.v5-root,.atlas-root,.ar-root) *{box-sizing:border-box;min-width:0}
+body.adult-layout #app .main-content :is(h1,h2,h3){font-family:inherit;color:var(--ae-ink);letter-spacing:-.025em;line-height:1.22}
+body.adult-layout #app .main-content h1{font-size:28px;font-weight:730;margin:8px 0 12px}body.adult-layout #app .main-content h2{font-size:19px;font-weight:680;margin:0 0 8px}
+body.adult-layout #app .main-content p{font-size:15px;line-height:1.55;color:var(--ae-muted);margin:8px 0 14px}
+body.adult-layout #app .main-content button{min-height:46px;max-width:100%;font:600 14px/1.4 system-ui,sans-serif;white-space:normal;color:var(--ae-ink);background:var(--ae-card);border:1px solid var(--ae-line);border-radius:12px;padding:11px 14px;box-shadow:none;text-shadow:none}
+body.adult-layout #app .main-content :is(.ae-primary,.wm-primary,.ap-primary,.v5-primary,.atlas-button.primary){display:flex;align-items:center;justify-content:center;gap:12px;width:100%;background:var(--ae-accent);color:white;border-color:var(--ae-accent);margin:12px 0 0;font-size:15px;box-shadow:none}
+body.adult-layout #app .main-content button:disabled{opacity:.55}body.adult-layout #app .main-content button:active{filter:brightness(.95)}
+body.adult-layout #app .main-content :is(input:not([type=checkbox]),select,textarea){width:100%;min-height:48px;padding:12px;font:16px/1.45 system-ui,sans-serif;color:var(--ae-ink);background:white;border:1px solid #b8c8bb;border-radius:10px;margin:6px 0 12px}
+body.adult-layout #app .main-content textarea{resize:vertical;min-height:92px}body.adult-layout #app .main-content label{display:block;font-size:14px;font-weight:600;margin:12px 0 4px}
+body.adult-layout #app .main-content :focus-visible{outline:3px solid #6d8b71;outline-offset:3px}
+body.adult-layout #app .main-content :is(.ae-card,.wm-home-card,.coach-download-card){display:block;background:white;border:1px solid var(--ae-line);border-radius:16px;padding:18px;margin:14px 0;box-shadow:none}
+.ae-page-head{margin:0 0 20px}.ae-eyebrow,.ae-note{font-size:12px;color:var(--ae-muted)}.ae-eyebrow{font-weight:700;letter-spacing:.08em}.ae-daily h2{margin-top:8px!important}
+body.adult-layout #app .main-content .ae-speaking{display:grid;grid-template-columns:72px minmax(0,1fr);gap:16px;align-items:center}.ae-speaking .human-companion.compact{width:72px;height:100px;margin:0}.ae-speaking p{font-size:14px!important}.ae-speaking button{margin:5px 0 0}
+.ae-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ae-tool{display:flex;align-items:flex-start;text-align:left;gap:10px;padding:14px!important}.ae-tool small,.ae-setting-row small,.ae-age-list small{display:block;font-size:12px;font-weight:400;color:var(--ae-muted);margin-top:4px}
+body.adult-layout #app .main-content .ae-text-button,body.adult-layout #app .main-content .ae-back{background:none;border:0;color:var(--ae-accent);padding:9px 0;min-height:44px;display:block;text-align:left}
+body.adult-layout #app .main-content .ae-setting-row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left}.ae-setting-row strong{font-size:16px}
+body.adult-layout #app .main-content .ae-switch{display:flex;justify-content:space-between;align-items:center;gap:20px;font-weight:400;min-height:48px;margin:0;border-bottom:1px solid var(--ae-line)}.ae-switch input{width:22px;height:22px;accent-color:var(--ae-accent)}
+.ae-age-list button{display:flex;width:100%;justify-content:space-between;align-items:center;text-align:left;margin:6px 0;gap:15px}.ae-age-list button[aria-pressed=true]{border-color:var(--ae-accent)!important;background:var(--ae-soft)!important}.ae-age-list button>span:last-child{font-size:12px;color:var(--ae-accent)}
+.ae-link-list{display:grid;gap:8px;margin:14px 0 0}.ae-link-list button{display:flex;justify-content:space-between;text-align:left}.ae-word-list{display:flex;gap:8px;flex-wrap:wrap}.ae-root summary{cursor:pointer;font-weight:600;min-height:28px}
+.ae-root svg,.adult-nav svg{width:22px;height:22px;flex:0 0 22px}.adult-nav .nav-item>span:first-child{display:flex}
+/* Placement: eliminate vertical centering and viewport-sized dead space. */
+body.adult-layout #app .ap-screen{display:block;background:white;border:1px solid var(--ae-line);border-radius:16px;padding:18px}
+body.adult-layout #app .ap-centre{display:block;flex:none;min-height:0;padding:22px 0 12px;gap:0}
+body.adult-layout #app .ap-top{color:var(--ae-muted);font-size:11px;letter-spacing:.07em}body.adult-layout #app .ap-top b{color:var(--ae-muted)}
+body.adult-layout #app .ap-bar{margin:12px 0;background:#e5ece3;height:5px}body.adult-layout #app .ap-bar i{background:var(--ae-accent)}
+body.adult-layout #app .ap-answers,body.adult-layout #app .ap-goals{display:grid;grid-template-columns:1fr;gap:9px;margin:18px 0 0}
+body.adult-layout #app .ap-answers button,body.adult-layout #app .ap-goals button{color:var(--ae-ink);background:#fafbf8;border-color:var(--ae-line);min-height:52px;padding:14px;text-align:left}
+body.adult-layout #app .ap-link{color:var(--ae-accent);background:none;border:0;width:auto;text-align:left;padding-left:0;opacity:1;margin-top:8px}
+body.adult-layout #app :is(.ap-definition,.ap-hook,.ap-pair>div,.ap-feedback,.ap-screen blockquote){background:var(--ae-soft);color:var(--ae-ink);border-color:var(--ae-line);box-shadow:none}
+body.adult-layout #app .ap-goals button span{color:var(--ae-muted)}body.adult-layout #app .ap-art{max-height:220px;margin:14px 0}.ap-art img{object-fit:contain}
+/* Legacy vocabulary/idiom routes retain behavior, but never their navy/gold theme. */
+body.adult-layout #app :is(.v5-top,.v5-eyebrow,.v5-listhead,.v5-intro,.v5-minibar,.v5-stepbar,.v5-lesson-top,.ar-eyebrow){background:none;color:var(--ae-muted);border-color:var(--ae-line);text-shadow:none}
+body.adult-layout #app .v5-top{display:none}body.adult-layout #app .v5-listhead{padding:0 0 18px;margin:0}.v5-root::before,.v5-root::after{display:none!important}
+body.adult-layout #app :is(.v5-empty,.v5-lesson-content,.v5-hook,.v5-meaning,.v5-example,.v5-scenario,.v5-feedback,.v5-reveal,.v5-relations>div,.v5-reviewlist>button,.v5-book,.v5-goal,.v5-bottompick,.v5-complete,.v5-summary,.v5-speak,.v5-hubtiles button,.ar-panel,.ar-goal){background:white;color:var(--ae-ink);border:1px solid var(--ae-line);box-shadow:none}
+body.adult-layout #app :is(.v5-root h1 i,.v5-root h1 em,.v5-root small,.v5-root em,.v5-word-splash span,.v5-word-splash h1,.v5-meaning,.v5-relations b,.v5-stepbar .active,.v5-reviewlist span){color:var(--ae-accent);text-shadow:none;background:none}
+body.adult-layout #app :is(.v5-optiongrid button,.v5-builder,.v5-tiles button,.v5-sentence,.v5-searchrow input,.v5-goal-text,.v5-lesson-content blockquote){background:var(--ae-soft);color:var(--ae-ink);border-color:var(--ae-line);box-shadow:none}
+body.adult-layout #app .v5-lesson-content{padding:18px}body.adult-layout #app .v5-lessongrid{gap:16px}body.adult-layout #app .v5-art-pane{position:static}.v5-art-pane>img{object-fit:cover}
+body.adult-layout #app .v5-library,body.adult-layout #app .v5-goalgrid{gap:12px}body.adult-layout #app .v5-empty{padding:22px;border-radius:16px}
+body.adult-layout #app .v5-word-splash{padding:12px 0}.v5-root .v5-reviewlist{padding:0}
+/* Conversation: compact character, bounded history and a visible editor. */
+body.adult-layout #app .coach-heading h1{font-size:22px}.coach-heading{margin-bottom:12px}.coach-identity{display:flex;gap:12px;align-items:center}.coach-identity .human-companion{width:56px;height:68px;margin:0}.coach-heading .coach-state{text-align:left;font-size:12px!important;margin:3px 0!important}
+.coach-focus{padding:12px 14px;background:var(--ae-soft,#edf3ed);border-radius:12px;margin:12px 0}.coach-focus strong{font-size:14px}.coach-focus p{font-size:13px!important;margin:5px 0!important}.coach-focus button{min-height:36px!important;padding:6px 10px!important;font-size:12px!important}
+.coach-topics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.coach-topics button{text-align:left!important}.coach-topics small{display:block;font-size:12px;font-weight:400;color:var(--ae-muted)}
+.wm-conversation{max-height:38dvh;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:0 4px 0 0;margin:8px 0;overflow-anchor:none}
+body.adult-layout #app .wm-message{padding:11px 13px;border-radius:12px;margin:9px 0}.wm-message p{font-size:14px!important;line-height:1.5!important;margin:5px 0 0!important}.wm-message.user{margin-left:20px}.coach-stream{border-style:dashed!important}.coach-stream:empty{display:none}.coach-timing{font-size:11px!important;margin:4px 0!important}
+.coach-composer{background:var(--ae-bg,#f7f7f2);padding-top:6px}.coach-composer label{margin-top:0!important}.coach-composer textarea{margin-bottom:6px!important;min-height:76px!important}.coach-turn-actions{grid-template-columns:1fr 1fr}.coach-turn-actions .wm-primary{margin:0!important}
+.coach-practice-card{padding:14px;border:1px solid #bccfba;border-radius:12px;background:#f1f6ed;margin:12px 0}.coach-practice-card p{font-size:14px!important}.coach-practice-card button{margin-top:6px}.coach-controls{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.coach-controls button{font-size:12px!important;padding:8px 10px!important;min-height:40px!important}
+@media(max-width:360px){body.adult-layout #app .main-content{padding:84px 14px 96px}.ae-two{grid-template-columns:1fr}.ae-speaking{gap:10px!important}.coach-topics{grid-template-columns:1fr}}
+@media(min-width:700px){body.adult-layout #app .main-content{padding-top:100px}.ae-root{max-width:680px!important}}
+@media(prefers-reduced-motion:reduce){body.adult-layout *{scroll-behavior:auto!important}}
