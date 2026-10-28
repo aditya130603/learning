@@ -1,34 +1,35 @@
-# Optional offline speaking companion
+# Offline AI companion — 1.3.0
 
-This is actual native local inference, not a bank of scripted replies. The optional **offline** APK contains LiteRT-LM 0.18.1 and has the Android INTERNET permission removed. The **standard** APK retains the previous optional hosted backend and supports older phones. They have the same application ID and separate build artifacts. Do not install the offline APK on unsupported hardware.
+Install `word-mayhem-offline-ai.apk` (Android 12+, ARM64). Home → Set up AI companion → choose Mira or Arjun → **Download & enable · 345 MB**. No Hugging Face account, browser redirect, model file picker, backend, provider key or device token is required for the default flow. Children's profiles still require parent enablement. Existing imported Gemma models and all learner progress are retained until the user explicitly replaces/removes them.
 
-## Target and limits
+## Download architecture
 
-Offline edition: Android 12/API 31 or newer, ARM64. Designed conservatively for trying a small model on 3–4 GB RAM phones: CPU-only, 2 threads, 2,048-token context allocation, only a few recent turns included, and at most 120 generated tokens per turn. It checks for at least 1.25 GB currently available RAM before loading and unloads when paused/backgrounded. That check is a heuristic, not a guarantee against Android killing a memory-heavy app. Loading can take time, replies may be slow, and a 3 GB phone may not have enough free memory at all.
+New default: **Qwen3-0.6B dynamic int4**, LiteRT-LM format, Apache-2.0. This replaces gated Gemma as the one-tap default; it is a different, smaller model, not fine-tuned Gemma. The optional advanced import remains for existing models.
 
-The local model is **not** trusted to certify arbitrary grammar or award mastery. Supported deterministic corrections are shown separately; general model advice can be wrong. Existing offline learning exercises still work without the model. This is a small conversational model, not cloud-level reasoning or a validated child-safety system; parent enablement and supervision remain necessary for children.
+Pinned source:
+`https://huggingface.co/litert-community/Qwen3-0.6B/resolve/e6bb3e4a1eb3f663153f0c1c12b735d64be657a7/Qwen3-0.6B_dynamic_wi4b32_afp32.litertlm`
 
-## One-time installation
+Exact size: 344,671,744 bytes (345 decimal MB / 329 MiB).
+SHA-256: `03e7da1eb1108b50dffaa9bb52cc7bcbad2eb0c66ca990267f480c1e545d2856`.
 
-1. Install `word-mayhem-offline-ai.apk` from the repository's Android testing release. If you already have an installation, check signature compatibility. Do not uninstall it just to bypass a mismatch: uninstalling deletes local progress.
-2. Download **gemma3-1b-it-int4.litertlm** (approximately 584 MB) from https://huggingface.co/litert-community/Gemma3-1B-IT/tree/main . Sign in and accept the publisher's Gemma terms yourself. Do not select the .task, int8, NPU-specific, or larger variants.
-3. In Home → Learners & settings → Companion setup, tap **Import downloaded model** and choose that file. Have at least 900 MB free internal storage in addition to the downloaded source file; the app copies it into its private storage. It accepts bounded-size local files; successful model initialization, not the filename alone, determines runtime compatibility. Model import can be cancelled, and temporary failed copies are deleted.
-4. Enable the companion for the learner and save settings. Begin with a typed turn. No URL, provider key or device token is needed in this edition.
-5. For voice, allow microphone access. An installed **on-device** English recognizer is required; Android 12 alone does not guarantee it exists. Install offline English speech support through the phone's speech provider if offered. TTS also needs a local English voice. If either is unavailable, text remains available. The app never substitutes the cloud recognizer.
-6. Test a real conversation with airplane mode enabled. This physical-device verification was not performed during implementation.
+Android DownloadManager handles network transfer, notifications, pause/reconnection and background continuation. The app persists the download ID and reconnects after restart. Once complete, a worker checks exact byte count and SHA-256 before atomically installing the model in private storage. Download failure or a corrupt file cannot replace an existing model. Cancel removes the partial download; a later explicit retry starts a fresh download. At least 800 MB free storage is required because verification temporarily holds both copies.
 
-The app's model-page button opens the system browser only for the one-time model download. Model files are not bundled in the APK and no model weights or publisher terms are silently downloaded/accepted. Text, selected learning memory and model inference stay on the phone in the offline edition. Voice uses the platform's dedicated on-device recognizer and a voice marked as not requiring a network connection. Session history and deletion controls remain per learner.
+The offline APK now needs INTERNET permission **for this download**. Conversation requests still route exclusively to the local engine; WebView arbitrary remote requests and online coach configuration remain blocked. The CDN receives normal download-request information (such as IP address), not conversation text. Download uses the user's available network, including mobile data, but not roaming; the UI recommends Wi-Fi. This edition is no longer accurately described as having no network capability.
 
-## Implementation and verification
+## Inference and voice
 
-- `LocalCoach.kt`: single-worker model import/inference, RAM/storage checks, bounded context/output, cancellation and resource release. Native initialization can only be released after the runtime call returns; no claim of instantaneous interruption during model loading.
-- `MainActivity.java`: explicit on-device recognizer, runtime microphone permission, installed local TTS selection, model picker and JS callbacks.
-- `speaking-companion.js`: offline routing has no fetch, no backend credentials and no silent online fallback. It only displays a generated reply after the native engine responds; late/cancelled responses are discarded.
-- Native generation errors remain visible and preserve the learner's draft. Explicit stop and 90/95-second native/client generation deadlines are included. The small model's generated advice is labeled as fallible.
-- 111 Node checks passed locally before CI submission. Native compilation is verified by the Android Actions workflow; actual inference, memory/thermal behavior, speech availability and conversation quality require a supported physical phone with the model imported. No emulator or live model execution was performed here.
+LiteRT-LM 0.18.1, CPU two threads, context 2,048 tokens, output capped at 120 tokens, short recent message window. Qwen thinking mode is disabled. A free-RAM check is a heuristic, not a guarantee: 3–4 GB phones may be slow or unable to run it. The model unloads when backgrounded; an active model download continues. Cancellation and inference deadlines are retained.
 
-References consulted:
-- https://developers.google.com/edge/litert-lm/android
-- https://github.com/google-ai-edge/LiteRT-LM/tree/v0.18.1/kotlin/java/com/google/ai/edge/litertlm
-- https://huggingface.co/litert-community/Gemma3-1B-IT
-- https://developer.android.com/reference/android/speech/SpeechRecognizer
+This model is not a reliable unrestricted grammar judge. Validated offline rules provide definite corrections; uncertain wording is ungraded. No new fine-tuning or claimed model-accuracy score is introduced.
+
+Mira/Arjun character and voice choices are saved per learner. Speech uses the installed Android English voice selected in settings, with a preview. Available voices and their gender characteristics vary by device; changing artwork does not guarantee a particular gendered voice. Voice recognition uses the on-device Android API only, with editable transcripts and text fallback. Speech interruption and reduced-motion support remain.
+
+Full Apache-2.0 licence is bundled at `assets/companions/QWEN-LICENSE.txt`. Model attribution: Qwen Team / Alibaba Cloud; LiteRT conversion distributed by litert-community. Upstream weights are quantized; no app-specific training has been performed. Relevant sources: https://huggingface.co/litert-community/Qwen3-0.6B and https://huggingface.co/Qwen/Qwen3-0.6B .
+
+## Verification performed
+
+The full 344,671,744-byte public model file was downloaded without credentials in this workspace; SHA-256 matched the pinned digest. This verifies the hosted file, not Android inference performance.
+
+## Verification limits
+
+The automated JS tests and browser tests exercise setup, character persistence, download controls, and mobile layouts using a mocked native bridge. Native compilation is checked by the Android build. DownloadManager recovery, Android TTS voice quality, low-memory inference, real microphones and animation/audio timing still require physical-device testing. No Android emulator is used. Do not uninstall an existing app to bypass a signing mismatch: uninstalling deletes local progress.

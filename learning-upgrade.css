@@ -23,3 +23,49 @@ body.adult-layout #app .wm-learning p{font-size:16px;line-height:1.5;margin:10px
 .wm-learning [hidden]{display:none!important}.wm-learning{box-sizing:border-box}.wm-learning *{box-sizing:border-box;min-width:0}
 .wm-learning button{white-space:normal;overflow-wrap:anywhere}.wm-learning>button+button{margin-top:10px}
 @media(max-width:480px){.wm-home-grid{grid-template-columns:1fr}body.adult-layout #app .main-content{padding:84px 16px 100px}.wm-home-card{padding:16px}}
+/* v17: implemented from docs/design/adult-reference.webp. Plain surfaces, quiet hierarchy. */
+body.adult-layout{background:#f8f7f3;color:#24312c}
+body.adult-layout .adult-topbar{background:#f8f7f3;border-bottom-color:#e4e6df}
+body.adult-layout .adult-brand{font-family:system-ui,sans-serif;font-size:20px;color:#24312c;letter-spacing:-.025em}
+body.adult-layout .adult-brand small{color:#657568;font-size:9px}
+body.adult-layout .age-pill{background:#fff;color:#526354;border-color:#dfe4db}
+body.adult-layout #app .adult-nav{background:#fffefb;border-color:#e1e5dc}
+body.adult-layout .adult-nav .nav-item.active{background:#edf2e9;color:#456548}
+body.adult-layout #app .wm-learning{font-family:system-ui,-apple-system,sans-serif;color:#24312c}
+body.adult-layout #app .wm-learning h1{font-family:inherit;font-size:clamp(28px,6vw,34px);line-height:1.16;font-weight:750;letter-spacing:-.035em;margin:12px 0}
+body.adult-layout #app .wm-learning h2{font-family:inherit;font-size:19px;font-weight:650;line-height:1.3;color:#25342c}
+body.adult-layout #app .wm-learning p{color:#647068;font-size:15px;line-height:1.5}
+body.adult-layout .wm-kicker{color:#637963;letter-spacing:.1em;font-size:10px}
+body.adult-layout .wm-learning button{border-color:#d7dfd3;color:#344b39;background:#fffefb;border-radius:12px;font-size:14px;font-weight:600;box-shadow:none}
+body.adult-layout .wm-learning .wm-primary{background:#4d7152;color:#fff;border-color:#4d7152}
+body.adult-layout .wm-learning .wm-primary:active{background:#395b3e}
+body.adult-layout .wm-learning input,body.adult-layout .wm-learning textarea,body.adult-layout .wm-learning select{border-color:#cfd8cc;background:#fffefb;color:#26392d;border-radius:12px}
+body.adult-layout .wm-home-card,.coach-download-card{background:#fffefb;border:1px solid #e0e5dc;border-radius:18px;padding:18px;box-shadow:none;margin:16px 0}
+.daily-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}.daily-count{font-size:12px;color:#4c684c;background:#eff3eb;padding:6px 10px;border-radius:20px;white-space:nowrap}
+.companion-home{display:grid;grid-template-columns:minmax(0,1fr) 95px;gap:8px;align-items:center;overflow:hidden}
+.companion-home>div:first-child{position:relative;z-index:1}.companion-home .wm-primary{margin:10px 0 6px;padding:12px}.companion-home button{width:100%;font-size:13px!important;padding:10px 8px}
+.human-companion{position:relative;width:190px;height:190px;margin:8px auto 0;display:flex;justify-content:center;align-items:flex-end;overflow:hidden;border-radius:0 0 28px 28px}
+.human-companion img{width:100%;height:100%;object-fit:contain;object-position:bottom;transform-origin:50% 90%}
+.human-companion.compact{width:120px;height:160px;margin:0 0 0 -10px;align-self:center}
+.human-companion.speaking img{animation:human-speak 1.8s ease-in-out infinite}.human-companion.listening img{animation:human-listen 2.4s ease-in-out infinite}.human-companion.thinking img{animation:human-think 2.2s ease-in-out infinite}
+.voice-pulse{display:none;position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:#fffefbe8;border-radius:18px;padding:8px 12px;align-items:center;gap:4px;height:28px}.voice-pulse i{display:block;width:3px;height:8px;background:#4d7152;border-radius:2px;animation:voice-bars .7s ease-in-out infinite alternate}.voice-pulse i:nth-child(2){animation-delay:.2s}.voice-pulse i:nth-child(3){animation-delay:.4s}.speaking .voice-pulse,.listening .voice-pulse{display:flex}
+@keyframes human-speak{50%{transform:translateY(-2px) rotate(.7deg)}}@keyframes human-listen{50%{transform:rotate(-1.2deg)}}@keyframes human-think{50%{transform:translateY(2px)}}@keyframes voice-bars{to{height:17px}}
+.companion-choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.wm-learning .companion-choice{padding:10px;background:#fffefb;text-align:left;display:flex;flex-direction:column;gap:4px;border:2px solid #e1e6dc;min-width:0}
+.wm-learning .companion-choice.selected{border-color:#4d7152;background:#f0f4eb}
+.companion-choice img{width:100%;height:138px;object-fit:contain;object-position:bottom}.companion-choice strong{font-size:17px}.companion-choice span{font-size:11px;font-weight:400;color:#647068}
+.coach-download-card>button{width:100%;margin:8px 0}.coach-download-card progress{display:block;width:100%;height:12px;accent-color:#4d7152;margin:12px 0}.coach-ready{display:block;color:#375b3c;padding:12px 0}
+.coach-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}.coach-heading button{font-size:11px!important;padding:10px!important;max-width:120px}.coach-heading h1{margin:5px 0!important}.coach-state{text-align:center;margin:8px 0!important}
+.wm-learning .coach-small{font-size:12px!important;line-height:1.5}.coach-turn-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}.coach-turn-actions .wm-primary{margin:8px 0}
+body.adult-layout .wm-message{background:#fffefb;border:1px solid #e0e5dc}.wm-message.user{background:#edf3e8!important;border-color:#dce6d7!important}.wm-message strong{font-size:12px}.wm-conversation:empty{display:none}
+body.adult-layout .wm-feedback,body.adult-layout .wm-learning blockquote,body.adult-layout .wm-hint{background:#edf2e9;border-color:#6b8b67}
+/* Existing adult lessons use the same sober surfaces; retain their controls and learning flow. */
+body.adult-layout #app .ap-screen,body.adult-layout #app .v5-homehero,body.adult-layout #app .v9-adultshortcuts button{background:#fffefb;color:#24312c;border:1px solid #e0e5dc;box-shadow:none}
+body.adult-layout #app .ap-screen h1,body.adult-layout #app .ap-screen h2,body.adult-layout #app .ap-screen h1 em{color:#24312c}
+body.adult-layout #app .ap-screen p,body.adult-layout #app .ap-top,body.adult-layout #app .ap-centre small,body.adult-layout #app .ap-top b{color:#5b6b60}
+body.adult-layout #app .ap-answers button,body.adult-layout #app .ap-goals button{background:#f3f5ef;border-color:#d6dfd0;color:#304b36}
+body.adult-layout #app .ap-bar{background:#e2e8dd}body.adult-layout #app .ap-bar i{background:#6b8b67}
+@media(prefers-reduced-motion:reduce){.human-companion img,.voice-pulse i{animation:none!important}}
+@media(max-width:340px){.companion-home{grid-template-columns:minmax(0,1fr) 75px}.human-companion.compact{width:95px}.companion-choice img{height:115px}}
+/* Route changes should arrive at the new heading immediately, including after a long settings page. */
+html{scroll-behavior:auto}

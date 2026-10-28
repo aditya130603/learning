@@ -42,6 +42,10 @@ public final class MainActivity extends Activity {
     private static final int MICROPHONE_REQUEST = 4603;
     private String queuedSpeech;
     private volatile String coachEndpoint = "";
+    private volatile String companionVoices = "[]";
+    private String defaultCompanionVoice = "";
+    private String selectedCompanionVoice = "";
+    private float companionPitch = 1f;
     private int recognitionGeneration = -1;
     private static final int VOICE_REQUEST = 4601;
     private void js(String code) { runOnUiThread(() -> { if(webView != null) webView.evaluateJavascript(code, null); }); }
@@ -52,10 +56,11 @@ public final class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
-        getWindow().setStatusBarColor(0xff725ad8);
-        getWindow().setNavigationBarColor(0xfff6f4fc);
+        getWindow().setStatusBarColor(0xfff8f7f3);
+        getWindow().setNavigationBarColor(0xfff8f7f3);
+        if(android.os.Build.VERSION.SDK_INT >= 23) getWindow().getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         webView = new WebView(this);
-        webView.setBackgroundColor(0xfff6f4fc);
+        webView.setBackgroundColor(0xfff8f7f3);
         setContentView(webView);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -90,6 +95,12 @@ public final class MainActivity extends Activity {
                     @Override public void onDone(String id) { speechEnded(id); }
                     @Override public void onError(String id) { speechEnded(id); }
                 });
+                org.json.JSONArray voices = new org.json.JSONArray();
+                if(speech.getVoices()!=null) for(Voice v:speech.getVoices()) if("en".equals(v.getLocale().getLanguage()) && (!BuildConfig.OFFLINE_COACH || !v.isNetworkConnectionRequired())) {
+                    try { voices.put(new JSONObject().put("id",v.getName()).put("label",v.getLocale().toLanguageTag()+" · "+v.getName())); } catch(Exception ignored) { }
+                }
+                companionVoices=voices.toString();
+                if(speech.getVoice()!=null)defaultCompanionVoice=speech.getVoice().getName();
                 speechReady = true;
                 if (queuedSpeech != null) {
                     speech.speak(queuedSpeech, TextToSpeech.QUEUE_FLUSH, null, "word");
@@ -162,6 +173,12 @@ public final class MainActivity extends Activity {
     }
 
     private final class NativeBridge {
+        @JavascriptInterface public void downloadOfflineModel() { if(localCoach!=null)localCoach.downloadModel(); }
+        @JavascriptInterface public void cancelModelDownload() { if(localCoach!=null)localCoach.cancelDownload(); }
+        @JavascriptInterface public String companionVoices() { return companionVoices; }
+        @JavascriptInterface public void selectCompanionVoice(String id, String character) {
+            runOnUiThread(() -> { selectedCompanionVoice=id == null ? "" : id; companionPitch="arjun".equals(character)?0.94f:1.06f; });
+        }
         @JavascriptInterface public String offlineStatus() { return localCoach == null ? "{}" : localCoach.status(); }
         @JavascriptInterface public boolean isOfflineBuild() { return BuildConfig.OFFLINE_COACH; }
         @JavascriptInterface public void importOfflineModel() {
@@ -177,13 +194,6 @@ public final class MainActivity extends Activity {
         @JavascriptInterface public void unloadOffline() { if(localCoach!=null) localCoach.unload(); }
         @JavascriptInterface public void removeOfflineModel() { if(localCoach!=null) localCoach.removeModel(); }
         @JavascriptInterface public void listenOffline(int id) { runOnUiThread(() -> startLocalRecognition(id)); }
-        @JavascriptInterface public void openOfflineModelPage() {
-            runOnUiThread(() -> {
-                try { startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://huggingface.co/litert-community/Gemma3-1B-IT/tree/main"))); }
-                catch(Exception ignored) { }
-            });
-        }
-
         @JavascriptInterface public void configureCoach(String endpoint) {
             if(endpoint == null || BuildConfig.OFFLINE_COACH) return;
             Uri uri = Uri.parse(endpoint);
@@ -194,7 +204,10 @@ public final class MainActivity extends Activity {
             if(text == null || text.length() > 2400) return;
             runOnUiThread(() -> {
                 if(speech == null || !speechReady) { js("window.SpeakingCompanion.nativeSpeechEnd("+id+");window.SpeakingCompanion.localStatus(\"No installed offline English voice is ready. Read the reply or install an English voice in Android settings.\")"); return; }
-                speech.stop(); speech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "coach:"+id);
+                speech.stop();
+                if(speech.getVoices()!=null) for(Voice v:speech.getVoices()) if(v.getName().equals(selectedCompanionVoice.isEmpty()?defaultCompanionVoice:selectedCompanionVoice) && "en".equals(v.getLocale().getLanguage()) && (!BuildConfig.OFFLINE_COACH || !v.isNetworkConnectionRequired())) { speech.setVoice(v); break; }
+                speech.setPitch(companionPitch); speech.setSpeechRate(0.88f);
+                speech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "coach:"+id);
             });
         }
         @JavascriptInterface public void listen(int id) {
@@ -222,6 +235,7 @@ public final class MainActivity extends Activity {
                     return;
                 }
                 speech.stop();
+                speech.setPitch(1f);speech.setSpeechRate(0.80f);
                 speech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "word");
             });
         }

@@ -7,6 +7,8 @@ public final class LocalCoach {
     public String status() { return "{\"supported\":false,\"installed\":false,\"busy\":false,\"message\":\"Install the optional offline-AI APK for local conversation.\"}"; }
     public void importModel(Uri uri) { events.status("Offline AI is not included in this APK."); }
     public void generate(int id, String payload) { events.reply(id,"","Offline AI is not included in this APK."); }
+    public void downloadModel() { events.status("Install the offline AI edition to download a local model."); }
+    public void cancelDownload() { }
     public void cancel() { }
     public void unload() { }
     public void removeModel() { }

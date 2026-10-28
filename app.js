@@ -63,9 +63,10 @@
   function header(){
     const age=Mayhem.getAge(),small=age==='4-6',newer=age==='10-13'||age==='14-17'||age==='18+';
     if(['14-17','18+'].includes(age)){
-      const current=ui.page==='home'&&window.LearningUpgrade?window.LearningUpgrade.page():ui.page;
+      const activePage=ui.page==='home'&&window.LearningUpgrade?window.LearningUpgrade.page():ui.page;
+      const current=activePage==='coach-setup'?'settings':activePage==='practice'?'adult-catalog':activePage;
       const item=(page,label,symbol)=>`<button class="nav-item ${current===page?'active':''}" data-nav="${page}" ${current===page?'aria-current="page"':''}><span aria-hidden="true">${symbol}</span><span>${label}</span></button>`;
-      return `<header class="topbar adult-topbar"><div class="adult-brand">Word Mayhem<small>ENGLISH FOR EVERYDAY LIFE</small></div><button class="age-pill" data-nav="settings">${age} · Settings</button></header><nav class="mobile-nav adult-nav" aria-label="Main navigation">${item('home','Home','⌂')}${item('adult-catalog','Learn','◇')}${item('talk','Speak','◉')}${item('review','Review','↻')}${item('settings','Settings','⚙')}</nav>`;
+      return `<header class="topbar adult-topbar"><div class="adult-brand">Word Mayhem<small>EVERYDAY ENGLISH</small></div><button class="age-pill" data-nav="settings">${age} · Settings</button></header><nav class="mobile-nav adult-nav" aria-label="Main navigation">${item('home','Home','⌂')}${item('adult-catalog','Learn','◇')}${item('talk','Speak','◉')}${item('review','Review','↻')}${item('settings','Settings','⚙')}</nav>`;
     }
     if(age==='4-6')return '<header class="gj-compacthead"><strong>🌈 Little Letters</strong><button data-nav="profile" aria-label="Switch age">⚙ Grown-ups</button></header>';
     const nav=(name,label)=>`<button class="nav-item ${ui.page===name||(ui.page==='mission-play'&&name==='missions')||((ui.page==='lesson'||ui.page==='game'||ui.page==='result')&&name==='letters')?'active':''}" data-nav="${name}" aria-label="${label}"><span class="nav-icon">${icon(name)}</span><span>${label}</span></button>`;
@@ -218,7 +219,7 @@
     if(GuidedJourney&&['4-6','7-9','10-13'].includes(Mayhem.getAge())&&(ui.page==='letters'||(Mayhem.getAge()==='4-6'&&(ui.page!=='home'||!window.LearningUpgrade)&&['home','missions','mission-play'].includes(ui.page))))GuidedJourney.schedule(render);
   }
   app.addEventListener('click',ev=>{
-    const learn=ev.target.closest('[data-learn]');if(learn&&window.LearningUpgrade){ui.page='home';window.LearningUpgrade.handle(learn.dataset.learn,render);return;}
+    const learn=ev.target.closest('[data-learn]');if(learn&&window.LearningUpgrade){const previous=window.LearningUpgrade.page();ui.page='home';window.LearningUpgrade.handle(learn.dataset.learn,render);if(previous!==window.LearningUpgrade.page())window.scrollTo({top:0});return;}
     const coach=ev.target.closest('[data-coach]');if(coach&&window.SpeakingCompanion){window.SpeakingCompanion.handle(coach.dataset.coach,render);return;}
     const adultNew=ev.target.closest('[data-ap]');
     if(adultNew&&AdultPlacement){AdultPlacement.handle(adultNew.dataset.ap,'',render);return;}
