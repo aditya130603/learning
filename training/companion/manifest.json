@@ -1,0 +1,10 @@
+{
+  "trials": 6000,
+  "tracks": 6,
+  "levelsPerTrack": 100,
+  "roundsPerLevel": 10,
+  "automaticGrammarChecks": 4800,
+  "humanReviewedVocabularyChecks": 1200,
+  "modelTrialsExecuted": 0,
+  "note": "Eight grammar templates recur across targets; these are correlated calibration probes, not 4800 independent grammar phenomena. Lexical meaning/transfer needs human review. Never train on this evaluation file."
+}

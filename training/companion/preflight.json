@@ -1,0 +1,13 @@
+{
+  "packages": {
+    "torch": false,
+    "transformers": false,
+    "peft": false,
+    "accelerate": false
+  },
+  "cuda": false,
+  "local_training_weights": false,
+  "ready": false,
+  "model_trials_executed": 0,
+  "training_completed": false
+}
