@@ -52,3 +52,13 @@ body.adult-layout #app .wm-message{padding:11px 13px;border-radius:12px;margin:9
 @media(max-width:360px){body.adult-layout #app .main-content{padding:84px 14px 96px}.ae-two{grid-template-columns:1fr}.ae-speaking{gap:10px!important}.coach-topics{grid-template-columns:1fr}}
 @media(min-width:700px){body.adult-layout #app .main-content{padding-top:100px}.ae-root{max-width:680px!important}}
 @media(prefers-reduced-motion:reduce){body.adult-layout *{scroll-behavior:auto!important}}
+
+/* Keep the editor visible on entry, even on small phones. */
+body.adult-layout #app .coach-identity{display:grid;grid-template-columns:48px minmax(0,1fr) 44px;gap:10px;align-items:center}
+body.adult-layout #app .coach-identity h1{font-size:21px;margin:0 0 5px}
+body.adult-layout #app .coach-identity p{font-size:12px;margin:0}
+body.adult-layout #app .coach-identity .human-companion{width:48px;height:64px;min-width:48px}
+body.adult-layout #app .coach-identity>button{padding:8px;width:44px;word-break:normal}
+body.adult-layout #app .coach-practice-card:not([open]){padding:11px 14px}
+
+@media(max-width:360px){body.adult-layout .adult-brand{font-size:18px}body.adult-layout .age-pill{font-size:12px;padding:10px}body.adult-layout .adult-topbar{padding:10px 14px}}
