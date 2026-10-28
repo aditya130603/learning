@@ -42,7 +42,7 @@ if(!response.ok)throw new Error(response.status===429?'Daily practice limit reac
 const result=await response.json();if(id!==generation)return;if(typeof result.reply!=='string'||!result.reply.trim())throw new Error('The service returned an invalid reply.');
 acceptReply(text,result);
 }catch(e){if(id===generation){mode='idle';notice=e.name==='AbortError'?'The reply timed out. Your text is still here; retry when connected.':e.message||'Connection failed. Your text is still here.';render();}}finally{clearTimeout(timeout);if(id===generation)request=null;}}
-function acceptReply(text,result){if(text){session.messages.push({role:'user',content:text});session.turns++;}session.messages.push({role:'assistant',content:result.reply.slice(0,2000)});session.messages=session.messages.slice(-40);draft='';
+function acceptReply(text,result){const edited=document.getElementById('coach-draft')?.value;if(text){session.messages.push({role:'user',content:text});session.turns++;}session.messages.push({role:'assistant',content:result.reply.slice(0,2000)});session.messages=session.messages.slice(-40);draft=typeof edited==='string'&&edited!==text?edited:'';
 const corrections=Array.isArray(result.corrections)?result.corrections.filter(c=>c&&['original','corrected','explanation'].every(k=>typeof c[k]==='string')).slice(0,2):[];
 session.corrections=session.corrections.concat(corrections).slice(-10);session.phrases=Array.from(new Set(session.phrases.concat((result.phrases||[]).filter(p=>typeof p==='string')))).slice(-12);
 if(cfg.memory)corrections.forEach(c=>{const item=c.explanation.slice(0,240);if(!cfg.mistakes.includes(item))cfg.mistakes.push(item);cfg.mistakes=cfg.mistakes.slice(-8);});

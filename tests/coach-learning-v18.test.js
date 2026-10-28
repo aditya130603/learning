@@ -5,6 +5,7 @@ test('rejects screenshot dialogue fabrication and instruction leakage',()=>{
 });
 test('rejects repeated assistant response and learner parrot without blocking legitimate answers',()=>{
  assert.equal(validate('How did your day go today? 😊','what are you doing','How did your day go today?').ok,false);
+ assert.equal(validate('I had a bad day at work, and my manager rejected my idea. What can I do to improve my workday?','My manager rejected my idea.','').ok,false);
  assert.equal(validate('Your manager rejected your idea.','Your manager rejected your idea.','').ok,false);
  assert.equal(validate('Mira: Could you tell me what happened next?','I missed my bus.','').text,'Could you tell me what happened next?');
 });
