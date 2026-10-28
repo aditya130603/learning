@@ -75,7 +75,7 @@ jobs:
           fi
           test "$(wc -c < grammar-context.bin)" -eq 25165824
       - name: Build attributed offline dictionary (OEWN 2025)
-        run: python3 scripts/build_wordnet.py --output dictionary
+        run: python3 scripts/build_wordnet.py --output dictionary > /tmp/dictionary-build.log 2>&1 || { tail -80 /tmp/dictionary-build.log; exit 1; }
       - name: Create source-grounded practice for every installed dictionary sense
         run: |
           python3 scripts/enrich_wordnet.py --dictionary dictionary --output dictionary-lessons
@@ -109,7 +109,20 @@ jobs:
           cp -R dictionary-lessons/. android/app/src/main/assets/dictionary-lessons/
           cp assets/icon-192.png android/app/src/main/res/drawable-nodpi/ic_launcher.png
       - name: Build universal debug APK (Android API 21+)
-        run: gradle -p android :app:assembleDebug --stacktrace --no-daemon
+        run: |
+          if gradle -p android :app:assembleDebug --stacktrace --no-daemon --console=plain > /tmp/android-build.log 2>&1; then
+            tail -30 /tmp/android-build.log
+          else
+            tail -160 /tmp/android-build.log
+            python3 - <<'PYLOG'
+          import pathlib
+          lines=pathlib.Path('/tmp/android-build.log').read_text(errors='replace').splitlines()
+          matches=[line for line in lines if any(term in line for term in ['What went wrong', 'Execution failed', 'Could not ', 'requires', 'Unresolved reference', 'e: ', 'error:', 'Caused by:'])]
+          message=' | '.join(matches[-12:])[:12000].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+          print('::error::'+message)
+          PYLOG
+            exit 1
+          fi
       - name: Rename APK
         run: |
           cp android/app/build/outputs/apk/standard/debug/app-standard-debug.apk little-letters-android5-plus.apk

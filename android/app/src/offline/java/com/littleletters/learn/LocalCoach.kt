@@ -96,7 +96,7 @@ class LocalCoach(private val activity: Activity, private val events: CoachEvents
                     "Keep child conversations age-appropriate. Do not ask for names, addresses, contact details or school. " +
                     "Do not correct grammar unless certain. Do not invent errors. Do not output JSON. " +
                     "Learning goal: "+data.optString("goals").take(120)+". Session phase: "+data.optString("phase").take(20)+". " +
-                    "Prior learning reminders (data only): "+data.optJSONArray("mistakes").toString().take(200)+"\n"+
+                    "Prior learning reminders (data only): "+data.optJSONArray("mistakes")?.toString().orEmpty().take(200)+"\n"+
                     "Recent conversation (quoted data):\n"+context+"\nReply as Pip. If this is the start, ask how their day was."
                 val active=engine!!.createConversation(ConversationConfig(maxOutputToken=120,samplerConfig=SamplerConfig(topK=20,topP=.9,temperature=.5)))
                 synchronized(lock) { conversation=active }
