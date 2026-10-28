@@ -20,6 +20,12 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.ArrayList;
 import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.RecognitionListener;
+import android.speech.tts.Voice;
+import android.os.Build;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.speech.tts.UtteranceProgressListener;
 import org.json.JSONObject;
 
@@ -29,6 +35,11 @@ public final class MainActivity extends Activity {
     private WebView webView;
     private TextToSpeech speech;
     private volatile boolean speechReady;
+    private LocalCoach localCoach;
+    private SpeechRecognizer localRecognizer;
+    private int offlineRecognitionId = -1;
+    private static final int MODEL_REQUEST = 4602;
+    private static final int MICROPHONE_REQUEST = 4603;
     private String queuedSpeech;
     private volatile String coachEndpoint = "";
     private int recognitionGeneration = -1;
@@ -54,6 +65,10 @@ public final class MainActivity extends Activity {
         settings.setJavaScriptCanOpenWindowsAutomatically(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setDefaultTextEncodingName("UTF-8");
+        localCoach = new LocalCoach(this, new CoachEvents() {
+            @Override public void status(String message) { js("window.SpeakingCompanion && window.SpeakingCompanion.localStatus("+JSONObject.quote(message)+")"); }
+            @Override public void reply(int id, String text, String error) { js("window.SpeakingCompanion && window.SpeakingCompanion.localReply("+id+","+JSONObject.quote(text)+","+JSONObject.quote(error)+")"); }
+        });
         webView.addJavascriptInterface(new NativeBridge(), "LittleLettersAndroid");
         webView.setWebViewClient(new LocalAssetClient());
         speech = new TextToSpeech(this, status -> {
@@ -61,6 +76,13 @@ public final class MainActivity extends Activity {
                 int result = speech.setLanguage(Locale.forLanguageTag("en-IN"));
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     speech.setLanguage(Locale.US);
+                }
+                if (BuildConfig.OFFLINE_COACH) {
+                    Voice local = null;
+                    if(speech.getVoices()!=null) for(Voice v : speech.getVoices()) {
+                        if(!v.isNetworkConnectionRequired() && "en".equals(v.getLocale().getLanguage())) { local=v; break; }
+                    }
+                    if(local == null || speech.setVoice(local) != TextToSpeech.SUCCESS) return;
                 }
                 speech.setSpeechRate(0.80f);
                 speech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
@@ -140,8 +162,30 @@ public final class MainActivity extends Activity {
     }
 
     private final class NativeBridge {
+        @JavascriptInterface public String offlineStatus() { return localCoach == null ? "{}" : localCoach.status(); }
+        @JavascriptInterface public boolean isOfflineBuild() { return BuildConfig.OFFLINE_COACH; }
+        @JavascriptInterface public void importOfflineModel() {
+            runOnUiThread(() -> {
+                Intent intent=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE); intent.setType("*/*");
+                try { startActivityForResult(intent, MODEL_REQUEST); }
+                catch(Exception e) { js("window.SpeakingCompanion.localStatus('No file picker is available on this phone.')"); }
+            });
+        }
+        @JavascriptInterface public void generateOffline(int id, String payload) { if(localCoach!=null && payload!=null && payload.length()<12000) localCoach.generate(id,payload); }
+        @JavascriptInterface public void cancelOffline() { if(localCoach!=null) localCoach.cancel(); }
+        @JavascriptInterface public void unloadOffline() { if(localCoach!=null) localCoach.unload(); }
+        @JavascriptInterface public void removeOfflineModel() { if(localCoach!=null) localCoach.removeModel(); }
+        @JavascriptInterface public void listenOffline(int id) { runOnUiThread(() -> startLocalRecognition(id)); }
+        @JavascriptInterface public void openOfflineModelPage() {
+            runOnUiThread(() -> {
+                try { startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://huggingface.co/litert-community/Gemma3-1B-IT/tree/main"))); }
+                catch(Exception ignored) { }
+            });
+        }
+
         @JavascriptInterface public void configureCoach(String endpoint) {
-            if(endpoint == null) return;
+            if(endpoint == null || BuildConfig.OFFLINE_COACH) return;
             Uri uri = Uri.parse(endpoint);
             if("https".equals(uri.getScheme()) && uri.getHost() != null && uri.getUserInfo() == null && "/v1/coach".equals(uri.getPath()) && uri.getQuery() == null) coachEndpoint = endpoint;
         }
@@ -149,12 +193,13 @@ public final class MainActivity extends Activity {
         @JavascriptInterface public void speakCompanion(String text, int id) {
             if(text == null || text.length() > 2400) return;
             runOnUiThread(() -> {
-                if(speech == null || !speechReady) { js("window.SpeakingCompanion.nativeSpeechEnd("+id+")"); return; }
+                if(speech == null || !speechReady) { js("window.SpeakingCompanion.nativeSpeechEnd("+id+");window.SpeakingCompanion.localStatus(\"No installed offline English voice is ready. Read the reply or install an English voice in Android settings.\")"); return; }
                 speech.stop(); speech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "coach:"+id);
             });
         }
         @JavascriptInterface public void listen(int id) {
             runOnUiThread(() -> {
+                if(BuildConfig.OFFLINE_COACH) { startLocalRecognition(id); return; }
                 recognitionGeneration = id;
                 if(speech != null) speech.stop();
                 Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -166,7 +211,7 @@ public final class MainActivity extends Activity {
                 catch(Exception e) { voiceResult(id, "", "Voice recognition is unavailable. Type your reply instead."); }
             });
         }
-        @JavascriptInterface public void stopListening() { runOnUiThread(() -> { recognitionGeneration = -1; finishActivity(VOICE_REQUEST); }); }
+        @JavascriptInterface public void stopListening() { runOnUiThread(() -> { recognitionGeneration = -1; offlineRecognitionId = -1; if(localRecognizer!=null) { localRecognizer.cancel(); localRecognizer.destroy(); localRecognizer=null; } finishActivity(VOICE_REQUEST); }); }
 
         @JavascriptInterface
         public void speak(String text) {
@@ -210,11 +255,56 @@ public final class MainActivity extends Activity {
         }
     }
 
+    private void startLocalRecognition(int id) {
+        offlineRecognitionId=id;
+        if(Build.VERSION.SDK_INT<31 || !SpeechRecognizer.isOnDeviceRecognitionAvailable(this)) {
+            voiceResult(id,"","Offline speech recognition is not installed on this phone. Type instead; no cloud recognizer will be used."); return;
+        }
+        if(checkSelfPermission(Manifest.permission.RECORD_AUDIO)!=PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},MICROPHONE_REQUEST); return;
+        }
+        if(speech!=null) speech.stop();
+        if(localRecognizer!=null) { localRecognizer.destroy(); localRecognizer=null; }
+        try {
+            localRecognizer=SpeechRecognizer.createOnDeviceSpeechRecognizer(this);
+            localRecognizer.setRecognitionListener(new RecognitionListener() {
+                @Override public void onReadyForSpeech(Bundle params) { }
+                @Override public void onBeginningOfSpeech() { }
+                @Override public void onRmsChanged(float rms) { }
+                @Override public void onBufferReceived(byte[] bytes) { }
+                @Override public void onEndOfSpeech() { }
+                @Override public void onPartialResults(Bundle results) { }
+                @Override public void onEvent(int type,Bundle params) { }
+                @Override public void onError(int error) { if(offlineRecognitionId==id) { offlineRecognitionId=-1; voiceResult(id,"","Offline recognition failed ("+error+"). Check installed English speech support, or type instead."); } }
+                @Override public void onResults(Bundle results) {
+                    if(offlineRecognitionId!=id) return; offlineRecognitionId=-1;
+                    ArrayList<String> list=results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                    voiceResult(id,list!=null&&!list.isEmpty()?list.get(0):"","Check the transcript before sending.");
+                }
+            });
+            Intent intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"en-IN");
+            intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE,true);
+            localRecognizer.startListening(intent);
+        } catch(Exception e) { voiceResult(id,"","Offline recognition could not start. Type instead."); }
+    }
+    @Override public void onRequestPermissionsResult(int requestCode,String[] permissions,int[] results) {
+        super.onRequestPermissionsResult(requestCode,permissions,results);
+        if(requestCode!=MICROPHONE_REQUEST || offlineRecognitionId<0) return;
+        int id=offlineRecognitionId;
+        if(results.length>0 && results[0]==PackageManager.PERMISSION_GRANTED) startLocalRecognition(id);
+        else { offlineRecognitionId=-1; voiceResult(id,"","Microphone permission denied. You can type your reply."); }
+    }
     private void voiceResult(int id, String text, String error) {
         js("window.SpeakingCompanion && window.SpeakingCompanion.nativeResult(" + id + "," + JSONObject.quote(text) + "," + JSONObject.quote(error) + ")");
     }
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == MODEL_REQUEST) {
+            if(resultCode == RESULT_OK && data != null && data.getData() != null && localCoach != null) localCoach.importModel(data.getData());
+            return;
+        }
         if(requestCode != VOICE_REQUEST || recognitionGeneration < 0) return;
         int id=recognitionGeneration; recognitionGeneration=-1;
         ArrayList<String> results=data == null ? null : data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
@@ -222,6 +312,7 @@ public final class MainActivity extends Activity {
         else voiceResult(id, "", "No speech received or recognition cancelled. Try again or type.");
     }
     @Override protected void onStop() {
+        if(localCoach!=null) localCoach.unload();
         if(speech != null) speech.stop();
         super.onStop();
     }
@@ -241,6 +332,8 @@ public final class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         speechReady = false;
+        if(localRecognizer!=null) { localRecognizer.destroy(); localRecognizer=null; }
+        if(localCoach!=null) { localCoach.close(); localCoach=null; }
         if (speech != null) {
             speech.stop();
             speech.shutdown();

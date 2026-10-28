@@ -111,11 +111,18 @@ jobs:
       - name: Build universal debug APK (Android API 21+)
         run: gradle -p android :app:assembleDebug --stacktrace --no-daemon
       - name: Rename APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk little-letters-android5-plus.apk
+        run: |
+          cp android/app/build/outputs/apk/standard/debug/app-standard-debug.apk little-letters-android5-plus.apk
+          cp android/app/build/outputs/apk/offline/debug/app-offline-debug.apk word-mayhem-offline-ai.apk
       - uses: actions/upload-artifact@v4
         with:
           name: Little-Letters-Android-5-plus
           path: little-letters-android5-plus.apk
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Word-Mayhem-Offline-AI-Android12-arm64
+          path: word-mayhem-offline-ai.apk
           retention-days: 90
       - name: Publish model as a build artifact
         uses: actions/upload-artifact@v4
@@ -141,7 +148,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if gh release view android-testing >/dev/null 2>&1; then
-            gh release upload android-testing little-letters-android5-plus.apk --clobber
+            gh release upload android-testing little-letters-android5-plus.apk word-mayhem-offline-ai.apk --clobber
           else
-            gh release create android-testing little-letters-android5-plus.apk --target "$GITHUB_SHA" --title 'Little Letters - Android testing APK' --notes 'Universal debug-signed testing APK, Android 5.0 or later. No Flutter, no emulator, no third-party runtime dependencies. Lessons are offline.' --prerelease
+            gh release create android-testing little-letters-android5-plus.apk word-mayhem-offline-ai.apk --target "$GITHUB_SHA" --title 'Little Letters - Android testing APK' --notes 'Universal debug-signed testing APK, Android 5.0 or later. No Flutter, no emulator, no third-party runtime dependencies. Lessons are offline.' --prerelease
           fi
