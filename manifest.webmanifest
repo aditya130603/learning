@@ -1,17 +1,17 @@
 {
   "id": "./",
-  "name": "Little Letters — Learn, Play, Write",
-  "short_name": "Little Letters",
-  "description": "Learn alphabet words with pictures, listening games, spelling and printable worksheets.",
+  "name": "Little Learners — My First Word Garden",
+  "short_name": "Little Learners",
+  "description": "A calm offline English word adventure for children aged 4–6.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f8f7fd",
-  "theme_color": "#7961e8",
+  "background_color": "#fffaf4",
+  "theme_color": "#fffaf4",
   "orientation": "portrait-primary",
   "icons": [
-    {"src":"assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"},
-    {"src":"assets/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
-    {"src":"assets/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}
+    {"src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"},
+    {"src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
   ]
 }
