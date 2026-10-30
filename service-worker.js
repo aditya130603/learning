@@ -3,7 +3,7 @@ const CACHE = "little-learners-46-v1";
 const SHELL = [
   "./", "./index.html", "./little-46.css", "./little-46-data.js", "./little-46.js",
   "./manifest.webmanifest", "./assets/icon.svg", "./assets/icon-192.png",
-  "./assets/icon-512.png", "./assets/scenes/children-garden.webp"
+  "./assets/icon-512.png", "./assets/scenes/little-garden.svg"
 ];
 self.addEventListener("install", function (event) {
   event.waitUntil(caches.open(CACHE).then(function (cache) {
