@@ -50,10 +50,20 @@ const server = http.createServer((req, res) => {
   assert.ok(await page.locator('[data-action="tile"]').count()>3,"The child must receive distractor letters as well as ANT");
   const firstBank=await page.locator('[data-action="tile"]').allTextContents();
   assert.notEqual(firstBank.slice(0,3).join(""),"ANT","Left-to-right tapping must not spell ANT");
-  const tilesBox=await page.locator(".spell-tiles").boundingBox();
+  assert.equal(await page.locator("main.step-spell").count(),1,"Spelling-specific CSS class must be present");
+  const compactSpellLayout=await page.evaluate(() => ({
+    viewport:innerHeight,
+    footerBottom:document.querySelector(".play-footer").getBoundingClientRect().bottom,
+    sceneBottom:document.querySelector(".spell-scene").getBoundingClientRect().bottom,
+    tilesBottom:document.querySelector(".spell-tiles").getBoundingClientRect().bottom,
+    pageWidth:document.querySelector("main").getBoundingClientRect().width
+  }));
+  assert.ok(compactSpellLayout.footerBottom<=compactSpellLayout.viewport+2,
+    "Spelling controls must fit within the 375x667 phone viewport: "+JSON.stringify(compactSpellLayout));
+    const tilesBox=await page.locator(".spell-tiles").boundingBox();
   const spellFooter=await page.locator(".play-footer").boundingBox();
   assert.ok(spellFooter.y>=tilesBox.y+tilesBox.height-3,"Spelling footer must not cover the letter bank");
-  await page.screenshot({ path:path.join(output,"04-tap-spelling.png"), fullPage:true });
+  await page.screenshot({ path:path.join(output,"04-tap-spelling.png"), fullPage:false });
   for(let n=0;n<3;n++) await page.locator('[data-action="tile"]:not([disabled])').first().click();
   assert.ok(await page.locator(".spell-tiles").count(),"Wrong left-to-right selection must remain in the spelling activity");
   assert.match(await page.locator(".inline-feedback").innerText(),/not quite|good try/i);
