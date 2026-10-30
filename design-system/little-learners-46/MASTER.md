@@ -55,3 +55,23 @@ Spacing: use an 8px base and 4px increments; primary page gutters 22px (15px on 
 No accounts, cloud API, ad SDK, font CDN, analytics or LLM. Existing Android Java speech bridge is reused. Keep small phones and weak CPUs in mind. The first visual milestone uses warm vector UI plus semantic illustrated-emoji cues for all 130 words; a coordinated set of 130 authored word illustrations should be a separate artistic production phase after real-child usability review.
 
 **Never** add more animations or background objects merely to make a page look decorated. Each ornament must strengthen focus, guidance, reward or comprehension.
+
+
+## Implementation guardrails: not a screenshot-based app
+
+The approved concept is a *design specification*, not a collection of image maps.
+- Story environments can use **independent illustrated background art**, but never pre-render a clickable button, alphabet letter, sticker count or progress state into that background.
+- Every flower level, spelling stone, answer slot, action button, progress indicator and reward is a **real semantic DOM component**, driven by curriculum and the child's saved progress.
+- Pip and vocabulary scenes are independent replaceable assets, never cropped screenshots of the complete UI. Future high-fidelity artwork should be created per illustration, without text/UI baked into the artwork.
+- All interactions must still operate with images switched off, the browser resized, and the app in an offline Android WebView.
+
+## Spelling acceptance criteria
+
+The spelling engine is separate in \`little-46-spelling.js\` and has exhaustive unit tests.
+- A word must never appear already in reading order in the tile bank, including on retries. The first tile must not equal the first target letter.
+- Each attempt adds at least one **plausible distractor**; a distractor never replaces a needed letter, and repeated letters receive unique button identities.
+- The letter bank changes order over attempts; it is not a predictable deterministic layout.
+- For 7+ letter vocabulary, a gentle two- or three-part challenge builds toward the whole word instead of displaying an overwhelming unsorted bank.
+- The challenge hides the fully spelled target word, leaving a picture and a spoken prompt, with a first-letter clue only on request or after repeated mistakes.
+- An incorrect attempt produces specific supportive feedback, clears the answer and re-shuffles the letter bank. No timer, negative score or failure lockout.
+- Tests require that tapping letters from left to right does **not** solve any of the 130 vocabulary words, across repeated generated rounds.
