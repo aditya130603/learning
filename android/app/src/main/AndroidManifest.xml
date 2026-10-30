@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Curriculum remains bundled. Network is opt-in for the configured coach endpoint only. -->
+    <!-- Child lessons and pictures ship in the APK. No account or analytics. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <queries>
         <intent><action android:name="android.speech.action.RECOGNIZE_SPEECH" /></intent>
@@ -8,7 +8,7 @@
     </queries>
     <application
         android:allowBackup="false"
-        android:label="Little Letters"
+        android:label="Little Learners"
         android:icon="@drawable/ic_launcher"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:usesCleartextTraffic="false"
