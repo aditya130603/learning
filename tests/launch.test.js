@@ -35,3 +35,5 @@ test('sentence assembly checks order rather than marking any taps correct',()=>{
  const {s,handle}=setup('7-9');handle('open:apple');handle('use');handle('order');assert.equal(s.ui().done,false);
  const target=s.ui().word.example.split(' '),used=new Set();for(const token of target){const i=s.ui().tokens.findIndex((t,i)=>t===token&&!used.has(i));used.add(i);handle('tile:'+i);}handle('order');assert.equal(s.ui().done,true);
 });
+
+test('learning roots do not collide with the delegated age-selection attribute',()=>{const {s}=setup();const html=s.view('home',()=>{});assert(html.includes('data-learning-age="18+"'));assert(!html.includes('data-age='));});

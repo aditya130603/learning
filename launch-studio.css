@@ -36,3 +36,8 @@ body.launch-ui .wm-learning{padding:0!important;max-width:760px;margin:auto}body
 @media(max-width:350px){body.launch-ui #app .main-content{padding-left:14px;padding-right:14px}.ls-brand svg{width:24px}.ls-brand small{font-size:9px}.ls-top{padding-left:14px;padding-right:14px}.ls-word-card{grid-template-columns:66px minmax(0,1fr) 12px!important;gap:10px!important}.ls-word-card span span{font-size:12px}.ls-nav .nav-item span{font-size:10px}}
 @media(prefers-reduced-motion:reduce){body.launch-ui *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 body.launch-ui:has(.ls-root[data-learning-age="4-6"]){--ls-accent:#68529c;--ls-soft:#eee6f8}.ls-root[data-learning-age="4-6"] .ls-feature-copy h2{font:700 32px system-ui!important}.ls-root[data-learning-age="4-6"] .ls-options.pictures button{min-height:100px!important}
+
+/* Keep shared settings and older tools in the same visual system for every profile. */
+body.launch-ui{--ae-bg:var(--ls-bg);--ae-card:#fff;--ae-ink:var(--ls-ink);--ae-muted:var(--ls-muted);--ae-line:var(--ls-line);--ae-accent:var(--ls-accent);--ae-soft:var(--ls-soft)}
+.ls-art{position:relative;isolation:isolate}.ls-art::before{content:"";position:absolute;inset:0;background:inherit;transform:scale(1.065);z-index:0}
+body.launch-ui .ls-nav{background:#faf9f6}
