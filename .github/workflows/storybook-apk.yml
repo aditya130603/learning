@@ -1,0 +1,46 @@
+name: Fast Little Learners storybook APK
+on:
+  push:
+    branches: ['feat/little-learners-age-4-6-rebuild']
+    paths:
+      - 'little-46*'
+      - 'assets/kids46/**'
+      - 'android/**'
+      - 'scripts/package-little-46.sh'
+      - '.github/workflows/storybook-apk.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test lesson progression
+        run: node --test tests/little-46.test.js
+      - name: Bundle child-only offline assets
+        run: |
+          bash scripts/package-little-46.sh android/app/src/main/assets
+          mkdir -p android/app/src/main/res/drawable-nodpi
+          cp assets/icon-192.png android/app/src/main/res/drawable-nodpi/ic_launcher.png
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK 35
+        run: |
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+          "$SDKMANAGER" 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build universal debug-signed APK
+        run: |
+          gradle -p android :app:assembleStandardDebug --no-daemon --console=plain
+          cp android/app/build/outputs/apk/standard/debug/app-standard-debug.apk little-learners-storybook-age-4-6.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: little-learners-storybook-age-4-6
+          path: little-learners-storybook-age-4-6.apk
+          retention-days: 90
