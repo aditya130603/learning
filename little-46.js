@@ -107,8 +107,8 @@
       '<button class="activity activity-letter" data-action="garden"><span class="activity-symbol abc">Aa</span><span class="activity-copy"><strong>Letter Garden</strong><small>Explore the alphabet</small></span>' + icon("next") + '</button>' +
       '<button class="activity activity-picture" data-action="picture"><span class="activity-symbol picture">' + icon("book", 36) + '</span><span class="activity-copy"><strong>Picture Play</strong><small>Listen and discover</small></span>' + icon("next") + '</button>' +
       '<button class="activity activity-story" data-action="story"><span class="activity-symbol story">' + icon("heart", 35) + '</span><span class="activity-copy"><strong>Story Corner</strong><small>Little tales to enjoy</small></span>' + icon("next") + '</button></div>' +
-      '<div class="home-footnote">' + icon("star",17) + '<strong>' + D.completedLetters(progress) + ' stickers</strong><span>·</span><strong>' + count + ' words discovered</strong>' +
-      '</div></main>' + tabbar("home");
+      '<button class="home-footnote" data-action="rewards" aria-label="Open my sticker book">' + icon("star",17) + '<strong>' + D.completedLetters(progress) + ' stickers</strong><span>·</span><strong>' + count + ' words discovered</strong>' +
+      '</button></main>';
   }
   function renderGarden() {
     var task = D.nextTask(progress);
@@ -141,7 +141,7 @@
       '<img src="assets/kids46/pip.svg" alt="Pip cheering you on" loading="lazy"></div>' +
       '<div class="garden-world"><img class="garden-world-art" src="assets/kids46/garden-path.svg" alt="" loading="lazy">' +
       '<div class="garden-wood-sign"><strong>Letter Garden</strong><small>A little journey from A to Z</small></div>' +
-      nodes.join("") + '</div></main>' + tabbar("garden");
+      nodes.join("") + '</div></main>';
   }
   function word() { return D.words[state.letter][state.word]; }
   function pictureFrame(item, extra) {
@@ -288,7 +288,7 @@
       earned.length + ' of 26 letter stickers collected' + (groups.length ? ' · ' + groups.length + ' garden stars!' : '') +
       '</p><div class="celebration-fox">' + fox() + '<span class="celebration-star" aria-hidden="true">★</span></div>' +
       btn(earned.length ? "Keep collecting!" : "Earn my first sticker!", "resume", "btn-primary btn-grow", "next") +
-      '</div></main>' + tabbar("rewards");
+      '</div></main>';
   }
   function startPicture() {
     state.view = "picture"; state.round = 0; state.feedback = "";
