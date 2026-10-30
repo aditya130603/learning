@@ -3,7 +3,7 @@
   "use strict";
 
   /* Emoji here illustrate vocabulary words; navigation uses consistent vector icons. */
-  const rows = {
+  var rows = {
     A: "ant|🐜|An ant is tiny and busy;apple|🍎|An apple is a crunchy fruit;arm|💪|Your arm helps you wave;acorn|🌰|An acorn can grow into a tree;astronaut|👩‍🚀|An astronaut explores space",
     B: "ball|⚽|A ball can bounce;bear|🐻|A bear has thick fur;bird|🐦|A bird has wings;boat|⛵|A boat floats on water;banana|🍌|A banana has a peel",
     C: "cat|🐈|A cat says meow;cup|🥤|A cup holds a drink;car|🚗|A car has wheels;cake|🎂|A cake is a sweet treat;cow|🐄|A cow says moo",
@@ -32,11 +32,11 @@
     Z: "zoo|🦒|A zoo is a place to see animals;zip|🤐|Zip up your coat;zero|0️⃣|Zero means none;zebra|🦓|A zebra has stripes;zipper|🤐|A zipper opens and closes"
   };
 
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  const words = {};
+  var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  var words = {};
   letters.forEach(function (letter) {
     words[letter] = rows[letter].split(";").map(function (entry, index) {
-      const bits = entry.split("|");
+      var bits = entry.split("|");
       return { id: letter + "-" + index, letter: letter, text: bits[0], picture: bits[1], clue: bits[2] };
     });
   });
@@ -44,11 +44,11 @@
   function clean(value) { return String(value || "").toUpperCase().replace(/[^A-Z]/g, ""); }
   function done(progress, letter) { return Boolean(progress.letters && progress.letters[letter] && progress.letters[letter].quiz); }
   function wordIndex(progress, letter) {
-    const current = progress.letters && progress.letters[letter];
+    var current = progress.letters && progress.letters[letter];
     return Math.max(0, Math.min(5, Number(current && current.word) || 0));
   }
   function unlocked(progress, letter) {
-    const index = letters.indexOf(letter);
+    var index = letters.indexOf(letter);
     if (index < 0) return false;
     if (index === 0) return true;
     if (!done(progress, letters[index - 1])) return false;
@@ -56,13 +56,13 @@
     return true;
   }
   function readyReview(progress, group) {
-    const start = Number(group) * 5;
+    var start = Number(group) * 5;
     return start + 5 <= letters.length && letters.slice(start, start + 5).every(function (l) { return done(progress, l); });
   }
   function nextTask(progress) {
-    for (let i = 0; i < letters.length; i++) {
+    for (var i = 0; i < letters.length; i++) {
       if (i > 0 && i % 5 === 0 && readyReview(progress, i / 5 - 1) && !(progress.reviews && progress.reviews[String(i / 5 - 1)])) return { type: "review", group: i / 5 - 1 };
-      const letter = letters[i];
+      var letter = letters[i];
       if (!done(progress, letter)) return unlocked(progress, letter) ? { type: "letter", letter: letter } : { type: "locked", letter: letter };
     }
     return { type: "finished" };
@@ -72,9 +72,9 @@
   }
   function completedLetters(progress) { return letters.filter(function (letter) { return done(progress, letter); }).length; }
   function availableWords(progress) {
-    const output = [];
+    var output = [];
     letters.forEach(function (letter) {
-      const count = wordIndex(progress, letter);
+      var count = wordIndex(progress, letter);
       words[letter].slice(0, count).forEach(function (word) { output.push(word); });
     });
     return output.length ? output : words.A.slice(0, 3);
@@ -83,20 +83,20 @@
     return letters.slice(group * 5, group * 5 + 5).map(function (letter, offset) { return words[letter][offset % 5]; });
   }
   function getChoices(word, pool, count, turn) {
-    const others = pool.filter(function (item) { return item.id !== word.id && item.picture !== word.picture; });
-    const selected = [];
-    for (let i = 0; i < others.length && selected.length < count - 1; i++) {
-      const item = others[(i + turn * 3) % others.length];
+    var others = pool.filter(function (item) { return item.id !== word.id && item.picture !== word.picture; });
+    var selected = [];
+    for (var i = 0; i < others.length && selected.length < count - 1; i++) {
+      var item = others[(i + turn * 3) % others.length];
       if (!selected.some(function (part) { return part.id === item.id; })) selected.push(item);
     }
-    const choice = selected.concat([word]);
-    const position = turn % choice.length;
-    const correct = choice.pop();
+    var choice = selected.concat([word]);
+    var position = turn % choice.length;
+    var correct = choice.pop();
     choice.splice(position, 0, correct);
     return choice;
   }
 
-  const api = {
+  var api = {
     letters: letters, words: words, clean: clean, done: done,
     unlocked: unlocked, wordIndex: wordIndex, readyReview: readyReview,
     nextTask: nextTask, countWords: countWords, completedLetters: completedLetters,
