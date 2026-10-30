@@ -12,7 +12,7 @@
     F: "fish|🐟|A fish swims;fan|🪭|A fan moves air;fox|🦊|A fox has a fluffy tail;frog|🐸|A frog can hop;flower|🌻|A flower can grow in a garden",
     G: "goat|🐐|A goat loves to climb;gift|🎁|A gift is something you give;grapes|🍇|Grapes grow in bunches;glove|🧤|A glove covers your hand;guitar|🎸|A guitar makes music",
     H: "hat|🎩|A hat sits on your head;hen|🐔|A hen lays eggs;hand|✋|We wave with a hand;horse|🐴|A horse can gallop;house|🏠|A house is a home",
-    I: "ink|🖋️|Ink makes marks on paper;ice|🧊|Ice is frozen water;igloo|🧊|An igloo is built from snow;insect|🐞|An insect has six legs;island|🏝️|An island has water around it",
+    I: "ink|🖋️|Ink makes marks on paper;ice|🧊|Ice is frozen water;ivy|🌿|Ivy is a leafy climbing plant;insect|🐞|An insect has six legs;island|🏝️|An island has water around it",
     J: "jam|🍓|Jam tastes sweet;jar|🫙|A jar can hold food;jet|✈️|A jet flies high;juice|🧃|Juice is a drink;jellyfish|🪼|A jellyfish floats in the sea",
     K: "key|🔑|A key opens a lock;kite|🪁|A kite flies in the wind;king|👑|A king wears a crown;kitten|🐈|A kitten is a baby cat;koala|🐨|A koala lives in trees",
     L: "lion|🦁|A lion has a loud roar;leaf|🍃|A leaf grows on a plant;lamp|💡|A lamp gives us light;lemon|🍋|A lemon tastes sour;ladder|🪜|A ladder helps us climb",
@@ -29,7 +29,7 @@
     W: "web|🕸️|A spider can spin a web;wig|🦱|A wig is pretend hair;wolf|🐺|A wolf is a wild animal;whale|🐋|A whale lives in the sea;window|🪟|Look outside a window",
     X: "box|📦|A box holds things;fox|🦊|A fox has a bushy tail;six|6️⃣|Six means one more than five;x-ray|🩻|An X-ray helps doctors see bones;xylophone|🎼|A xylophone makes music",
     Y: "yak|🐂|A yak has long hair;yam|🍠|A yam is a root vegetable;yarn|🧶|Yarn can make a scarf;yo-yo|🪀|A yo-yo goes up and down;yellow|🟨|Yellow is a bright color",
-    Z: "zoo|🦒|A zoo is a place to see animals;zip|🤐|Zip up your coat;zero|0️⃣|Zero means none;zebra|🦓|A zebra has stripes;zipper|🤐|A zipper opens and closes"
+    Z: "zoo|🦒|A zoo is a place to see animals;zip|🤐|Zip up your coat;zero|0️⃣|Zero means none;zebra|🦓|A zebra has stripes;zigzag|〽️|A zigzag goes left and right"
   };
 
   var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
