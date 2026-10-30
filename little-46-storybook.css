@@ -181,3 +181,9 @@ border:4px solid #bd8856;border-radius:15px;background:linear-gradient(160deg,#f
  .play-page .word-sound-button{height:44px}
 }
 @media(prefers-reduced-motion:reduce){.garden-flower,.celebration-star,.buddy{animation:none!important}}
+
+/* Storybook navigation: no floating tab bar covering child activity cards. */
+.home-footnote{display:flex;align-items:center;min-height:52px;width:100%;background:#fffdf6;border:2px solid #e5e7d1;border-radius:18px;padding:10px;box-shadow:0 3px 0 #d4dcc8;cursor:pointer;margin:17px 0 10px}
+.home-page{padding-bottom:45px}
+.garden-page{padding-bottom:45px}
+.rewards-page{padding-bottom:50px}
