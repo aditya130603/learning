@@ -2,6 +2,7 @@
 (function () {
   "use strict";
   var D = window.Little46Data;
+  var S = window.Little46Spelling;
   var KEY = "little-learners-age46-v1";
   var app = document.getElementById("app");
   var paths = {
@@ -35,7 +36,7 @@
     return blank();
   }
   var progress = load();
-  var state = { view: "home", letter: "A", step: "look", word: 0, tiles: [], selected: [], mistakes: 0, hint: false, feedback: "", quiz: null, round: 0, story: 0, storyCorrect: false, prize: null, parentAnswer: "", enteredParent: false };
+  var state = { view: "home", letter: "A", step: "look", word: 0, tiles: [], selected: [], mistakes: 0, hint: false, spellParts: [], partIndex: 0, completedParts: [], feedback: "", quiz: null, round: 0, story: 0, storyCorrect: false, prize: null, parentAnswer: "", enteredParent: false };
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (err) { /* ephemeral progress */ }
   }
@@ -161,20 +162,45 @@
       (state.feedback ? '<p class="inline-feedback" role="status">' + safe(state.feedback) + '</p>' : "") +
       '<footer class="play-footer">' + footer + '</footer></main>';
   }
-  function shuffledTiles(target) {
-    var list = D.clean(target).split("").map(function (ch, index) { return { ch: ch, id: index }; });
-    for (var i = list.length - 1; i > 0; i--) {
-      var j = (i * 7 + list[0].ch.charCodeAt(0) + i * i) % (i + 1);
-      var hold = list[i]; list[i] = list[j]; list[j] = hold;
+  function resetSpellRound() {
+    var part=state.spellParts[state.partIndex];
+    var round=S.makeRound(part,{bonus:state.word>=3});
+    state.tiles=round.tiles;
+    state.selected=[];
+  }
+  function beginSpelling() {
+    state.spellParts=S.splitWord(word().text);
+    state.partIndex=0;
+    state.completedParts=[];
+    state.mistakes=0;
+    state.hint=false;
+    state.feedback="";
+    state.step="spell";
+    resetSpellRound();
+    render();
+    speak("Listen to the word, then build it using the letter stones.");
+  }
+  function completeSpellingPart() {
+    state.completedParts.push(state.spellParts[state.partIndex]);
+    if(state.partIndex+1<state.spellParts.length) {
+      state.partIndex++;
+      state.hint=false; state.mistakes=0; state.feedback="";
+      resetSpellRound();
+      render();
+      speak("Great! You built that part. Now build the next part.");
+      return;
     }
-    return list;
+    if(!progress.letters[state.letter]) progress.letters[state.letter]={word:0};
+    progress.letters[state.letter].word=Math.max(progress.letters[state.letter].word,state.word+1);
+    save();state.step="complete";state.feedback="";
+    render();speak("Beautiful spelling! You built the word "+word().text+".");
   }
   function prepareWord() {
-    var item = word();
-    state.step = "look"; state.tiles = shuffledTiles(item.text); state.selected = [];
-    state.feedback = ""; state.mistakes = 0; state.hint = false;
+    var item=word();
+    state.step="look"; state.tiles=[];state.selected=[];state.spellParts=[];state.partIndex=0;state.completedParts=[];
+    state.feedback="";state.mistakes=0;state.hint=false;
     render();
-    speak(item.text + ". " + item.clue);
+    speak(item.text+". "+item.clue);
   }
   function renderLook() {
     var item = word();
@@ -203,22 +229,31 @@
       btn("Say it again", "say", "btn-secondary btn-grow", "volume"), state.word);
   }
   function renderSpell() {
-    var item = word(), chosen = state.selected.map(function (id) { return state.tiles.filter(function (tile) { return tile.id === id; })[0]; });
-    var spelled = D.clean(item.text);
-    var slots = spelled.split("").map(function (_, index) {
-      return '<span class="letter-slot ' + (chosen[index] ? "filled" : "") + '">' + (chosen[index] ? chosen[index].ch : "") + '</span>';
+    var item=word(),part=state.spellParts[state.partIndex],chosen=state.selected.map(function(id){
+      return state.tiles.filter(function(tile){return tile.id===id;})[0];
+    });
+    var slots=part.split("").map(function(_,index){
+      return '<span class="letter-slot '+(chosen[index]?"filled":"")+'" aria-label="'+(chosen[index]?"Position "+(index+1)+": "+chosen[index].ch:"Empty letter position "+(index+1))+'">'+
+        (chosen[index]?chosen[index].ch:"")+'</span>';
     }).join("");
-    var remaining = state.tiles.map(function (tile) {
-      var used = state.selected.indexOf(tile.id) >= 0;
-      return '<button class="spell-tile" data-action="tile" data-tile="' + tile.id + '" ' + (used ? 'disabled aria-label="Letter already used"' : 'aria-label="Letter ' + tile.ch + '"') +
-        '>' + tile.ch + '</button>';
+    var remaining=state.tiles.map(function(tile){
+      var used=state.selected.indexOf(tile.id)>=0;
+      return '<button class="spell-tile" data-action="tile" data-tile="'+tile.id+'" '+(used?'disabled aria-label="Used letter '+tile.ch+'"':'aria-label="Choose letter '+tile.ch+'"')+'>'+tile.ch+'</button>';
     }).join("");
-    return lessonShell('Build the <em>word!</em>', "Tap the letters in the right order. You can try again.",
-      '<div class="spell-preview">' + pictureFrame(item, "compact") + '<div class="spell-hint-line">' +
-      (state.hint ? 'Hint: ' + safe(spelled.charAt(0)) + ' is the first letter.' : 'Which letter comes first?') + '</div></div>' +
-      '<div class="spell-slots" aria-label="Spelling answer">' + slots + '</div><div class="spell-tiles">' + remaining + '</div>',
-      '<button class="text-button" data-action="undo">' + icon("back", 18) + ' Undo</button><button class="text-button" data-action="hint">' + icon("spark", 18) + ' Hint</button>' +
-      btn("Hear it", "say", "btn-secondary", "volume"), state.word);
+    var partsLabel=state.spellParts.length>1 ? '<span class="spell-part-label">Little steps · Part '+(state.partIndex+1)+' of '+state.spellParts.length+'</span>' : '';
+    var accomplished=state.completedParts.length ? '<div class="spell-done">Wonderful! '+state.completedParts.map(function(x){return '<span>'+safe(x)+'</span>';}).join('')+'</div>' : '';
+    var guide=state.hint? 'A tiny clue: the first letter is '+safe(part.charAt(0))+'.':'Listen, think, and build the word.';
+    return lessonShell('Listen & <em>spell!</em>',"The letters are mixed up. Some do not belong.",
+      '<div class="spell-challenge-head">'+partsLabel+'<div class="spell-preview">'+pictureFrame(item,"compact")+'</div>'+
+      '<button data-action="say" class="spell-listen" aria-label="Hear the target word">'+icon("volume",22)+'<span>Hear the word</span></button>'+
+      '<p class="spell-hint-line">'+safe(guide)+'</p></div>'+
+      accomplished+'<div class="spell-answer-label">Your answer</div><div class="spell-slots" aria-label="Your spelling answer">'+slots+'</div>'+
+      '<div class="spell-bank-title">Tap the letter stones <span>'+state.tiles.length+' choices</span></div><div class="spell-tiles" role="group" aria-label="Mixed-up letter choices">'+remaining+'</div>'+
+      '<p class="spell-coach-note">Look carefully! Extra letters are hiding here.</p>',
+      '<button class="text-button" data-action="undo" '+(state.selected.length?'':'disabled')+'>'+icon("back",18)+' Undo</button>'+
+      '<button class="text-button" data-action="clear" '+(state.selected.length?'':'disabled')+'>'+icon("replay",18)+' Start over</button>'+
+      '<button class="text-button" data-action="hint">'+icon("spark",18)+' A clue</button>',
+      state.word);
   }
   function renderComplete() {
     var item = word();
@@ -387,30 +422,39 @@
     }
     if (action === "say") return speak(word().text + ". " + word().clue, true);
     if (action === "look-next") { state.step = "find"; state.feedback = ""; render(); speak("Find the " + word().text); return; }
-    if (action === "find-choice") return correctAndNext(word(), choice, function () { state.step = "spell"; state.feedback = ""; render(); speak("Now build the word."); });
-    if (action === "tile") {
-      var id = Number(node.getAttribute("data-tile"));
-      if (state.selected.indexOf(id) !== -1) return;
+    if (action === "find-choice") return correctAndNext(word(), choice, function () { beginSpelling(); });
+    if(action==="tile") {
+      var id=Number(node.getAttribute("data-tile"));
+      if(state.selected.indexOf(id)>=0)return;
+      var available=state.tiles.filter(function(tile){return tile.id===id;})[0];
+      if(!available)return;
       state.selected.push(id);
-      if (state.selected.length === D.clean(word().text).length) {
-        var built = state.selected.map(function (tileId) {
-          return state.tiles.filter(function (tile) { return tile.id === tileId; })[0].ch;
-        }).join("");
-        if (built === D.clean(word().text)) {
-          if (!progress.letters[state.letter]) progress.letters[state.letter] = { word: 0 };
-          progress.letters[state.letter].word = Math.max(progress.letters[state.letter].word, state.word + 1);
-          save(); state.step = "complete"; state.feedback = ""; speak("Beautiful spelling!");
-        } else {
-          state.selected = []; state.mistakes++;
-          state.hint = state.mistakes >= 2;
-          playFeedback("Almost! The letters need a different order. Try again.");
-          speak("Try again. You can do it.");
-        }
+      var part=state.spellParts[state.partIndex];
+      if(state.selected.length===part.length) {
+        var evaluated=S.evaluate(part,state.selected,state.tiles);
+        if(evaluated.correct)return completeSpellingPart();
+        state.mistakes++;
+        state.hint=state.mistakes>=2;
+        state.selected=[];
+        // A fresh shuffle eliminates memorizing tile positions on a retry.
+        resetSpellRound();
+        var message=state.hint
+          ? "Good try! Look for "+part.charAt(0)+" first, then listen again."
+          : "That spells "+evaluated.submitted+". Not quite! Listen and try a new order.";
+        playFeedback(message);
+        speak("Good try. Listen, and try the letters in a new order.");
+        return render();
       }
+      state.feedback="";
       return render();
     }
-    if (action === "undo") { state.selected.pop(); state.feedback = ""; return render(); }
-    if (action === "hint") { state.hint = true; return render(); }
+    if(action==="undo") {state.selected.pop();state.feedback="";return render();}
+    if(action==="clear") {state.selected=[];state.feedback="";return render();}
+    if(action==="hint") {
+      state.hint=true;state.feedback="";
+      render();speak(S.hint(state.spellParts[state.partIndex],state.mistakes,true),true);
+      return;
+    }
     if (action === "complete-next") {
       var nextIndex = D.wordIndex(progress, state.letter);
       if (nextIndex >= 5) return startQuiz("letter", D.words[state.letter], state.letter);
