@@ -78,11 +78,12 @@ const server = http.createServer((req, res) => {
   assert.equal(await page.locator('.garden-flower:not([disabled])').count(),1);
   console.log("UI checkpoint: 320px garden map");
   await page.screenshot({path:path.join(output,"09-garden-storybook-320.png"),fullPage:false,timeout:10000});
+  await page.locator('[data-action="back"]').first().click();
   await page.locator('[data-action="rewards"]').first().click();
   assert.equal(await page.locator(".shelf-slot").count(),26);
   assert.match(await page.locator(".rewards-celebration").innerText(),/0 of 26 letter stickers/i);
   await page.screenshot({path:path.join(output,"10-sticker-storybook-320.png"),fullPage:true});
-  await page.locator('[data-action="home"]').first().click();
+  await page.locator('[data-action="back"]').first().click();
   assert.equal(await page.locator(".hero-fox .buddy").count(),1);
   const illustrationOk = await page.evaluate(() => {
     const img=document.querySelector(".hero-fox img");
