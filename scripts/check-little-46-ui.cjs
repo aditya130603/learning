@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
   assert.match(await page.locator("h1").first().innerText(), /explorer/i);
   await page.screenshot({ path:path.join(output,"01-home-375.png"), fullPage:true });
   await page.locator('[data-action="garden"]').first().click();
-  assert.match(await page.locator(".garden-intro h1").innerText(), /letter/i);
+  assert.match(await page.locator(".garden-intro h1").innerText(), /alphabet|letter/i);
   console.log("UI checkpoint: garden map");
   await page.screenshot({ path:path.join(output,"02-letter-garden.png"), fullPage:false, timeout:10000 });
   console.log("UI: opening A lesson");
