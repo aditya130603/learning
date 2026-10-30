@@ -29,6 +29,7 @@ const server = http.createServer((req, res) => {
   page.setDefaultTimeout(15000);
   page.on("pageerror", error => errors.push(error.message));
   page.on("console", msg => { if (msg.type() === "error") errors.push(msg.text()); });
+  console.log("UI: loading home");
   await page.goto("http://127.0.0.1:" + port + "/", { waitUntil:"load" });
   await page.locator("h1").first().waitFor();
   assert.match(await page.locator("h1").first().innerText(), /explorer/i);
@@ -37,6 +38,7 @@ const server = http.createServer((req, res) => {
   assert.match(await page.locator(".garden-intro h1").innerText(), /letter/i);
   console.log("UI checkpoint: garden map");
   await page.screenshot({ path:path.join(output,"02-letter-garden.png"), fullPage:false, timeout:10000 });
+  console.log("UI: opening A lesson");
   await page.locator('[data-action="letter"][data-letter="A"]').click();
   assert.match(await page.locator(".play-content h1").innerText(), /ant/i);
   await page.screenshot({ path:path.join(output,"03-word-intro.png"), fullPage:true });
@@ -54,6 +56,7 @@ const server = http.createServer((req, res) => {
   assert.match(await page.locator(".play-content h1").innerText(), /apple/i, "Saved progress must resume at word 2");
   await page.locator('[data-action="back"]').click();
   await page.locator('[data-action="home"]').first().click();
+  console.log("UI: opening story");
   await page.locator('[data-action="story"]').first().click();
   await page.locator('[data-action="story-choice"][data-choice="nest"]').click();
   assert.match(await page.locator(".story-speech").innerText(), /cozy/i);
@@ -90,4 +93,4 @@ const server = http.createServer((req, res) => {
   assert.deepEqual(errors, [], "The site should have no browser exceptions");
   console.log("UI smoke checks passed; screenshots saved to", output);
   await browser.close();
-})().then(() => server.close(), error => { console.error(error); server.close(); process.exitCode = 1; });
+})().then(() => server.close(), error => { console.error("UI CHECK FAILED:",error && error.stack || error); server.close(); process.exit(1); });
