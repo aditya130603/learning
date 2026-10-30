@@ -119,7 +119,7 @@
       '<div class="section-label"><h2>Where shall we go?</h2><span>Choose an adventure</span></div>' +
       '<div class="activity-stack">' +
       '<button class="activity activity-letter" data-action="garden"><span class="activity-symbol abc">Aa</span><span class="activity-copy"><strong>Letter garden</strong><small>Letters, sounds &amp; spelling</small></span>' + icon("next") + '</button>' +
-      '<button class="activity activity-picture" data-action="picture"><span class="activity-symbol picture"><img src="assets/scenes/children-garden.webp" alt="" loading="lazy"></span><span class="activity-copy"><strong>Picture play</strong><small>Listen, look &amp; discover</small></span>' + icon("next") + '</button>' +
+      '<button class="activity activity-picture" data-action="picture"><span class="activity-symbol picture"><img src="assets/scenes/little-garden.svg" alt="" loading="lazy"></span><span class="activity-copy"><strong>Picture play</strong><small>Listen, look &amp; discover</small></span>' + icon("next") + '</button>' +
       '<button class="activity activity-story" data-action="story"><span class="activity-symbol story">' + icon("heart", 35) + '</span><span class="activity-copy"><strong>Story corner</strong><small>Three tiny tales to help</small></span>' + icon("next") + '</button></div>' +
       '<p class="home-note">No rush. No timers. Every try helps your brain grow.</p></main>' + tabbar("home");
   }
@@ -146,7 +146,7 @@
           '</strong><small>' + set.join(" · ") + '</small></span>' + icon("next", 20) + '</button>' : "") + '</section>');
     }
     return topbar("The letter garden") + '<main class="page garden-page"><div class="garden-intro"><div><p class="eyebrow">YOUR LEARNING PATH</p><h1>One little<br><em>letter at a time.</em></h1><p>Tap a bright letter to begin. Grow your garden at your own pace.</p></div>' +
-      '<img src="assets/scenes/children-garden.webp" alt="An illustrated happy garden" loading="lazy"></div>' + sections.join("") +
+      '<img src="assets/scenes/little-garden.svg" alt="An illustrated happy garden" loading="lazy"></div>' + sections.join("") +
       '</main>' + tabbar("garden");
   }
   function word() { return D.words[state.letter][state.word]; }
