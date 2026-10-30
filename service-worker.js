@@ -1,7 +1,7 @@
 /* Versioned atomic app-shell cache. Do not pre-cache old adult/dictionary files. */
-const CACHE = "little-learners-46-woodland-v5";
+const CACHE = "little-learners-46-golden-spelling-v6";
 const SHELL = [
-  "./", "./index.html", "./little-46.css", "./little-46-storybook.css", "./little-46-kit.css", "./little-46-data.js", "./little-46-spelling.js", "./little-46.js",
+  "./", "./index.html", "./little-46-ui.css", "./little-46-data.js", "./little-46-spelling.js", "./little-46.js",
   "./manifest.webmanifest", "./assets/icon.svg", "./assets/icon-192.png",
   "./assets/icon-512.png", "./assets/kids46/pip.svg", "./assets/kids46/home-meadow.svg",
   "./assets/kids46/ant.svg", "./assets/kids46/winding-path.svg", "./assets/kits/nature/apple.svg", "./assets/kits/nature/tree-puffy.svg",
