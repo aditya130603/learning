@@ -1,100 +1,46 @@
-name: Android APK - universal Android 5+
+name: Little Learners 4-6 - APK and UI checks
 on:
   push:
-    branches: [main]
+    branches: [main, 'feat/little-learners-age-4-6-rebuild']
     paths:
       - 'android/**'
-      - '*.js'
-      - '*.css'
-      - 'mission-content.js'
-      - 'scene-art.js'
-      - 'lexicon-data.js'
-      - 'word-studio.js'
-      - 'friend-challenge.js'
-      - 'v3.css'
-      - 'v5.css'
-      - 'adult-v5.js'
-      - 'adult-100-data.js'
-      - 'adult-roadmap-v8.js'
-      - 'guided-v8.js'
-      - 'mnemonic-scenes-v13.js'
-      - 'curated-memory-v13.js'
-      - 'adult-placement-v13.js'
-      - 'live-kids-v13.js'
-      - 'learning-v13.css'
-      - 'kids-journey-v10.js'
-      - 'kids-journey-v10.css'
-      - 'word-facts-v9.js'
-      - 'ux-v9.js'
-      - 'ux-v9.css'
-      - 'tests/**'
-      - 'progression-v8.css'
-      - 'grammar-core.js'
-      - 'grammar-model.js'
-      - 'grammar-context.js'
-      - 'grammar-context.bin'
-      - 'grammar-data/**'
-      - 'training/**'
-      - 'kids-v5.js'
-      - 'kids-polish-v6.js'
-      - 'mission-expansion-v6.js'
-      - 'scene-pack-v6.js'
-      - 'lexicon-v6.js'
-      - 'lexicon-v6.css'
-      - 'dictionary-study-v7.js'
-      - 'dictionary-study-v7.css'
-      - 'dictionary-lessons/**'
-      - 'scripts/**'
-      - 'dictionary/**'
-      - 'assets/v8-scenes/**'
-      - 'mayhem.js'
-      - 'words.js'
-      - 'styles.css'
+      - 'little-46*'
       - 'index.html'
-      - 'assets/**'
+      - 'manifest.webmanifest'
+      - 'service-worker.js'
+      - 'assets/icon*'
+      - 'assets/scenes/children-garden.webp'
+      - 'tests/little-46.test.js'
+      - 'scripts/package-little-46.sh'
+      - 'scripts/check-little-46-ui.cjs'
       - '.github/workflows/android-apk.yml'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Train (or verify) full offline 24 MiB context model from attributed text
+      - name: Check the 4-6 curriculum and unlock rules
+        run: node --test tests/little-46.test.js
+      - name: Package tiny offline site
+        run: bash scripts/package-little-46.sh dist
+      - name: Check actual mobile UI in headless Chrome (NO emulator)
         run: |
-          if [ -f grammar-context.bin ]; then
-            test "$(wc -c < grammar-context.bin)" -eq 25165824
-            echo 'Existing verified-size model reused.'
-          else
-            python3 training/build_context_model.py --output grammar-context.bin --report training/CONTEXT_REPORT.json
-          fi
-          test "$(wc -c < grammar-context.bin)" -eq 25165824
-      - name: Build attributed offline dictionary (OEWN 2025)
-        run: python3 scripts/build_wordnet.py --output dictionary > /tmp/dictionary-build.log 2>&1 || { tail -80 /tmp/dictionary-build.log; exit 1; }
-      - name: Create source-grounded practice for every installed dictionary sense
-        run: |
-          python3 scripts/enrich_wordnet.py --dictionary dictionary --output dictionary-lessons
-          python3 tests/test_enrichment.py
-          python3 -c "import json; d=json.load(open('dictionary/meta.json')); r=json.load(open('dictionary-lessons/report.json')); assert r['counts']['terms']==d['entry_count'] and d['entry_count']>=100000, (d['entry_count'],r['counts']['terms']); print('Practice coverage verified:',r['counts']['terms'])"
-      - name: Validate six adult 100-level curricula
-        run: python3 scripts/validate_tracks_v8.py --dictionary dictionary --output training/V8_COVERAGE_REPORT.json
-      - name: Check learning logic
-        run: node --test tests/*.test.js
-      - name: Check launch journeys in headless Chrome (no emulator)
-        run: |
-          npm install --prefix /tmp/wm-webcheck --no-save playwright@1.51.1
-          NODE_PATH=/tmp/wm-webcheck/node_modules UI_BROWSER=$(command -v google-chrome) node scripts/check-launch-ui.cjs
-      - name: Save launch screen checks
+          npm install --prefix /tmp/little-ui --no-save playwright@1.51.1
+          CHROME="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$CHROME" ]; then echo 'Chrome not installed on runner'; exit 1; fi
+          NODE_PATH=/tmp/little-ui/node_modules UI_BROWSER="$CHROME" node scripts/check-little-46-ui.cjs
+      - name: Save visual review screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: launch-ui-screens
-          path: /tmp/launch-ui
+          name: little-learners-4-6-screen-checks
+          path: /tmp/little-learners-ui
           if-no-files-found: ignore
       - uses: actions/setup-java@v4
         with:
@@ -102,78 +48,40 @@ jobs:
           java-version: '17'
       - name: Install Android 35 SDK
         run: |
-          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          SDK_ROOT="$ANDROID_SDK_ROOT"
           SDKMANAGER="$(find "$SDK_ROOT/cmdline-tools" -type f -name sdkmanager | head -n 1)"
           test -n "$SDKMANAGER"
           "$SDKMANAGER" 'platforms;android-35' 'build-tools;35.0.0'
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Bundle offline website and launcher icon
+      - name: Bundle only little-learner assets
         run: |
-          mkdir -p android/app/src/main/assets/assets android/app/src/main/res/drawable-nodpi
-          cp launch-content.js launch-studio.js launch-studio.css android/app/src/main/assets/
-          cp index.html app.js words.js mission-content.js mayhem.js mnemonic-scenes-v13.js curated-memory-v13.js adult-placement-v13.js live-kids-v13.js learning-v13.css dictionary-study-v7.js dictionary-study-v7.css scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-context.js grammar-context.bin grammar-core.js adult-v5.js kids-v5.js kids-polish-v6.js guided-v8.js kids-journey-v10.js kids-journey-v10.css word-facts-v9.js ux-v9.js ux-v9.css adult-100-data.js adult-roadmap-v8.js progression-v8.css mission-expansion-v6.js scene-pack-v6.js lexicon-v6.js lexicon-v6.css styles.css v3.css v5.css service-worker.js manifest.webmanifest profiles.js learning-core.js learning-content.js learning-scenes.js speaking-companion.js learning-upgrade.js learning-upgrade.css adult-experience.js adult-experience.css coach-learning.js android/app/src/main/assets/
-          cp -R assets/. android/app/src/main/assets/assets/
-          mkdir -p android/app/src/main/assets/dictionary
-          cp -R dictionary/. android/app/src/main/assets/dictionary/
-          mkdir -p android/app/src/main/assets/dictionary-lessons
-          cp -R dictionary-lessons/. android/app/src/main/assets/dictionary-lessons/
+          bash scripts/package-little-46.sh android/app/src/main/assets
+          mkdir -p android/app/src/main/res/drawable-nodpi
           cp assets/icon-192.png android/app/src/main/res/drawable-nodpi/ic_launcher.png
-      - name: Build universal debug APK (Android API 21+)
+      - name: Build one universal Android 5+ APK
         run: |
-          if gradle -p android :app:assembleDebug --stacktrace --no-daemon --console=plain > /tmp/android-build.log 2>&1; then
-            tail -30 /tmp/android-build.log
+          if gradle -p android :app:assembleStandardDebug --no-daemon --console=plain > /tmp/little-build.log 2>&1; then
+            tail -30 /tmp/little-build.log
           else
-            tail -160 /tmp/android-build.log
-            python3 - <<'PYLOG'
-          import pathlib
-          lines=pathlib.Path('/tmp/android-build.log').read_text(errors='replace').splitlines()
-          matches=[line for line in lines if any(term in line for term in ['What went wrong', 'Execution failed', 'Could not ', 'requires', 'Unresolved reference', 'e: ', 'error:', 'Caused by:'])]
-          message=' | '.join(matches[-12:])[:12000].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
-          print('::error::'+message)
-          PYLOG
+            tail -160 /tmp/little-build.log
             exit 1
           fi
-      - name: Rename APK
-        run: |
-          cp android/app/build/outputs/apk/standard/debug/app-standard-debug.apk little-letters-android5-plus.apk
-          cp android/app/build/outputs/apk/offline/debug/app-offline-debug.apk word-mayhem-offline-ai.apk
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Little-Letters-Android-5-plus
-          path: little-letters-android5-plus.apk
-          retention-days: 90
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Word-Mayhem-Offline-AI-Android12-arm64
-          path: word-mayhem-offline-ai.apk
-          retention-days: 90
-      - name: Publish model as a build artifact
+          cp android/app/build/outputs/apk/standard/debug/app-standard-debug.apk little-learners-age-4-6.apk
+      - name: Publish APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: GrammarCore-Trained-Model-24MiB
-          path: |
-            grammar-context.bin
-            training/CONTEXT_REPORT.json
-          if-no-files-found: error
+          name: little-learners-age-4-6-android5-plus
+          path: little-learners-age-4-6.apk
           retention-days: 90
-      - name: Commit trained data to repository for PWA offline use
-        if: ${{ !cancelled() && success() }}
-        run: |
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git config user.name 'github-actions[bot]'
-          git add grammar-context.bin training/CONTEXT_REPORT.json
-          if ! git diff --cached --quiet; then
-            git commit -m 'data: publish trained 24 MiB grammar context counts'
-            git push origin HEAD:main
-          fi
-      - name: Publish latest testing APK on Releases
+      - name: Publish testing Release only after main branch merges
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if gh release view android-testing >/dev/null 2>&1; then
-            gh release upload android-testing little-letters-android5-plus.apk word-mayhem-offline-ai.apk --clobber
+          if gh release view little-learners-46 >/dev/null 2>&1; then
+            gh release upload little-learners-46 little-learners-age-4-6.apk --clobber
           else
-            gh release create android-testing little-letters-android5-plus.apk word-mayhem-offline-ai.apk --target "$GITHUB_SHA" --title 'Little Letters - Android testing APK' --notes 'Universal debug-signed testing APK, Android 5.0 or later. No Flutter, no emulator, no third-party runtime dependencies. Lessons are offline.' --prerelease
+            gh release create little-learners-46 little-learners-age-4-6.apk --target "$GITHUB_SHA" --title 'Little Learners 4–6 — Android testing APK' --notes 'Offline-first universal Android 5+ APK. Debug signed for sideload testing. Only the 4–6 learning experience; no adult dictionary or 24 MB grammar model.' --prerelease
           fi
