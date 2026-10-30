@@ -55,7 +55,7 @@ const server = http.createServer((req, res) => {
   await page.locator('[data-action="resume"]').click();
   assert.match(await page.locator(".play-content h1").innerText(), /apple/i, "Saved progress must resume at word 2");
   await page.locator('[data-action="back"]').click();
-  await page.locator('[data-action="home"]').first().click();
+  await page.locator('[data-action="back"]').first().click();
   console.log("UI: opening story");
   await page.locator('[data-action="story"]').first().click();
   await page.locator('[data-action="story-choice"][data-choice="nest"]').click();
