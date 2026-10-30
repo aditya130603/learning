@@ -18,6 +18,9 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+concurrency:
+  group: little-learners-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:
@@ -30,6 +33,12 @@ jobs:
         run: node --test tests/little-46.test.js
       - name: Package tiny offline site
         run: bash scripts/package-little-46.sh dist
+      - name: Save offline site for independent review
+        uses: actions/upload-artifact@v4
+        with:
+          name: little-learners-offline-site
+          path: dist/
+          retention-days: 30
       - name: Check actual mobile UI in headless Chrome (NO emulator)
         run: |
           npm install --prefix /tmp/little-ui --no-save playwright@1.51.1
