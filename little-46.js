@@ -1,10 +1,10 @@
 /* Little Learners 4–6. A deliberately small, offline-first, screen-reader-friendly app. */
 (function () {
   "use strict";
-  const D = window.Little46Data;
-  const KEY = "little-learners-age46-v1";
-  const app = document.getElementById("app");
-  const paths = {
+  var D = window.Little46Data;
+  var KEY = "little-learners-age46-v1";
+  var app = document.getElementById("app");
+  var paths = {
     back: '<path d="m15 18-6-6 6-6"/>',
     next: '<path d="m9 18 6-6-6-6"/>',
     volume: '<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a5 5 0 0 1 0 6M18 6a9 9 0 0 1 0 12"/>',
@@ -29,30 +29,30 @@
   function blank() { return { version: 1, letters: {}, reviews: {}, sound: true, reduceMotion: false }; }
   function load() {
     try {
-      const old = JSON.parse(localStorage.getItem(KEY));
+      var old = JSON.parse(localStorage.getItem(KEY));
       if (old && old.version === 1 && old.letters && old.reviews) return old;
     } catch (err) { /* local storage may be disabled */ }
     return blank();
   }
-  let progress = load();
-  let state = { view: "home", letter: "A", step: "look", word: 0, tiles: [], selected: [], mistakes: 0, hint: false, feedback: "", quiz: null, round: 0, story: 0, storyCorrect: false, prize: null, parentAnswer: "", enteredParent: false };
+  var progress = load();
+  var state = { view: "home", letter: "A", step: "look", word: 0, tiles: [], selected: [], mistakes: 0, hint: false, feedback: "", quiz: null, round: 0, story: 0, storyCorrect: false, prize: null, parentAnswer: "", enteredParent: false };
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (err) { /* ephemeral progress */ }
   }
   function announce(message) {
-    const live = document.getElementById("announcement");
+    var live = document.getElementById("announcement");
     if (live) live.textContent = message;
   }
   function speak(message, force) {
     if (!progress.sound && !force) return;
-    const text = String(message || "").slice(0, 160);
+    var text = String(message || "").slice(0, 160);
     try {
       if (window.LittleLettersAndroid && window.LittleLettersAndroid.speak) {
         window.LittleLettersAndroid.speak(text); return;
       }
       if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
+        var utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.79; utterance.pitch = 1.05; utterance.lang = "en-IN";
         window.speechSynthesis.speak(utterance);
       }
@@ -76,9 +76,9 @@
       '</div><button class="top-icon top-settings" data-action="parent" aria-label="Parent settings">' + icon("settings", 21) + '</button></header>';
   }
   function tabbar(active) {
-    const tabs = [["home","Home","home"],["garden","Letters","book"],["rewards","Stickers","star"]];
+    var tabs = [["home","Home","home"],["garden","Letters","book"],["rewards","Stickers","star"]];
     return '<nav class="bottom-nav" aria-label="Main navigation">' + tabs.map(function (item) {
-      const selected = active === item[0];
+      var selected = active === item[0];
       return '<button data-action="' + item[0] + '" class="nav-item ' + (selected ? "active" : "") + '" aria-current="' + (selected ? "page" : "false") + '">' + icon(item[2], 23) + '<span>' + item[1] + '</span></button>';
     }).join("") + '</nav>';
   }
@@ -101,14 +101,14 @@
   }
   function badge(label, emblem) { return '<span class="pill">' + (emblem ? icon(emblem, 16) : "") + safe(label) + '</span>'; }
   function currentDescription() {
-    const task = D.nextTask(progress);
+    var task = D.nextTask(progress);
     if (task.type === "review") return { task: task, heading: "Your garden review is ready!", sub: "Show what you remember from five letters.", button: "Start review" };
     if (task.type === "letter") return { task: task, heading: "Letter " + task.letter + " is waiting!", sub: "Meet new words and collect a sticker.", button: "Let's learn" };
     if (task.type === "finished") return { task: task, heading: "You grew the whole garden!", sub: "Keep playing and remembering words.", button: "Explore again" };
     return { task: task, heading: "Your next adventure is almost here!", sub: "Finish the last challenge to unlock it.", button: "See my letters" };
   }
   function renderHome() {
-    const guide = currentDescription(), count = D.countWords(progress);
+    var guide = currentDescription(), count = D.countWords(progress);
     return topbar("", true) + '<main class="page home-page"><div class="welcome-eyebrow">A little magic, every day ' + icon("spark", 14) +
       '</div><h1>Hello, little<br><em>explorer!</em></h1><section class="hero"><div class="hero-text">' +
       '<span class="hero-tag">YOUR NEXT ADVENTURE</span><h2>' + safe(guide.heading) + '</h2><p>' + safe(guide.sub) +
@@ -124,16 +124,16 @@
       '<p class="home-note">No rush. No timers. Every try helps your brain grow.</p></main>' + tabbar("home");
   }
   function renderGarden() {
-    const task = D.nextTask(progress);
-    const sections = [];
-    for (let index = 0; index < 26; index += 5) {
-      const group = Math.floor(index / 5);
-      const set = D.letters.slice(index, index + 5);
+    var task = D.nextTask(progress);
+    var sections = [];
+    for (var index = 0; index < 26; index += 5) {
+      var group = Math.floor(index / 5);
+      var set = D.letters.slice(index, index + 5);
       sections.push('<section class="garden-section"><div class="group-heading"><span class="group-mark">' + (group + 1) + '</span><div><h2>' + ["Sunny meadow","Bouncy forest","Rainbow river","Starry hill","Cozy clouds","The final bloom"][group] + '</h2><p>Letters ' + set[0] + '–' + set[set.length - 1] + '</p></div></div><div class="letter-grid">' +
         set.map(function (letter) {
-          const open = D.unlocked(progress, letter), done = D.done(progress, letter);
-          const selected = task.type === "letter" && task.letter === letter;
-          const status = done ? icon("check", 17) : open ? '<span class="letter-progress">' + D.wordIndex(progress, letter) + '/5</span>' : icon("lock", 16);
+          var open = D.unlocked(progress, letter), done = D.done(progress, letter);
+          var selected = task.type === "letter" && task.letter === letter;
+          var status = done ? icon("check", 17) : open ? '<span class="letter-progress">' + D.wordIndex(progress, letter) + '/5</span>' : icon("lock", 16);
           return '<button class="letter-tile ' + (done ? "complete " : "") + (selected ? "next-letter " : "") +
             (open ? "" : "locked") + '" data-action="letter" data-letter="' + letter + '" ' + (open ? "" : "disabled") +
             ' aria-label="Letter ' + letter + ', ' + (done ? "complete" : open ? "available" : "locked") + '">' +
@@ -155,9 +155,9 @@
       '<span class="picture-emoji" role="img" aria-label="' + safe(item.text) + '">' + item.picture + '</span><span class="picture-grass"></span></div>';
   }
   function lessonShell(heading, description, body, footer, count) {
-    const isQuiz = state.step === "quiz", n = isQuiz ? state.round : state.word;
-    const total = isQuiz ? (state.quiz ? state.quiz.items.length : 5) : 5;
-    return topbar("Letter " + state.letter) + '<main class="page play-page"><div class="lesson-meta"><div class="lesson-kicker">' +
+    var isQuiz = state.step === "quiz", n = isQuiz ? state.round : state.word;
+    var total = isQuiz ? (state.quiz ? state.quiz.items.length : 5) : 5;
+    return topbar(state.quiz && state.step === "quiz" && state.quiz.type === "review" ? "Garden review" : "Letter " + state.letter) + '<main class="page play-page"><div class="lesson-meta"><div class="lesson-kicker">' +
       badge(isQuiz ? "Little challenge" : "Letter " + state.letter, "spark") + '<span>' + (n + 1) + ' of ' + total + '</span></div>' +
       '<div class="progress-track" role="progressbar" aria-valuenow="' + n + '" aria-valuemin="0" aria-valuemax="' + total + '" aria-label="Lesson progress"><span style="width:' + Math.round((n / total) * 100) + '%"></span></div></div>' +
       '<div class="play-content"><h1>' + heading + '</h1><p class="play-subtitle">' + description + '</p>' + body + '</div>' +
@@ -165,23 +165,23 @@
       '<footer class="play-footer">' + footer + '</footer></main>';
   }
   function shuffledTiles(target) {
-    const list = D.clean(target).split("").map(function (ch, index) { return { ch: ch, id: index }; });
-    for (let i = list.length - 1; i > 0; i--) {
-      const j = (i * 7 + list[0].ch.charCodeAt(0) + i * i) % (i + 1);
-      const hold = list[i]; list[i] = list[j]; list[j] = hold;
+    var list = D.clean(target).split("").map(function (ch, index) { return { ch: ch, id: index }; });
+    for (var i = list.length - 1; i > 0; i--) {
+      var j = (i * 7 + list[0].ch.charCodeAt(0) + i * i) % (i + 1);
+      var hold = list[i]; list[i] = list[j]; list[j] = hold;
     }
     return list;
   }
   function prepareWord() {
-    const item = word();
+    var item = word();
     state.step = "look"; state.tiles = shuffledTiles(item.text); state.selected = [];
     state.feedback = ""; state.mistakes = 0; state.hint = false;
     render();
     speak(item.text + ". " + item.clue);
   }
   function renderLook() {
-    const item = word();
-    const letter = state.letter, start = D.clean(item.text).charAt(0) === letter;
+    var item = word();
+    var letter = state.letter, start = D.clean(item.text).charAt(0) === letter;
     return lessonShell('Meet <em>' + safe(item.text) + '!</em>', "Look at the picture. Say the word with Pip.", pictureFrame(item) +
       '<div class="fact-card"><div class="fact-title"><span class="fact-bullet"></span> Let’s discover</div><p>' + safe(item.clue) +
       '.</p><div class="fact-small">The word has <strong>' + D.clean(item.text).length + ' letters.</strong> ' +
@@ -195,21 +195,21 @@
       '</span><small>' + safe(item.text) + '</small></button>';
   }
   function renderFind() {
-    const item = word();
-    const choices = D.getChoices(item, D.words[state.letter].concat(D.availableWords(progress)), 3, state.word + D.letters.indexOf(state.letter));
+    var item = word();
+    var choices = D.getChoices(item, D.words[state.letter].concat(D.availableWords(progress)), 3, state.word + D.letters.indexOf(state.letter));
     return lessonShell('Find the <em>' + safe(item.text) + '.</em>', "Listen carefully. Tap the matching picture.",
       '<div class="question-cue">' + icon("volume", 20) + '<strong>' + safe(item.text) + '</strong></div><div class="image-choices">' +
       choices.map(function (part) { return pictureChoice(part, 0, "find-choice"); }).join("") + '</div>',
       btn("Say it again", "say", "btn-secondary btn-grow", "volume"), state.word);
   }
   function renderSpell() {
-    const item = word(), chosen = state.selected.map(function (id) { return state.tiles.find(function (tile) { return tile.id === id; }); });
-    const spelled = D.clean(item.text);
-    const slots = Array.from({ length: spelled.length }, function (_, index) {
+    var item = word(), chosen = state.selected.map(function (id) { return state.tiles.filter(function (tile) { return tile.id === id; })[0]; });
+    var spelled = D.clean(item.text);
+    var slots = spelled.split("").map(function (_, index) {
       return '<span class="letter-slot ' + (chosen[index] ? "filled" : "") + '">' + (chosen[index] ? chosen[index].ch : "") + '</span>';
     }).join("");
-    const remaining = state.tiles.map(function (tile) {
-      const used = state.selected.indexOf(tile.id) >= 0;
+    var remaining = state.tiles.map(function (tile) {
+      var used = state.selected.indexOf(tile.id) >= 0;
       return '<button class="spell-tile" data-action="tile" data-tile="' + tile.id + '" ' + (used ? 'disabled aria-label="Letter already used"' : 'aria-label="Letter ' + tile.ch + '"') +
         '>' + tile.ch + '</button>';
     }).join("");
@@ -221,9 +221,9 @@
       btn("Hear it", "say", "btn-secondary", "volume"), state.word);
   }
   function renderComplete() {
-    const item = word();
-    const unlocked = D.wordIndex(progress, state.letter) === 3 && state.word === 2;
-    const last = state.word === 4;
+    var item = word();
+    var unlocked = D.wordIndex(progress, state.letter) === 3 && state.word === 2;
+    var last = state.word === 4;
     return lessonShell('<em>Wonderful!</em>', "You listened, looked and spelled. That is real learning.",
       '<div class="celebrate-stage"><div class="celebrate-halo"></div><div class="celebrate-picture">' + item.picture +
       '</div><span class="celebrate-star s1">✦</span><span class="celebrate-star s2">✧</span><span class="celebrate-star s3">✦</span></div>' +
@@ -246,18 +246,18 @@
     render(); speak("Let's find the picture!");
   }
   function renderQuiz() {
-    const quiz = state.quiz, target = quiz.items[state.round];
-    const pool = quiz.type === "review" ? D.letterReviewWords(quiz.context).concat(D.availableWords(progress)) :
+    var quiz = state.quiz, target = quiz.items[state.round];
+    var pool = quiz.type === "review" ? D.letterReviewWords(quiz.context).concat(D.availableWords(progress)) :
       D.words[target.letter].concat(D.availableWords(progress));
-    const options = D.getChoices(target, pool, 3, state.round + D.letters.indexOf(target.letter));
-    const title = quiz.type === "review" ? "Garden <em>review!</em>" : "Your letter <em>challenge!</em>";
+    var options = D.getChoices(target, pool, 3, state.round + D.letters.indexOf(target.letter));
+    var title = quiz.type === "review" ? "Garden <em>review!</em>" : "Your letter <em>challenge!</em>";
     return lessonShell(title, "Find each picture. Take your time and have fun.",
       '<div class="quiz-target"><span>Where is the</span><strong>' + safe(target.text) + '?</strong><button data-action="quiz-say" class="speaker-round" aria-label="Hear the question">' +
       icon("volume", 23) + '</button></div><div class="image-choices quiz-choices">' + options.map(function (item) { return pictureChoice(item, 0, "quiz-choice"); }).join("") +
       '</div>', btn("Hear it again", "quiz-say", "btn-secondary btn-grow", "volume"), state.round);
   }
   function finishQuiz() {
-    const quiz = state.quiz;
+    var quiz = state.quiz;
     if (quiz.type === "letter") {
       if (!progress.letters[quiz.context]) progress.letters[quiz.context] = { word: 5 };
       progress.letters[quiz.context].quiz = true;
@@ -275,8 +275,8 @@
       '<button class="quiet-link" data-action="rewards">See my stickers</button></main>';
   }
   function renderRewards() {
-    const earned = D.letters.filter(function (letter) { return D.done(progress, letter); });
-    const groups = Object.keys(progress.reviews).filter(function (key) { return progress.reviews[key]; });
+    var earned = D.letters.filter(function (letter) { return D.done(progress, letter); });
+    var groups = Object.keys(progress.reviews).filter(function (key) { return progress.reviews[key]; });
     return topbar("My sticker book") + '<main class="page rewards-page"><div class="rewards-header"><div class="reward-sun">' +
       icon("star", 36) + '</div><h1>Look how far<br><em>you’ve come!</em></h1><p>Every sticker shows a little thing you learned.</p></div>' +
       '<div class="sticker-grid">' + earned.map(function (letter) {
@@ -292,8 +292,8 @@
     render(); speak("Picture time! Find the matching picture.");
   }
   function renderPicture() {
-    const pool = D.availableWords(progress), item = pool[state.round % pool.length];
-    const options = D.getChoices(item, pool.concat(D.words.B, D.words.C), 3, state.round);
+    var pool = D.availableWords(progress), item = pool[state.round % pool.length];
+    var options = D.getChoices(item, pool.concat(D.words.B, D.words.C), 3, state.round);
     return topbar("Picture play") + '<main class="page minigame-page"><div class="minigame-progress">' + badge("Round " + (state.round + 1) + " of 3", "star") +
       '</div><h1>Can you spot the<br><em>' + safe(item.text) + '?</em></h1><p>Listen to Pip, then tap the picture.</p>' +
       '<button class="big-sound" data-action="picture-say" aria-label="Hear ' + safe(item.text) + '">' + icon("volume", 28) + '<span>Listen again</span></button>' +
@@ -301,14 +301,14 @@
       '</div>' + (state.feedback ? '<p class="inline-feedback" role="status">' + safe(state.feedback) + '</p>' : "") +
       '</main>';
   }
-  const stories = [
+  var stories = [
     { title: "The bird’s cozy home", prompt: "Little Bird is tired. Where should it rest?", options: [{ name: "nest", picture: "🪺" },{ name: "cake", picture: "🎂" }], answer: "nest", happy: "Hooray! Bird is cozy in its nest.", picture: "🐦" },
     { title: "Pip’s sunny walk", prompt: "The sun is shining. What can Pip wear?", options: [{ name: "hat", picture: "🧢" },{ name: "drum", picture: "🥁" }], answer: "hat", happy: "Lovely! Pip’s hat shades his head.", picture: "🦊" },
     { title: "The windy afternoon", prompt: "The wind is blowing. What can fly?", options: [{ name: "kite", picture: "🪁" },{ name: "spoon", picture: "🥄" }], answer: "kite", happy: "Up, up, up goes the kite!", picture: "🌤️" }
   ];
   function startStory() { state.view = "story"; state.story = 0; state.storyCorrect = false; state.feedback = ""; render(); speak(stories[0].prompt); }
   function renderStory() {
-    const story = stories[state.story];
+    var story = stories[state.story];
     return topbar("Story corner") + '<main class="page story-page"><div class="story-chapter">LITTLE TALE ' + (state.story + 1) + ' / ' + stories.length +
       '</div><h1>' + safe(story.title) + '</h1><div class="story-scene"><span class="story-cloud"></span><span class="story-art" role="img" aria-label="Story character">' + story.picture +
       '</span><span class="story-hill"></span></div><div class="story-speech">' + safe(state.storyCorrect ? story.happy : story.prompt) +
@@ -351,12 +351,12 @@
       else if (state.step === "complete") app.innerHTML = renderComplete();
       else if (state.step === "quiz") app.innerHTML = renderQuiz();
     }
-    const main = app.querySelector("main");
+    var main = app.querySelector("main");
     if (main) main.setAttribute("id", "main-content");
     if (state.view !== "parent") state.parentAnswer = "";
   }
   function resume() {
-    const task = D.nextTask(progress);
+    var task = D.nextTask(progress);
     if (task.type === "letter") return startLetter(task.letter);
     if (task.type === "review") return startQuiz("review", D.letterReviewWords(task.group), task.group);
     if (task.type === "finished") return navigate("rewards");
@@ -367,9 +367,10 @@
     else { playFeedback("Nice try! Look carefully, then try again."); render(); }
   }
   app.addEventListener("click", function (event) {
-    const node = event.target.closest("[data-action]");
+    var node = event.target;
+    while (node && node !== app && (!node.getAttribute || !node.getAttribute("data-action"))) node = node.parentNode;
     if (!node || node.disabled) return;
-    const action = node.getAttribute("data-action"), choice = node.getAttribute("data-choice");
+    var action = node.getAttribute("data-action"), choice = node.getAttribute("data-choice");
     if (action === "home") return navigate("home");
     if (action === "back") return navigate(state.view === "lesson" ? "garden" : "home");
     if (action === "garden" || action === "rewards") return navigate(action);
@@ -377,7 +378,7 @@
     if (action === "parent") { state.enteredParent = false; return navigate("parent"); }
     if (action === "letter") return startLetter(node.getAttribute("data-letter"));
     if (action === "review") {
-      const group = Number(node.getAttribute("data-group"));
+      var group = Number(node.getAttribute("data-group"));
       if (D.readyReview(progress, group)) startQuiz("review", D.letterReviewWords(group), group);
       return;
     }
@@ -385,12 +386,12 @@
     if (action === "look-next") { state.step = "find"; state.feedback = ""; render(); speak("Find the " + word().text); return; }
     if (action === "find-choice") return correctAndNext(word(), choice, function () { state.step = "spell"; state.feedback = ""; render(); speak("Now build the word."); });
     if (action === "tile") {
-      const id = Number(node.getAttribute("data-tile"));
+      var id = Number(node.getAttribute("data-tile"));
       if (state.selected.indexOf(id) !== -1) return;
       state.selected.push(id);
       if (state.selected.length === D.clean(word().text).length) {
-        const built = state.selected.map(function (tileId) {
-          return state.tiles.find(function (tile) { return tile.id === tileId; }).ch;
+        var built = state.selected.map(function (tileId) {
+          return state.tiles.filter(function (tile) { return tile.id === tileId; })[0].ch;
         }).join("");
         if (built === D.clean(word().text)) {
           if (!progress.letters[state.letter]) progress.letters[state.letter] = { word: 0 };
@@ -408,13 +409,13 @@
     if (action === "undo") { state.selected.pop(); state.feedback = ""; return render(); }
     if (action === "hint") { state.hint = true; return render(); }
     if (action === "complete-next") {
-      const nextIndex = D.wordIndex(progress, state.letter);
+      var nextIndex = D.wordIndex(progress, state.letter);
       if (nextIndex >= 5) return startQuiz("letter", D.words[state.letter], state.letter);
       state.word = nextIndex; return prepareWord();
     }
     if (action === "quiz-say") return speak("Find the " + state.quiz.items[state.round].text, true);
     if (action === "quiz-choice") {
-      const target = state.quiz.items[state.round];
+      var target = state.quiz.items[state.round];
       return correctAndNext(target, choice, function () {
         state.round++;
         if (state.round >= state.quiz.items.length) finishQuiz();
@@ -424,7 +425,7 @@
     if (action === "picture") return startPicture();
     if (action === "picture-say") return speak("Find the " + D.availableWords(progress)[state.round % D.availableWords(progress).length].text, true);
     if (action === "picture-choice") {
-      const pool = D.availableWords(progress), target = pool[state.round % pool.length];
+      var pool = D.availableWords(progress), target = pool[state.round % pool.length];
       return correctAndNext(target, choice, function () {
         state.round++;
         if (state.round >= 3) { state.prize = { symbol: "★", title: "Picture detective!", message: "You found three pictures. Wonderful looking!" }; navigate("prize"); }
@@ -434,7 +435,7 @@
     if (action === "story") return startStory();
     if (action === "story-say") return speak(state.storyCorrect ? stories[state.story].happy : stories[state.story].prompt, true);
     if (action === "story-choice") {
-      const story = stories[state.story];
+      var story = stories[state.story];
       if (choice !== story.answer) { playFeedback("That is a fun idea! Which one helps our friend?"); return render(); }
       state.storyCorrect = true; state.feedback = ""; render(); speak(story.happy); return;
     }
@@ -443,10 +444,10 @@
       state.story++; state.storyCorrect = false; state.feedback = ""; render(); return speak(stories[state.story].prompt);
     }
     if (action === "parent-unlock") {
-      const input = document.getElementById("parent-answer");
+      var input = document.getElementById("parent-answer");
       state.parentAnswer = input ? input.value.trim() : "";
       if (state.parentAnswer === "12") { state.enteredParent = true; return render(); }
-      const message = document.getElementById("parent-error"); if (message) message.textContent = "Please try the grown-up question again.";
+      var message = document.getElementById("parent-error"); if (message) message.textContent = "Please try the grown-up question again.";
       return;
     }
     if (action === "toggle-sound") { progress.sound = !progress.sound; save(); return render(); }
@@ -461,7 +462,7 @@
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && state.view !== "home") navigate("home");
     if (event.key === "Enter" && state.view === "parent" && !state.enteredParent) {
-      const unlock = app.querySelector('[data-action="parent-unlock"]'); if (unlock) unlock.click();
+      var unlock = app.querySelector('[data-action="parent-unlock"]'); if (unlock) unlock.click();
     }
   });
   window.addEventListener("pageshow", function () { if (state.view === "home") render(); });
