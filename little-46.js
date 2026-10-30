@@ -155,7 +155,7 @@
   function lessonShell(heading, description, body, footer, count) {
     var isQuiz = state.step === "quiz", n = isQuiz ? state.round : state.word;
     var total = isQuiz ? (state.quiz ? state.quiz.items.length : 5) : 5;
-    return topbar(state.quiz && state.step === "quiz" && state.quiz.type === "review" ? "Garden review" : "Letter " + state.letter) + '<main class="page play-page"><div class="lesson-meta"><div class="lesson-kicker">' +
+    return topbar(state.quiz && state.step === "quiz" && state.quiz.type === "review" ? "Garden review" : "Letter " + state.letter) + '<main class="page play-page step-' + (state.step === "spell" ? "spell" : state.step === "look" ? "look" : state.step === "find" ? "find" : state.step === "quiz" ? "quiz" : "result") + '"><div class="lesson-meta"><div class="lesson-kicker">' +
       badge(isQuiz ? "Little challenge" : "Letter " + state.letter, "spark") + '<span>' + (n + 1) + ' of ' + total + '</span></div>' +
       '<div class="progress-track" role="progressbar" aria-valuenow="' + n + '" aria-valuemin="0" aria-valuemax="' + total + '" aria-label="Lesson progress"><span style="width:' + Math.round((n / total) * 100) + '%"></span></div></div>' +
       '<div class="play-content"><h1>' + heading + '</h1><p class="play-subtitle">' + description + '</p>' + body + '</div>' +
@@ -229,30 +229,36 @@
       btn("Say it again", "say", "btn-secondary btn-grow", "volume"), state.word);
   }
   function renderSpell() {
-    var item=word(),part=state.spellParts[state.partIndex],chosen=state.selected.map(function(id){
-      return state.tiles.filter(function(tile){return tile.id===id;})[0];
-    });
+    var item=word(), part=state.spellParts[state.partIndex];
+    var chosen=state.selected.map(function(id){return state.tiles.filter(function(tile){return tile.id===id;})[0];});
     var slots=part.split("").map(function(_,index){
-      return '<span class="letter-slot '+(chosen[index]?"filled":"")+'" aria-label="'+(chosen[index]?"Position "+(index+1)+": "+chosen[index].ch:"Empty letter position "+(index+1))+'">'+
+      return '<span class="letter-slot '+(chosen[index]?"filled":"")+'" aria-label="'+(chosen[index]?"Position "+(index+1)+": "+chosen[index].ch:"Empty position "+(index+1))+'">'+
         (chosen[index]?chosen[index].ch:"")+'</span>';
     }).join("");
     var remaining=state.tiles.map(function(tile){
       var used=state.selected.indexOf(tile.id)>=0;
-      return '<button class="spell-tile" data-action="tile" data-tile="'+tile.id+'" '+(used?'disabled aria-label="Used letter '+tile.ch+'"':'aria-label="Choose letter '+tile.ch+'"')+'>'+tile.ch+'</button>';
+      return '<button class="spell-tile" data-action="tile" data-tile="'+tile.id+'" '+
+        (used?'disabled aria-label="Used letter '+tile.ch+'"':'aria-label="Choose letter '+tile.ch+'"')+'>'+tile.ch+'</button>';
     }).join("");
-    var partsLabel=state.spellParts.length>1 ? '<span class="spell-part-label">Little steps · Part '+(state.partIndex+1)+' of '+state.spellParts.length+'</span>' : '';
-    var accomplished=state.completedParts.length ? '<div class="spell-done">Wonderful! '+state.completedParts.map(function(x){return '<span>'+safe(x)+'</span>';}).join('')+'</div>' : '';
-    var guide=state.hint? 'A tiny clue: the first letter is '+safe(part.charAt(0))+'.':'Listen, think, and build the word.';
-    return lessonShell('Listen & <em>spell!</em>',"The letters are mixed up. Some do not belong.",
-      '<div class="spell-challenge-head">'+partsLabel+'<div class="spell-preview">'+pictureFrame(item,"compact")+'</div>'+
-      '<button data-action="say" class="spell-listen" aria-label="Hear the target word">'+icon("volume",22)+'<span>Hear the word</span></button>'+
-      '<p class="spell-hint-line">'+safe(guide)+'</p></div>'+
-      accomplished+'<div class="spell-answer-label">Your answer</div><div class="spell-slots" aria-label="Your spelling answer">'+slots+'</div>'+
-      '<div class="spell-bank-title">Tap the letter stones <span>'+state.tiles.length+' choices</span></div><div class="spell-tiles" role="group" aria-label="Mixed-up letter choices">'+remaining+'</div>'+
-      '<p class="spell-coach-note">Look carefully! Extra letters are hiding here.</p>',
-      '<button class="text-button" data-action="undo" '+(state.selected.length?'':'disabled')+'>'+icon("back",18)+' Undo</button>'+
-      '<button class="text-button" data-action="clear" '+(state.selected.length?'':'disabled')+'>'+icon("replay",18)+' Start over</button>'+
-      '<button class="text-button" data-action="hint">'+icon("spark",18)+' A clue</button>',
+    var partsLabel=state.spellParts.length>1 ? 'Part '+(state.partIndex+1)+' of '+state.spellParts.length : 'Listen and try';
+    var accomplished=state.completedParts.length ?
+      '<div class="spell-done">You spelled '+state.completedParts.map(function(x){return '<span>'+safe(x)+'</span>';}).join('')+'</div>' : '';
+    return lessonShell('Spell the <em>word!</em>', "Look, listen, then choose the letters.",
+      '<div class="spelling-board">' +
+      '<div class="spell-scene">' +
+      '<div class="spell-illustration">'+pictureFrame(item,"compact")+'</div>' +
+      '<div class="spell-audio-panel"><span class="spell-step-chip">'+safe(partsLabel)+'</span>' +
+      '<button data-action="say" class="spell-listen" aria-label="Hear the word again">'+icon("volume",25)+'<span>Listen</span></button>' +
+      '<span class="spell-micro-tip">Tap to hear!</span></div></div>' +
+      accomplished +
+      '<div class="spell-answer-section"><div class="spell-answer-label">Make the word</div><div class="spell-slots" role="group" aria-label="Your spelling answer">'+slots+'</div></div>'+
+      '<div class="spell-bank-section"><div class="spell-bank-title">Choose the letters <span>One is extra!</span></div>' +
+      '<div class="spell-tiles" role="group" aria-label="Mixed-up letters">'+remaining+'</div></div>' +
+      (state.hint?'<p class="spell-hint-line" role="status">First letter: <strong>'+safe(part[0])+'</strong></p>':'') +
+      '</div>',
+      '<button class="spell-action" data-action="undo" '+(state.selected.length?'':'disabled')+'>'+icon("back",19)+' Undo</button>'+
+      '<button class="spell-action" data-action="mix">'+icon("replay",19)+' Mix</button>'+
+      '<button class="spell-action spell-hint-action" data-action="hint">'+icon("spark",19)+' Hint</button>',
       state.word);
   }
   function renderComplete() {
@@ -450,6 +456,7 @@
     }
     if(action==="undo") {state.selected.pop();state.feedback="";return render();}
     if(action==="clear") {state.selected=[];state.feedback="";return render();}
+    if(action==="mix") {state.selected=[];state.feedback="";resetSpellRound();return render();}
     if(action==="hint") {
       state.hint=true;state.feedback="";
       render();speak(S.hint(state.spellParts[state.partIndex],state.mistakes,true),true);
