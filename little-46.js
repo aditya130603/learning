@@ -68,7 +68,7 @@
     window.scrollTo(0, 0);
   }
   function brand() {
-    return '<span class="brand-mark" aria-hidden="true">' + icon("spark", 21) + '</span><span class="brand-name">little learners<span class="brand-dot">.</span></span>';
+    return '<span class="storybook-logo"><span class="logo-word">little</span><span class="logo-learners"><b>l</b><b>e</b><b>a</b><b>r</b><b>n</b><b>e</b><b>r</b><b>s</b></span></span>';
   }
   function topbar(title, isHome) {
     return '<header class="topbar"><button class="top-icon" data-action="' + (isHome ? "home" : "back") + '" aria-label="' + (isHome ? "Home" : "Go back") + '">' +
@@ -83,18 +83,7 @@
     }).join("") + '</nav>';
   }
   function fox() {
-    return '<svg class="buddy" viewBox="0 0 250 238" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pip, a smiling fox guide">' +
-      '<ellipse cx="124" cy="218" rx="90" ry="11" fill="#D2A97D" opacity=".23"/>' +
-      '<path d="M61 105 63 18 122 63 183 18 186 108" fill="#EC8D5A" stroke="#AD573B" stroke-width="5" stroke-linejoin="round"/>' +
-      '<path d="M75 83 76 41 107 77M172 83 172 41 141 77" fill="#FFC2B4"/>' +
-      '<path d="M46 124c0-47 32-80 79-80s79 33 79 80c0 56-34 91-79 91s-79-35-79-91Z" fill="#F29E69" stroke="#AD573B" stroke-width="5"/>' +
-      '<path d="M47 136c16 0 25 5 39 25 13 18 27 23 39 23s26-5 39-23c14-20 23-25 39-25-6 47-37 79-78 79s-72-32-78-79Z" fill="#FFF3DD"/>' +
-      '<ellipse cx="92" cy="126" rx="7" ry="10" fill="#352F41"/><ellipse cx="158" cy="126" rx="7" ry="10" fill="#352F41"/>' +
-      '<ellipse cx="72" cy="151" rx="13" ry="7" fill="#F78E8E" opacity=".65"/><ellipse cx="178" cy="151" rx="13" ry="7" fill="#F78E8E" opacity=".65"/>' +
-      '<path d="M111 150q14 10 28 0" fill="none" stroke="#6D4241" stroke-width="4" stroke-linecap="round"/>' +
-      '<path d="m115 143 10 9 10-9Z" fill="#5E4345"/><path d="M125 152v4" stroke="#5E4345" stroke-width="3" stroke-linecap="round"/>' +
-      '<path d="M179 190q48 0 48-36c20 44-3 70-45 54" fill="#EC8D5A" stroke="#AD573B" stroke-width="4"/>' +
-      '</svg>';
+    return '<img class="buddy" src="assets/kids46/pip.svg" alt="Pip the cheerful fox learning guide">';
   }
   function btn(label, action, type, emblem, extra) {
     return '<button class="btn ' + (type || "btn-primary") + '" data-action="' + action + '" ' + (extra || "") + '><span>' + safe(label) + '</span>' + (emblem ? icon(emblem, 21) : "") + '</button>';
@@ -109,50 +98,58 @@
   }
   function renderHome() {
     var guide = currentDescription(), count = D.countWords(progress);
-    return topbar("", true) + '<main class="page home-page"><div class="welcome-eyebrow">A little magic, every day ' + icon("spark", 14) +
-      '</div><h1>Hello, little<br><em>explorer!</em></h1><section class="hero"><div class="hero-text">' +
-      '<span class="hero-tag">YOUR NEXT ADVENTURE</span><h2>' + safe(guide.heading) + '</h2><p>' + safe(guide.sub) +
-      '</p>' + btn(guide.button, "resume", "btn-cream", "next") + '</div><div class="hero-art"><span class="art-sun"></span>' + fox() +
-      '<span class="art-flower">✿</span><span class="art-doodle">✦</span></div></section>' +
-      '<div class="mini-stats"><div class="mini-stat">' + icon("book", 22) + '<div><strong>' + count + '<span>/130</span></strong><small>Words discovered</small></div></div>' +
-      '<div class="mini-stat">' + icon("star", 22) + '<div><strong>' + D.completedLetters(progress) + '</strong><small>Letter stickers</small></div></div></div>' +
-      '<div class="section-label"><h2>Where shall we go?</h2><span>Choose an adventure</span></div>' +
+    return topbar("", true) + '<main class="page home-page">' +
+      '<section class="hero storybook-hero"><div class="hero-world"><div class="hero-heading"><p class="welcome-eyebrow">Welcome to your happy place!</p><h1>Hello, little<br><em>explorer!</em></h1></div>' +
+      '<div class="hero-fox">' + fox() + '</div><div class="adventure-sign"><span class="sign-eyebrow">YOUR NEXT ADVENTURE</span><h2>' + safe(guide.heading) + '</h2>' +
+      btn(guide.button, "resume", "btn-sign", "next") + '</div><span class="scene-spark scene-spark-one" aria-hidden="true">✦</span><span class="scene-spark scene-spark-two" aria-hidden="true">✿</span></div></section>' +
+      '<div class="home-cheer">Little steps make <strong>big explorers!</strong> <span aria-hidden="true">✦</span></div>' +
       '<div class="activity-stack">' +
-      '<button class="activity activity-letter" data-action="garden"><span class="activity-symbol abc">Aa</span><span class="activity-copy"><strong>Letter garden</strong><small>Letters, sounds &amp; spelling</small></span>' + icon("next") + '</button>' +
-      '<button class="activity activity-picture" data-action="picture"><span class="activity-symbol picture"><img src="assets/scenes/little-garden.svg" alt="" loading="lazy"></span><span class="activity-copy"><strong>Picture play</strong><small>Listen, look &amp; discover</small></span>' + icon("next") + '</button>' +
-      '<button class="activity activity-story" data-action="story"><span class="activity-symbol story">' + icon("heart", 35) + '</span><span class="activity-copy"><strong>Story corner</strong><small>Three tiny tales to help</small></span>' + icon("next") + '</button></div>' +
-      '<p class="home-note">No rush. No timers. Every try helps your brain grow.</p></main>' + tabbar("home");
+      '<button class="activity activity-letter" data-action="garden"><span class="activity-symbol abc">Aa</span><span class="activity-copy"><strong>Letter Garden</strong><small>Explore the alphabet</small></span>' + icon("next") + '</button>' +
+      '<button class="activity activity-picture" data-action="picture"><span class="activity-symbol picture">' + icon("book", 36) + '</span><span class="activity-copy"><strong>Picture Play</strong><small>Listen and discover</small></span>' + icon("next") + '</button>' +
+      '<button class="activity activity-story" data-action="story"><span class="activity-symbol story">' + icon("heart", 35) + '</span><span class="activity-copy"><strong>Story Corner</strong><small>Little tales to enjoy</small></span>' + icon("next") + '</button></div>' +
+      '<div class="home-footnote">' + icon("star",17) + '<strong>' + D.completedLetters(progress) + ' stickers</strong><span>·</span><strong>' + count + ' words discovered</strong>' +
+      '</div></main>' + tabbar("home");
   }
   function renderGarden() {
     var task = D.nextTask(progress);
-    var sections = [];
-    for (var index = 0; index < 26; index += 5) {
-      var group = Math.floor(index / 5);
-      var set = D.letters.slice(index, index + 5);
-      sections.push('<section class="garden-section"><div class="group-heading"><span class="group-mark">' + (group + 1) + '</span><div><h2>' + ["Sunny meadow","Bouncy forest","Rainbow river","Starry hill","Cozy clouds","The final bloom"][group] + '</h2><p>Letters ' + set[0] + '–' + set[set.length - 1] + '</p></div></div><div class="letter-grid">' +
-        set.map(function (letter) {
-          var open = D.unlocked(progress, letter), done = D.done(progress, letter);
-          var selected = task.type === "letter" && task.letter === letter;
-          var status = done ? icon("check", 17) : open ? '<span class="letter-progress">' + D.wordIndex(progress, letter) + '/5</span>' : icon("lock", 16);
-          return '<button class="letter-tile ' + (done ? "complete " : "") + (selected ? "next-letter " : "") +
-            (open ? "" : "locked") + '" data-action="letter" data-letter="' + letter + '" ' + (open ? "" : "disabled") +
-            ' aria-label="Letter ' + letter + ', ' + (done ? "complete" : open ? "available" : "locked") + '">' +
-            '<strong>' + letter + '<span>' + letter.toLowerCase() + '</span></strong><span class="tile-status">' + status + '</span></button>';
-        }).join("") + '</div>' +
-        (index + 5 <= 26 ? '<button class="review-strip ' + (D.readyReview(progress, group) ? "ready" : "") +
-          '" data-action="review" data-group="' + group + '" ' + (D.readyReview(progress, group) ? "" : "disabled") +
-          '><span class="review-badge">' + icon(D.readyReview(progress, group) ? "star" : "lock", 19) + '</span><span><strong>' +
-          (progress.reviews[String(group)] ? "Garden review complete!" : "Five-letter garden review") +
-          '</strong><small>' + set.join(" · ") + '</small></span>' + icon("next", 20) + '</button>' : "") + '</section>');
-    }
-    return topbar("The letter garden") + '<main class="page garden-page"><div class="garden-intro"><div><p class="eyebrow">YOUR LEARNING PATH</p><h1>One little<br><em>letter at a time.</em></h1><p>Tap a bright letter to begin. Grow your garden at your own pace.</p></div>' +
-      '<img src="assets/scenes/little-garden.svg" alt="An illustrated happy garden" loading="lazy"></div>' + sections.join("") +
-      '</main>' + tabbar("garden");
+    var coords = [23,56,69,31,58,23,62,40,70,27,52,73,35,59,24,56,71,33,61,26,54,70,34,58,27,54];
+    var flowers = ["orange","yellow","purple","pink","blue"];
+    var nodes = [];
+    D.letters.forEach(function (letter, index) {
+      var open = D.unlocked(progress, letter), done = D.done(progress, letter);
+      var selected = task.type === "letter" && task.letter === letter;
+      var flower = flowers[index % 5];
+      var status = done ? '<span class="flower-check">' + icon("check",16) + '</span>' : (!open ? '<span class="flower-lock">' + icon("lock",15) + '</span>' :
+        '<span class="flower-progress">' + D.wordIndex(progress, letter) + '/5</span>');
+      nodes.push('<button class="garden-flower ' + flower + ' ' + (done ? "complete " : "") + (selected ? "current " : "") + (open ? "" : "locked") +
+        '" style="top:' + (190 + index * 142) + 'px;left:' + coords[index] + '%" data-action="letter" data-letter="' + letter + '" ' + (open ? "" : "disabled") +
+        ' aria-label="Letter ' + letter + ', ' + (done ? "complete" : open ? "available" : "locked") + '">' +
+        '<span class="petal p1"></span><span class="petal p2"></span><span class="petal p3"></span><span class="petal p4"></span><span class="petal p5"></span>' +
+        '<span class="flower-face">' + letter + '</span>' + status + '</button>');
+      if (index > 0 && index % 5 === 4) {
+        var group = Math.floor(index / 5);
+        nodes.push('<button class="garden-gate ' + (D.readyReview(progress, group) ? "ready" : "closed") +
+          '" style="top:' + (281 + index * 142) + 'px" data-action="review" data-group="' + group + '" ' +
+          (D.readyReview(progress, group) ? "" : "disabled") + '>' +
+          icon(D.readyReview(progress,group) ? "star" : "lock",18) + '<span>' +
+          (progress.reviews[String(group)] ? "Review complete!" : "Review " + D.letters[index-4] + "–" + letter) +
+          '</span></button>');
+      }
+    });
+    return topbar("Letter Garden") + '<main class="page garden-page"><div class="garden-intro"><div><p class="eyebrow">WELCOME TO YOUR ADVENTURE</p>' +
+      '<h1>Explore the <em>alphabet!</em></h1><p>Follow the path. Tap a flower to learn.</p></div>' +
+      '<img src="assets/kids46/pip.svg" alt="Pip cheering you on" loading="lazy"></div>' +
+      '<div class="garden-world"><img class="garden-world-art" src="assets/kids46/garden-path.svg" alt="" loading="lazy">' +
+      '<div class="garden-wood-sign"><strong>Letter Garden</strong><small>A little journey from A to Z</small></div>' +
+      nodes.join("") + '</div></main>' + tabbar("garden");
   }
   function word() { return D.words[state.letter][state.word]; }
   function pictureFrame(item, extra) {
-    return '<div class="picture-stage ' + (extra || "") + '"><span class="picture-orb picture-orb-one"></span><span class="picture-orb picture-orb-two"></span>' +
-      '<span class="picture-emoji" role="img" aria-label="' + safe(item.text) + '">' + item.picture + '</span><span class="picture-grass"></span></div>';
+    var artwork = item.id === "A-0" ? '<img class="vocab-art" src="assets/kids46/ant.svg" alt="A smiling ant in a sunny garden">' :
+      '<span class="picture-emoji" role="img" aria-label="' + safe(item.text) + '">' + item.picture + '</span>';
+    return '<div class="picture-stage ' + (extra || "") + (item.id === "A-0" ? " has-custom-art" : "") +
+      '"><span class="picture-orb picture-orb-one"></span><span class="picture-orb picture-orb-two"></span>' +
+      artwork + '<span class="picture-grass"></span></div>';
   }
   function lessonShell(heading, description, body, footer, count) {
     var isQuiz = state.step === "quiz", n = isQuiz ? state.round : state.word;
@@ -182,12 +179,15 @@
   function renderLook() {
     var item = word();
     var letter = state.letter, start = D.clean(item.text).charAt(0) === letter;
-    return lessonShell('Meet <em>' + safe(item.text) + '!</em>', "Look at the picture. Say the word with Pip.", pictureFrame(item) +
+    return lessonShell('Meet <em>' + safe(item.text) + '!</em>', "Look closely. Listen, then say the word with Pip.",
+      '<div class="pip-speaks"><img src="assets/kids46/pip.svg" alt="" loading="lazy"><span>Pip says, <strong>' + safe(item.text) + '!</strong></span></div>' +
+      pictureFrame(item) +
+      '<div class="word-sound-card"><button class="word-sound-button" data-action="say" aria-label="Hear the word ' + safe(item.text) + '">' + icon("volume",22) + '</button><strong>' +
+      safe(item.text) + '</strong></div>' +
       '<div class="fact-card"><div class="fact-title"><span class="fact-bullet"></span> Let’s discover</div><p>' + safe(item.clue) +
-      '.</p><div class="fact-small">The word has <strong>' + D.clean(item.text).length + ' letters.</strong> ' +
-      (start ? 'It begins with <strong>' + letter + '</strong>.' : 'Can you spot <strong>' + letter + '</strong> inside it?') +
-      '</div></div>', '<button class="listen-button" data-action="say" aria-label="Hear ' + safe(item.text) + '">' + icon("volume", 22) +
-      ' Hear the word</button>' + btn("I’m ready!", "look-next", "btn-primary btn-grow", "next"));
+      '.</p><div class="fact-small">It has <strong>' + D.clean(item.text).length + ' letters</strong>. ' +
+      (start ? 'It starts with <strong>' + letter + '</strong>.' : 'Find the letter <strong>' + letter + '</strong> inside it.') +
+      '</div></div>', btn("I’m ready!", "look-next", "btn-primary btn-grow", "next"));
   }
   function pictureChoice(item, pos, answerAction) {
     return '<button class="image-choice" data-action="' + answerAction + '" data-choice="' + safe(item.id) +
@@ -269,7 +269,7 @@
     save(); state.view = "prize"; render(); speak("You did it! Your garden is growing.");
   }
   function renderPrize() {
-    return topbar("Your celebration") + '<main class="page prize-page"><div class="prize-glow"></div><div class="prize-tag">A LITTLE VICTORY</div><div class="prize-medal">' +
+    return topbar("Your celebration") + '<main class="page prize-page"><div class="prize-glow"></div><div class="prize-tag">YOU DID IT!</div><div class="prize-medal">' +
       safe(state.prize.symbol) + '</div><h1>' + safe(state.prize.title) + '</h1><p>' + safe(state.prize.message) +
       '</p><div class="prize-buddy">' + fox() + '</div>' + btn("Keep exploring", "resume", "btn-primary btn-grow", "next") +
       '<button class="quiet-link" data-action="rewards">See my stickers</button></main>';
@@ -277,15 +277,18 @@
   function renderRewards() {
     var earned = D.letters.filter(function (letter) { return D.done(progress, letter); });
     var groups = Object.keys(progress.reviews).filter(function (key) { return progress.reviews[key]; });
-    return topbar("My sticker book") + '<main class="page rewards-page"><div class="rewards-header"><div class="reward-sun">' +
-      icon("star", 36) + '</div><h1>Look how far<br><em>you’ve come!</em></h1><p>Every sticker shows a little thing you learned.</p></div>' +
-      '<div class="sticker-grid">' + earned.map(function (letter) {
-        return '<div class="sticker" aria-label="Letter ' + letter + ' sticker"><span>' + letter + '</span><small>Letter ' + letter + '</small></div>';
-      }).join("") + groups.map(function (group) {
-        return '<div class="sticker golden" aria-label="Garden review star"><span>★</span><small>Garden star</small></div>';
-      }).join("") + (!earned.length && !groups.length ? '<div class="empty-stickers"><div class="empty-star">' + icon("star", 54) +
-      '</div><h2>Your first sticker is close!</h2><p>Learn five words and complete a letter challenge.</p>' +
-      btn("Let’s begin", "resume", "btn-primary", "next") + '</div>' : "") + '</div></main>' + tabbar("rewards");
+    return topbar("My Stickers") + '<main class="page rewards-page"><div class="sticker-book"><div class="sticker-book-heading"><span>✿</span><h1>My Learning Stickers</h1><span>✿</span></div>' +
+      '<div class="sticker-shelves">' + D.letters.map(function (letter,index) {
+        var isEarned = D.done(progress,letter), item = D.words[letter][0];
+        return '<div class="shelf-slot ' + (isEarned ? "collected" : "not-yet") + '" aria-label="Letter ' + letter + (isEarned ? ' sticker earned' : ' sticker not yet earned') + '">' +
+          '<span class="sticker-illustration" role="img" aria-label="' + safe(item.text) + '">' + (isEarned ? item.picture : '✦') + '</span>' +
+          '<span class="sticker-letter">' + letter + '</span></div>';
+      }).join("") + '</div></div>' +
+      '<div class="rewards-celebration"><h2>' + (earned.length ? "You’re amazing!" : "Your adventure begins!") + '</h2><p>' +
+      earned.length + ' of 26 letter stickers collected' + (groups.length ? ' · ' + groups.length + ' garden stars!' : '') +
+      '</p><div class="celebration-fox">' + fox() + '<span class="celebration-star" aria-hidden="true">★</span></div>' +
+      btn(earned.length ? "Keep collecting!" : "Earn my first sticker!", "resume", "btn-primary btn-grow", "next") +
+      '</div></main>' + tabbar("rewards");
   }
   function startPicture() {
     state.view = "picture"; state.round = 0; state.feedback = "";
