@@ -75,6 +75,7 @@ const server = http.createServer((req, res) => {
   // The new storybook map and sticker shelf must be real accessible controls/content.
   await page.locator('[data-action="garden"]').first().click();
   assert.equal(await page.locator(".garden-flower").count(),26);
+  await page.locator(".garden-world-art").evaluate(img => { if (!img.complete) return new Promise(resolve => {img.onload=resolve;img.onerror=resolve}); });
   assert.equal(await page.locator('.garden-flower:not([disabled])').count(),1);
   console.log("UI checkpoint: 320px garden map");
   await page.screenshot({path:path.join(output,"09-garden-storybook-320.png"),fullPage:false,timeout:10000});
