@@ -55,3 +55,9 @@ Design guide: design-system/little-learners-46/MASTER.md.
 ## Storybook illustrated design (v2)
 
 The four primary screens now follow an illustrated woodland/garden art direction: original reusable SVG Pip fox, garden meadow, an illustrated alphabet path, a custom ant scene, functional flower-shaped letter stops, and a wooden sticker shelf whose slots accurately reflect earned progress. Styling is applied via `little-46-storybook.css` without replacing lesson logic. The reference concept is visual direction only: no non-interactive picture is substituted for buttons. All added SVGs are bundled offline inside the small Android build; other vocabulary words currently use their illustrated emoji.
+
+## Golden spelling screen — applied UI/UX skills (October 2026)
+
+The rebuilt interactive spelling screen uses the reviewed UI/UX Pro Max and Frontend Design guidance directly: one visible objective, independent Pip/word artwork, a clear speech control, touch-friendly answer slots and shuffled decoy letter tiles, native Undo/Mix/Hint buttons, reduced-motion support and responsive spacing. Its assembled visual stylesheet is `little-46-ui.css`, consolidating the previously layered style files into a single app-loaded sheet; prior styles remain in the repository for history. Actual Chrome screenshots and control checks are included in the Android Actions build artifacts.
+
+**Acceptance checks:** local browser evaluation at 320×568, 375×667, 390×844, 430×932 confirmed visible spelling controls without horizontal overflow or overlap; wrong answers, hint, remix and successful `ANT` completion were exercised. A GitHub CI run also passed. This is a verified *spelling UI milestone*, **not** a claim that the entire app's custom art now matches the approved painterly reference. Remaining visual work: a consistent illustrated Pip expression set, premium word scenes across all letters, and cohesive Home/Garden/Sticker artwork.
