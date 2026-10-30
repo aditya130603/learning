@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Test lesson progression
-        run: node --test tests/little-46.test.js
+        run: node --test tests/little-46.test.js tests/little-46-spelling.test.js
       - name: Bundle child-only offline assets
         run: |
           bash scripts/package-little-46.sh android/app/src/main/assets
