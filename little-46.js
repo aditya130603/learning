@@ -267,7 +267,7 @@
       '<span class="spell-micro-tip">Tap to hear!</span></div></div>' +
       accomplished +
       '<div class="spell-answer-section"><div class="spell-answer-label">Make the word</div><div class="spell-slots" role="group" aria-label="Your spelling answer">'+slots+'</div></div>'+
-      '<div class="spell-bank-section"><div class="spell-bank-title">Choose the letters <span>One is extra!</span></div>' +
+      '<div class="spell-bank-section"><div class="spell-bank-title">Choose the letters <span>Some are extra</span></div>' +
       '<div class="spell-tiles" role="group" aria-label="Mixed-up letters">'+remaining+'</div></div>' +
       (state.hint?'<p class="spell-hint-line" role="status">First letter: <strong>'+safe(part[0])+'</strong></p>':'') +
       '</div>',
