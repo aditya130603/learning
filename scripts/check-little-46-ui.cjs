@@ -26,6 +26,7 @@ const server = http.createServer((req, res) => {
   const browser = await chromium.launch(opts);
   const errors = [];
   const page = await browser.newPage({ viewport:{ width:375,height:667 }, reducedMotion:"reduce", deviceScaleFactor:1 });
+  page.setDefaultTimeout(15000);
   page.on("pageerror", error => errors.push(error.message));
   page.on("console", msg => { if (msg.type() === "error") errors.push(msg.text()); });
   await page.goto("http://127.0.0.1:" + port + "/", { waitUntil:"load" });
@@ -34,7 +35,8 @@ const server = http.createServer((req, res) => {
   await page.screenshot({ path:path.join(output,"01-home-375.png"), fullPage:true });
   await page.locator('[data-action="garden"]').first().click();
   assert.match(await page.locator(".garden-intro h1").innerText(), /letter/i);
-  await page.screenshot({ path:path.join(output,"02-letter-garden.png"), fullPage:true });
+  console.log("UI checkpoint: garden map");
+  await page.screenshot({ path:path.join(output,"02-letter-garden.png"), fullPage:false, timeout:10000 });
   await page.locator('[data-action="letter"][data-letter="A"]').click();
   assert.match(await page.locator(".play-content h1").innerText(), /ant/i);
   await page.screenshot({ path:path.join(output,"03-word-intro.png"), fullPage:true });
@@ -71,7 +73,8 @@ const server = http.createServer((req, res) => {
   await page.locator('[data-action="garden"]').first().click();
   assert.equal(await page.locator(".garden-flower").count(),26);
   assert.equal(await page.locator('.garden-flower:not([disabled])').count(),1);
-  await page.screenshot({path:path.join(output,"09-garden-storybook-320.png"),fullPage:true});
+  console.log("UI checkpoint: 320px garden map");
+  await page.screenshot({path:path.join(output,"09-garden-storybook-320.png"),fullPage:false,timeout:10000});
   await page.locator('[data-action="rewards"]').first().click();
   assert.equal(await page.locator(".shelf-slot").count(),26);
   assert.match(await page.locator(".rewards-celebration").innerText(),/0 of 26 letter stickers/i);
@@ -83,6 +86,7 @@ const server = http.createServer((req, res) => {
     return img && img.complete && img.naturalWidth > 0;
   });
   assert.equal(illustrationOk,true,"The Pip illustration should load in offline package");
+  console.log("UI checkpoint: all interaction checks complete");
   assert.deepEqual(errors, [], "The site should have no browser exceptions");
   console.log("UI smoke checks passed; screenshots saved to", output);
   await browser.close();
