@@ -11,7 +11,7 @@
     Y:"IV", Z:"SX"
   };
   var chunks = {
-    ASTRONAUT:["AS","TRO","NAUT"], ELEPHANT:["EL","E","PHANT"],
+    ASTRONAUT:["AS","TRO","NAUT"], ELEPHANT:["ELE","PHANT"],
     JELLYFISH:["JEL","LY","FISH"], XYLOPHONE:["XY","LO","PHONE"],
     QUESTION:["QUES","TION"], UMBRELLA:["UM","BREL","LA"],
     RAINBOW:["RAIN","BOW"], VOLCANO:["VOL","CA","NO"],
