@@ -35,7 +35,8 @@ const server = http.createServer((req, res) => {
   assert.match(await page.locator("h1").first().innerText(), /explorer/i);
   await page.screenshot({ path:path.join(output,"01-home-375.png"), fullPage:true });
   await page.locator('[data-action="garden"]').first().click();
-  assert.match(await page.locator(".garden-intro h1").innerText(), /alphabet|letter/i);
+  assert.match(await page.locator(".garden-intro h1").innerText(), /flower path|alphabet|letter/i);
+  assert.equal(await page.locator(".garden-chapter").count(),6,"Garden should have six illustrated chapters");
   console.log("UI checkpoint: garden map");
   await page.screenshot({ path:path.join(output,"02-letter-garden.png"), fullPage:false, timeout:10000 });
   console.log("UI: opening A lesson");
@@ -97,6 +98,7 @@ const server = http.createServer((req, res) => {
   // The new storybook map and sticker shelf must be real accessible controls/content.
   await page.locator('[data-action="garden"]').first().click();
   assert.equal(await page.locator(".garden-flower").count(),26);
+  assert.ok(await page.locator(".garden-deco").count()>=24,"Kitbitz nature sprites should decorate the garden independently");
   await page.locator(".garden-world-art").evaluate(img => { if (!img.complete) return new Promise(resolve => {img.onload=resolve;img.onerror=resolve}); });
   assert.equal(await page.locator('.garden-flower:not([disabled])').count(),1);
   console.log("UI checkpoint: 320px garden map");
