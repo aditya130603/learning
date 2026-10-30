@@ -139,7 +139,7 @@
     return topbar("Letter Garden") + '<main class="page garden-page"><div class="garden-intro"><div><p class="eyebrow">WELCOME TO YOUR ADVENTURE</p>' +
       '<h1>Explore the <em>alphabet!</em></h1><p>Follow the path. Tap a flower to learn.</p></div>' +
       '<img src="assets/kids46/pip.svg" alt="Pip cheering you on" loading="lazy"></div>' +
-      '<div class="garden-world"><img class="garden-world-art" src="assets/kids46/garden-path.svg" alt="" loading="lazy">' +
+      '<div class="garden-world"><img class="garden-world-art" src="assets/kids46/garden-path.svg" alt="">' +
       '<div class="garden-wood-sign"><strong>Letter Garden</strong><small>A little journey from A to Z</small></div>' +
       nodes.join("") + '</div></main>';
   }
@@ -281,8 +281,8 @@
       '<div class="sticker-shelves">' + D.letters.map(function (letter,index) {
         var isEarned = D.done(progress,letter), item = D.words[letter][0];
         return '<div class="shelf-slot ' + (isEarned ? "collected" : "not-yet") + '" aria-label="Letter ' + letter + (isEarned ? ' sticker earned' : ' sticker not yet earned') + '">' +
-          '<span class="sticker-illustration" role="img" aria-label="' + safe(item.text) + '">' + (isEarned ? item.picture : '✦') + '</span>' +
-          '<span class="sticker-letter">' + letter + '</span></div>';
+          '<span class="sticker-illustration" role="img" aria-label="' + safe(item.text) + '">' + item.picture + '</span>' +
+          '<span class="sticker-letter">' + letter + '</span>' + (isEarned ? '' : '<span class="sticker-lock">' + icon('lock',12) + '</span>') + '</div>';
       }).join("") + '</div></div>' +
       '<div class="rewards-celebration"><h2>' + (earned.length ? "You’re amazing!" : "Your adventure begins!") + '</h2><p>' +
       earned.length + ' of 26 letter stickers collected' + (groups.length ? ' · ' + groups.length + ' garden stars!' : '') +
