@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="title">
+<title id="title">A sunny storybook garden with flowers, a tree and butterflies</title>
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#D7F0F4"/><stop offset="1" stop-color="#EDF9EC"/></linearGradient>
+ <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#A8DFB1"/><stop offset="1" stop-color="#72B990"/></linearGradient>
+</defs>
+<rect width="600" height="420" fill="url(#sky)"/>
+<circle cx="482" cy="75" r="51" fill="#FFE5A2"/>
+<circle cx="475" cy="68" r="65" fill="#FFF6D8" opacity=".46"/>
+<path d="M56 81c-17-24-4-43 23-39 11-25 43-25 55 0 29-5 41 13 35 36Z" fill="#FFFDF6" opacity=".91"/>
+<path d="M315 107c-14-21-1-35 22-33 9-23 33-20 45 0 25-3 31 13 27 31Z" fill="#FFFDF6" opacity=".75"/>
+<path d="M-35 268Q125 164 282 257T626 240v195H-35Z" fill="#BFE6BC"/>
+<path d="M-35 332Q140 217 309 306T626 287v148H-35Z" fill="url(#hill)"/>
+<path d="M-30 382Q165 324 335 381T635 362v73H-30Z" fill="#82BE93"/>
+<path d="M140 320c-14-49-18-95-7-154h30c-2 56 7 103 20 154Z" fill="#AB7957"/>
+<path d="M138 267c-9-41-19-57-33-75" stroke="#AB7957" stroke-width="14" fill="none" stroke-linecap="round"/>
+<path d="M159 243c10-45 34-63 52-76" stroke="#AB7957" stroke-width="12" fill="none" stroke-linecap="round"/>
+<g fill="#68B28A" stroke="#4A946D" stroke-width="5">
+ <circle cx="116" cy="155" r="48"/><circle cx="171" cy="132" r="56"/><circle cx="219" cy="168" r="46"/>
+ <circle cx="153" cy="188" r="57"/><circle cx="209" cy="207" r="46"/>
+</g>
+<g fill="#8FCEA1"><ellipse cx="112" cy="116" rx="13" ry="9"/><ellipse cx="185" cy="106" rx="12" ry="7"/><ellipse cx="245" cy="186" rx="11" ry="6"/><ellipse cx="172" cy="225" rx="16" ry="9"/></g>
+<g fill="#EB9670"><circle cx="194" cy="179" r="8"/><circle cx="126" cy="211" r="8"/><circle cx="211" cy="128" r="8"/></g>
+<g stroke="#467C62" stroke-width="5" stroke-linecap="round">
+ <path d="M369 338v-48M422 364v-66M511 346v-52M70 365v-39M559 378v-44"/>
+</g>
+<g fill="#FDF6C7" stroke="#F7E7AB" stroke-width="3">
+ <circle cx="369" cy="279" r="12"/><circle cx="422" cy="285" r="12"/><circle cx="511" cy="283" r="12"/><circle cx="70" cy="315" r="11"/><circle cx="559" cy="320" r="12"/>
+</g>
+<g fill="#F7A3A0"><ellipse cx="369" cy="265" rx="8" ry="12"/><ellipse cx="369" cy="293" rx="8" ry="12"/><ellipse cx="353" cy="279" rx="12" ry="8"/><ellipse cx="385" cy="279" rx="12" ry="8"/>
+<ellipse cx="511" cy="269" rx="8" ry="12"/><ellipse cx="511" cy="296" rx="8" ry="12"/><ellipse cx="496" cy="283" rx="12" ry="8"/><ellipse cx="525" cy="283" rx="12" ry="8"/></g>
+<g fill="#FFE18F"><ellipse cx="422" cy="272" rx="8" ry="12"/><ellipse cx="422" cy="300" rx="8" ry="12"/><ellipse cx="407" cy="285" rx="12" ry="8"/><ellipse cx="437" cy="285" rx="12" ry="8"/></g>
+<g fill="#FFF5B9"><ellipse cx="70" cy="302" rx="8" ry="11"/><ellipse cx="70" cy="327" rx="8" ry="11"/><ellipse cx="56" cy="315" rx="11" ry="8"/><ellipse cx="84" cy="315" rx="11" ry="8"/>
+<ellipse cx="559" cy="305" rx="8" ry="11"/><ellipse cx="559" cy="335" rx="8" ry="11"/><ellipse cx="545" cy="320" rx="11" ry="8"/><ellipse cx="573" cy="320" rx="11" ry="8"/></g>
+<g fill="#B27855"><circle cx="369" cy="279" r="6"/><circle cx="422" cy="285" r="6"/><circle cx="511" cy="283" r="6"/><circle cx="70" cy="315" r="5"/><circle cx="559" cy="320" r="6"/></g>
+<g transform="translate(323 151) rotate(-9)">
+ <path d="M0 0c-45-35-53 22-11 26-34 36 18 57 25 12 5 43 55 12 23-12 43-10 19-56-17-26Z" fill="#F9A9A0" stroke="#BB7979" stroke-width="4"/>
+ <path d="M12-3q13 23 8 48" fill="none" stroke="#9C5D61" stroke-width="5" stroke-linecap="round"/>
+ <path d="M14-5q-10-25-22-24M17-5q10-22 25-19" fill="none" stroke="#9C5D61" stroke-width="3" stroke-linecap="round"/>
+</g>
+<g transform="translate(465 215) rotate(13)">
+ <path d="M0 0c-29-25-35 11-8 17-24 23 9 42 16 9 5 32 39 10 15-9 31-9 11-41-11-17Z" fill="#B8A1E6" stroke="#8C78BD" stroke-width="3"/>
+ <path d="M9-2q11 18 6 33" fill="none" stroke="#7667A6" stroke-width="4" stroke-linecap="round"/>
+</g>
+<path d="M309 388q10-16 21 0M337 404q10-14 21 0M244 351q10-14 21 0" stroke="#4E996C" stroke-width="4" fill="none" stroke-linecap="round"/>
+</svg>
