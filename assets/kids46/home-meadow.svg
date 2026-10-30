@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 660" role="img" aria-label="Sunlit garden with a cozy cottage and flowers"><defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#90D8F6"/><stop offset=".78" stop-color="#EAF9F0"/></linearGradient><linearGradient id="hill" x2="0" y2="1"><stop stop-color="#ABD88B"/><stop offset="1" stop-color="#61B67C"/></linearGradient></defs>
+<rect width="650" height="660" fill="url(#sky)"/><circle cx="508" cy="104" r="54" fill="#FFF3A7"/>
+<g fill="#FFFDF5"><ellipse cx="110" cy="101" rx="76" ry="25"/><ellipse cx="158" cy="82" rx="45" ry="31"/><ellipse cx="389" cy="156" rx="67" ry="23"/></g>
+<path d="M0 312q151-90 302-10t348-35v393H0Z" fill="#C0E3B3"/><path d="M0 387q170-77 338-2t312-50v325H0Z" fill="url(#hill)"/>
+<g transform="translate(444 206)"><path d="M4 151V66h118v85Z" fill="#F6E1BA" stroke="#D9A17C" stroke-width="6"/><path d="M-23 69 66-12l86 81Z" fill="#E78C67" stroke="#AA6049" stroke-width="7" stroke-linejoin="round"/><path d="M48 151V98q18-22 35 0v53" fill="#AD7758"/><circle cx="73" cy="124" r="4" fill="#FFF2C9"/><rect x="17" y="88" width="27" height="29" fill="#8FCBE0" stroke="#AC7959" stroke-width="5"/><rect x="92" y="88" width="27" height="29" fill="#8FCBE0" stroke="#AC7959" stroke-width="5"/></g>
+<path d="M347 360h120" stroke="#FCF5E4" stroke-width="8" stroke-dasharray="7 18"/><path d="M0 443q175-55 340 5" fill="none" stroke="#D7EAB3" stroke-width="55"/>
+<g fill="#478F62"><ellipse cx="7" cy="284" rx="86" ry="117"/><ellipse cx="65" cy="228" rx="76" ry="104"/><ellipse cx="635" cy="310" rx="77" ry="122"/></g><g fill="#7BC67D"><ellipse cx="44" cy="284" rx="55" ry="79"/><ellipse cx="571" cy="292" rx="49" ry="72"/></g>
+<path d="M0 590q145-109 307 9t343-55v116H0Z" fill="#48A66B"/>
+<g stroke="#428B59" stroke-width="6" stroke-linecap="round"><path d="M49 620v-56M151 609v-72M293 622v-57M418 601v-64M547 626v-75"/></g>
+<g fill="#F79BAA"><circle cx="49" cy="551" r="15"/><circle cx="32" cy="565" r="15"/><circle cx="66" cy="565" r="15"/><circle cx="49" cy="582" r="15"/><circle cx="294" cy="547" r="15"/><circle cx="276" cy="562" r="15"/><circle cx="312" cy="562" r="15"/><circle cx="294" cy="580" r="15"/><circle cx="547" cy="537" r="16"/><circle cx="529" cy="553" r="16"/><circle cx="565" cy="553" r="16"/><circle cx="547" cy="569" r="16"/></g>
+<g fill="#FFF2A5"><circle cx="49" cy="565" r="10"/><circle cx="294" cy="563" r="10"/><circle cx="547" cy="553" r="10"/></g>
+<g transform="translate(289 235) rotate(-22)"><path d="M0 0q-48-47-34 0 10 23 34 15-2 39 18 26 18-16 4-28 29 24 42 0 11-38-35-18Z" fill="#FFA994" stroke="#BE796C" stroke-width="4"/><path d="M14-9q10 24 5 45" stroke="#A96B64" stroke-width="4" fill="none"/></g>
+<g fill="#FCF7D5"><circle cx="268" cy="482" r="6"/><circle cx="327" cy="518" r="4"/><circle cx="518" cy="446" r="6"/></g>
+</svg>

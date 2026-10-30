@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 790" role="img" aria-label="A gentle winding path">
+<defs><linearGradient id="sand" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe9bf"/><stop offset=".5" stop-color="#f8d7a3"/><stop offset="1" stop-color="#e8be8d"/></linearGradient><filter id="soft" x="-40%" y="-10%" width="180%" height="120%"><feGaussianBlur stdDeviation="5"/></filter></defs>
+<path d="M156-60C70 80 290 138 196 249 99 355 268 396 172 509 78 629 295 689 184 828" fill="none" stroke="#8d724f" stroke-opacity=".2" stroke-width="112" stroke-linecap="round" filter="url(#soft)"/>
+<path d="M156-60C70 80 290 138 196 249 99 355 268 396 172 509 78 629 295 689 184 828" fill="none" stroke="#c7a47a" stroke-opacity=".72" stroke-width="91" stroke-linecap="round"/>
+<path d="M156-60C70 80 290 138 196 249 99 355 268 396 172 509 78 629 295 689 184 828" fill="none" stroke="url(#sand)" stroke-width="83" stroke-linecap="round"/>
+<path d="M156-60C70 80 290 138 196 249 99 355 268 396 172 509 78 629 295 689 184 828" fill="none" stroke="#fff3d6" stroke-opacity=".72" stroke-width="3" stroke-dasharray="3 23" stroke-linecap="round"/>
+<g fill="#d5ad75" opacity=".32"><ellipse cx="118" cy="64" rx="4" ry="2"/><ellipse cx="192" cy="167" rx="6" ry="3"/><ellipse cx="200" cy="362" rx="7" ry="2"/><ellipse cx="125" cy="545" rx="5" ry="3"/><ellipse cx="190" cy="722" rx="6" ry="3"/></g>
+<g fill="#fff1ce" opacity=".67"><circle cx="198" cy="75" r="4"/><circle cx="126" cy="274" r="3"/><circle cx="260" cy="452" r="3"/><circle cx="174" cy="646" r="4"/></g>
+</svg>

@@ -1,0 +1,98 @@
+/* Little Learners • Woodland artwork integration
+   Kitbitz CC0 individual SVG sprites; scene components and gameplay are real DOM.
+   Maintains 320px Android support, local assets and reduced-motion preferences. */
+:root{--wood:#a86c48;--cocoa:#694733;--grass:#4a9064;--cream:#fff9ea}
+.world-sprite,.garden-deco{position:absolute;pointer-events:none;user-select:none;-webkit-user-select:none;z-index:1}
+.storybook-hero .hero-world{isolation:isolate}
+.storybook-hero .world-sprite{filter:drop-shadow(0 5px 2px rgba(65,88,46,.12))}
+.storybook-hero .hero-tree{width:53%;height:62%;object-fit:contain;right:-23%;top:5%;opacity:.9}
+.storybook-hero .hero-bush{width:42%;height:27%;object-fit:contain;right:-10%;bottom:-8%;z-index:2}
+.storybook-hero .hero-flower{width:65px;height:85px;right:19%;bottom:10%;z-index:2;transform:rotate(-17deg)}
+.storybook-hero .hero-fox{z-index:4;left:-3%;width:54%;bottom:13px}
+.storybook-hero .adventure-sign{z-index:5}
+.home-page .activity{transition:transform .18s ease,box-shadow .18s ease}
+.home-page .activity:active{transform:translateY(3px);box-shadow:0 2px 0 #e2c59e}
+.home-page .activity-letter{border-color:#fff2d9}
+.home-page .activity-picture{border-color:#eaf9ec}
+.home-page .activity-story{border-color:#f7eafa}
+/* The map now consists of individual CHAPTER SCENES, not one giant stretched picture. */
+.garden-page{background:linear-gradient(180deg,#d8f2e7,#f7f6df)}
+.garden-world{position:relative;height:auto!important;overflow:visible!important;display:flex;flex-direction:column;gap:18px;
+  background:none!important;border:0!important;box-shadow:none!important;margin:0!important;padding:0 4px 32px!important;border-radius:0}
+.garden-world>.garden-wood-sign{position:relative;top:auto;left:auto;transform:rotate(-2deg);margin:6px auto 1px;width:80%;flex:0 0 auto;z-index:5}
+.garden-chapter{position:relative;isolation:isolate;border:4px solid #fff8dc;border-radius:27px;overflow:hidden;
+  box-shadow:0 7px 0 #a8caa5,0 11px 22px #597d5a30;background:linear-gradient(180deg,#a3dffa 0%,#bdeab9 44%,#7ac78d 100%)}
+.garden-chapter .chapter-heading{position:absolute;top:14px;left:14px;z-index:7;display:flex;align-items:center;gap:9px;
+  background:#fffaf2ec;border:3px solid #fff;border-radius:18px;padding:7px 14px 7px 7px;
+  box-shadow:0 4px 0 #94b69a;max-width:calc(100% - 27px)}
+.garden-chapter .chapter-number{display:grid;place-items:center;height:35px;width:35px;border-radius:12px;background:#f7c978;color:#754931;font-weight:950;font-size:20px}
+.garden-chapter .chapter-heading strong{display:block;font-size:16px;line-height:1;color:#4b593b;white-space:nowrap}
+.garden-chapter .chapter-heading small{display:block;font-size:11px;font-weight:800;color:#60735a;margin-top:4px}
+.chapter-landscape{position:relative;height:787px;width:100%;isolation:isolate;background:
+  radial-gradient(circle at 81% 16%,#fff5b9 0 32px,transparent 35px),
+  linear-gradient(180deg,#a0dcf2 0%,#d3f6d4 35%,#81c78e 100%)}
+.chapter-short .chapter-landscape{height:288px}
+.chapter-landscape .garden-world-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:center center;z-index:0;opacity:.46;mix-blend-mode:normal;pointer-events:none}
+.chapter-landscape:before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,#b9eaf090 0%,#c7ebb023 47%,#4a9d5c33 100%)}
+.chapter-landscape:after{content:"";position:absolute;bottom:-20px;left:-15%;width:130%;height:90px;border-radius:50%;
+ background:#519c68;z-index:1;pointer-events:none}
+.chapter-landscape .chapter-path{position:absolute;z-index:2;left:50%;top:95px;bottom:14px;width:27%;transform:translateX(-50%);
+  background:linear-gradient(180deg,#efd3a0,#fce7bd,#d7ae85);border-left:5px solid #e6bb81;border-right:5px solid #dcb280;
+  clip-path:polygon(15% 0,90% 0,70% 19%,94% 38%,55% 55%,72% 75%,23% 100%,0 100%,33% 75%,13% 55%,45% 37%,17% 19%);
+  opacity:.76}
+.garden-chapter .garden-deco{z-index:3;filter:drop-shadow(0 5px 4px #235c4230)}
+.garden-chapter .deco-tree{width:140px;height:245px;right:-38px;top:96px}
+.garden-chapter .deco-bush-left{width:113px;height:100px;left:-30px;top:198px}
+.garden-chapter .deco-bush-right{width:140px;height:128px;right:-45px;top:475px}
+.garden-chapter .deco-flower-one{width:62px;height:90px;left:4px;bottom:78px}
+.garden-chapter .deco-flower-two{width:55px;height:75px;right:1px;top:330px}
+.garden-chapter .deco-mushroom{width:63px;height:70px;right:2%;bottom:42px}
+.garden-chapter:nth-child(odd) .deco-tree{right:auto;left:-45px}
+.garden-chapter:nth-child(odd) .deco-bush-left{left:auto;right:-20px}
+.garden-chapter:nth-child(odd) .deco-bush-right{right:auto;left:-30px}
+.garden-chapter:nth-child(3n) .deco-flower-two{top:220px}
+.garden-chapter .garden-flower{z-index:5}
+.garden-chapter .garden-gate{z-index:6;max-width:calc(100% - 20px);white-space:normal}
+.garden-chapter .garden-flower.current .flower-face{outline:3px solid #fffbd2;outline-offset:5px}
+.garden-chapter .garden-flower:disabled{opacity:.7}
+.garden-chapter .garden-flower:active:not(:disabled){transform:translateX(-50%) scale(.94)}
+.garden-chapter .flower-face{box-shadow:0 3px 0 #bd824c,0 7px 10px #3d613e30}
+.garden-chapter .garden-gate{left:50%}
+.chapter-short .deco-bush-right,.chapter-short .deco-mushroom{display:none}
+.chapter-short .garden-flower{top:137px!important;left:51%!important}
+.chapter-short .chapter-path{bottom:0;top:125px}
+/* Kitbitz food and flora live independently from lesson content. */
+.picture-stage.has-kit-art{background:radial-gradient(circle at 70% 20%,#fff5bd 0 33px,transparent 34px),
+  linear-gradient(180deg,#bce8e7,#e4f3cb 80%,#a9d28c 81%)!important}
+.picture-stage.has-kit-art .vocab-art{width:64%!important;height:82%!important;object-fit:contain!important;z-index:2}
+.picture-stage.has-kit-art .picture-grass{display:block!important}
+.sticker-illustration img{display:block;width:58px;height:53px;object-fit:contain;margin:auto}
+.shelf-slot.not-yet .sticker-illustration img{filter:grayscale(.65);opacity:.55}
+.rewards-celebration{position:relative;isolation:isolate;overflow:hidden}
+.rewards-celebration:before{content:"";position:absolute;left:-17px;bottom:4px;width:86px;height:85px;
+  background:url("assets/kits/nature/flower-pink.svg") center/contain no-repeat;opacity:.9;pointer-events:none}
+.rewards-celebration:after{content:"";position:absolute;right:-28px;bottom:3px;width:118px;height:90px;
+  background:url("assets/kits/nature/bush.svg") center/contain no-repeat;opacity:.8;pointer-events:none}
+.rewards-celebration>*{position:relative;z-index:1}
+@media(max-width:360px){
+ .storybook-hero .hero-tree{right:-28%;width:55%}
+ .storybook-hero .hero-bush{width:46%;right:-15%}
+ .storybook-hero .hero-flower{width:52px;right:16%}
+ .garden-chapter .deco-tree{width:108px}
+ .garden-chapter .deco-bush-right{width:105px}
+ .garden-chapter .deco-bush-left{width:90px}
+ .garden-chapter .garden-flower{width:96px;height:104px}
+}
+@media(prefers-reduced-motion:no-preference){
+ .storybook-hero .hero-flower{animation:kit-sway 3.8s ease-in-out infinite;transform-origin:50% 100%}
+ .garden-chapter .deco-flower-one{animation:kit-sway 4.2s ease-in-out infinite;transform-origin:center bottom}
+ .garden-chapter .garden-flower.current{animation:kit-sparkle 2.8s ease-in-out infinite}
+}
+@keyframes kit-sway{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(5deg)}}
+@keyframes kit-sparkle{0%,100%{filter:drop-shadow(0 8px 5px #385b3e63)}50%{filter:drop-shadow(0 3px 12px #fff6bb)}}
+body.reduce-motion .world-sprite,body.reduce-motion .garden-deco,body.reduce-motion .garden-flower{animation:none!important}
+
+/* Vector winding woodland path replaces the geometric strip; no interactive text in art. */
+.chapter-landscape .chapter-path {clip-path:none!important;position:absolute;inset:0!important;left:0!important;top:0!important;bottom:0!important;right:0!important;width:100%!important;height:100%!important;transform:none!important;border:0!important;opacity:.83!important;background:url("assets/kids46/winding-path.svg") center/100% 100% no-repeat!important;pointer-events:none;}
