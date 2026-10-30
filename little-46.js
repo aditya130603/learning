@@ -244,36 +244,36 @@
       btn("Say it again", "say", "btn-secondary btn-grow", "volume"), state.word);
   }
   function renderSpell() {
-    var item=word(), part=state.spellParts[state.partIndex];
-    var chosen=state.selected.map(function(id){return state.tiles.filter(function(tile){return tile.id===id;})[0];});
-    var slots=part.split("").map(function(_,index){
-      return '<span class="letter-slot '+(chosen[index]?"filled":"")+'" aria-label="'+(chosen[index]?"Position "+(index+1)+": "+chosen[index].ch:"Empty position "+(index+1))+'">'+
-        (chosen[index]?chosen[index].ch:"")+'</span>';
-    }).join("");
-    var remaining=state.tiles.map(function(tile){
-      var used=state.selected.indexOf(tile.id)>=0;
-      return '<button class="spell-tile" data-action="tile" data-tile="'+tile.id+'" '+
-        (used?'disabled aria-label="Used letter '+tile.ch+'"':'aria-label="Choose letter '+tile.ch+'"')+'>'+tile.ch+'</button>';
-    }).join("");
-    var partsLabel=state.spellParts.length>1 ? 'Part '+(state.partIndex+1)+' of '+state.spellParts.length : 'Listen and try';
-    var accomplished=state.completedParts.length ?
-      '<div class="spell-done">You spelled '+state.completedParts.map(function(x){return '<span>'+safe(x)+'</span>';}).join('')+'</div>' : '';
-    return lessonShell('Spell the <em>word!</em>', "Look, listen, then choose the letters.",
-      '<div class="spelling-board">' +
-      '<div class="spell-scene">' +
-      '<div class="spell-illustration">'+pictureFrame(item,"compact")+'</div>' +
-      '<div class="spell-audio-panel"><span class="spell-step-chip">'+safe(partsLabel)+'</span>' +
-      '<button data-action="say" class="spell-listen" aria-label="Hear the word again">'+icon("volume",25)+'<span>Listen</span></button>' +
-      '<span class="spell-micro-tip">Tap to hear!</span></div></div>' +
-      accomplished +
-      '<div class="spell-answer-section"><div class="spell-answer-label">Make the word</div><div class="spell-slots" role="group" aria-label="Your spelling answer">'+slots+'</div></div>'+
-      '<div class="spell-bank-section"><div class="spell-bank-title">Choose the letters <span>Some are extra</span></div>' +
-      '<div class="spell-tiles" role="group" aria-label="Mixed-up letters">'+remaining+'</div></div>' +
-      (state.hint?'<p class="spell-hint-line" role="status">First letter: <strong>'+safe(part[0])+'</strong></p>':'') +
-      '</div>',
-      '<button class="spell-action" data-action="undo" '+(state.selected.length?'':'disabled')+'>'+icon("back",19)+' Undo</button>'+
-      '<button class="spell-action" data-action="mix">'+icon("replay",19)+' Mix</button>'+
-      '<button class="spell-action spell-hint-action" data-action="hint">'+icon("spark",19)+' Hint</button>',
+    var item=word(),part=state.spellParts[state.partIndex];
+    var chosen=state.selected.map(function(id){return state.tiles.filter(function(t){return t.id===id;})[0];});
+    var slots=part.split('').map(function(_,i){
+      return '<span class="letter-slot '+(chosen[i]?'filled':'')+'" aria-label="'+(chosen[i]?'Position '+(i+1)+': '+chosen[i].ch:'Empty letter position '+(i+1))+'">'+(chosen[i]?chosen[i].ch:'')+'</span>';
+    }).join('');
+    var tiles=state.tiles.map(function(t){
+      var used=state.selected.indexOf(t.id)>=0;
+      return '<button class="spell-tile" data-action="tile" data-tile="'+t.id+'" '+(used?'disabled aria-label="Used letter '+t.ch+'"':'aria-label="Choose letter '+t.ch+'"')+'>'+t.ch+'</button>';
+    }).join('');
+    var partLabel=state.spellParts.length>1 ? 'Part '+(state.partIndex+1)+' of '+state.spellParts.length : 'Picture spelling';
+    var completed=state.completedParts.length?'<div class="spell-done" role="status">'+state.completedParts.map(function(x){return '<span>'+safe(x)+'</span>';}).join('')+' <span>Great start!</span></div>':'';
+    return lessonShell('Can you <em>spell it?</em>', 'Listen carefully. Find the right letters.',
+      '<section class="spell-world" aria-label="Picture of '+safe(item.text)+'">'+
+        '<img class="spell-leaf leaf-left" src="assets/kits/nature/bush.svg" alt="" aria-hidden="true">'+
+        '<img class="spell-leaf leaf-right" src="assets/kits/nature/fern.svg" alt="" aria-hidden="true">'+
+        '<div class="spell-hero-art">'+pictureFrame(item,'compact')+'</div>'+
+        '<div class="spell-mentor">'+
+        '<img src="assets/kids46/pip.svg" alt="Pip the fox" class="spell-mentor-fox"></div>'+
+      '</section>'+
+      '<button class="spell-listen" data-action="say" aria-label="Hear the word '+safe(item.text)+' again">'+icon('volume',21)+' <span>Hear the word</span></button>'+
+      completed+
+      '<section class="spell-build" aria-label="Build your answer"><div class="spell-task-head"><strong>Build the word</strong><span class="spell-part-label">'+safe(partLabel)+'</span></div>'+
+        '<div class="spell-slots" role="group" aria-label="Word spelling answer">'+slots+'</div>'+
+      '</section>'+
+      '<section class="spell-picker" aria-label="Letter choices"><div class="spell-bank-title"><strong>Choose your letters</strong><span>Extra letters included</span></div>'+
+      '<div class="spell-tiles" role="group" aria-label="Shuffled letter choices">'+tiles+'</div></section>'+
+      (state.hint?'<p class="spell-hint-line" role="status">Pip’s hint: start with <strong>'+safe(part[0])+'</strong>.</p>':'') ,
+      '<button class="spell-action" data-action="undo" '+(state.selected.length?'':'disabled')+'>'+icon('back',18)+'<span>Undo</span></button>'+
+      '<button class="spell-action" data-action="mix">'+icon('replay',18)+'<span>Mix</span></button>'+
+      '<button class="spell-action spell-hint-action" data-action="hint">'+icon('spark',18)+'<span>Hint</span></button>',
       state.word);
   }
   function renderComplete() {
