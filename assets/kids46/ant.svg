@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 420"><defs><linearGradient id="a" x2="0" y2="1"><stop stop-color="#A4DFF5"/><stop offset="1" stop-color="#E1F7DE"/></linearGradient><radialGradient id="b"><stop stop-color="#727A8D"/><stop offset="1" stop-color="#353A4F"/></radialGradient></defs>
+<rect width="560" height="420" fill="url(#a)"/><circle cx="469" cy="67" r="39" fill="#FFF4AD"/><g fill="#FFF" opacity=".84"><ellipse cx="119" cy="77" rx="65" ry="21"/><ellipse cx="155" cy="55" rx="44" ry="30"/><ellipse cx="403" cy="110" rx="70" ry="18"/></g>
+<path d="M0 343q145-66 284-12t276-31v120H0Z" fill="#A5DB98"/><path d="M0 377q160-45 306 9t254-23v57H0Z" fill="#72B987"/>
+<path d="M0 336q26-149 122-121 29 96-122 121M446 341q0-150 105-177 43 125-105 177" fill="#65B870" stroke="#46975E" stroke-width="6"/>
+<g stroke="#36384B" stroke-width="12" stroke-linecap="round" fill="none"><path d="M241 246q-80 23-97 93M263 267q-28 40-26 93M337 260q56 22 66 84M350 224q75 17 103 76"/></g>
+<ellipse cx="371" cy="235" rx="95" ry="75" fill="url(#b)" stroke="#33384A" stroke-width="6"/><path d="M338 161q30 78 0 142M399 165q33 69 7 133" fill="none" stroke="#98A1AE" stroke-width="8" opacity=".3"/>
+<ellipse cx="297" cy="225" rx="61" ry="66" fill="url(#b)" stroke="#35394B" stroke-width="5"/>
+<circle cx="192" cy="204" r="91" fill="url(#b)" stroke="#35394B" stroke-width="7"/><path d="M160 132q-16-75-57-81M221 126q13-71 58-82" stroke="#35394B" stroke-width="9" stroke-linecap="round" fill="none"/><circle cx="102" cy="50" r="11" fill="#404252"/><circle cx="280" cy="43" r="11" fill="#404252"/>
+<ellipse cx="154" cy="189" rx="15" ry="22" fill="#202436"/><ellipse cx="218" cy="189" rx="15" ry="22" fill="#202436"/><ellipse cx="148" cy="181" rx="6" ry="9" fill="#FFF"/><ellipse cx="212" cy="181" rx="6" ry="9" fill="#FFF"/>
+<ellipse cx="122" cy="236" rx="20" ry="11" fill="#E8A0A9"/><ellipse cx="254" cy="233" rx="19" ry="11" fill="#E8A0A9"/><path d="M175 230q17 19 35 0" stroke="#FFF" stroke-width="6" stroke-linecap="round" fill="none"/>
+<g transform="translate(485 315)" fill="#FFF"><ellipse cy="-22" rx="12" ry="23"/><ellipse cy="22" rx="12" ry="23"/><ellipse cx="-22" rx="23" ry="12"/><ellipse cx="22" rx="23" ry="12"/></g><circle cx="485" cy="315" r="13" fill="#FFCE76"/>
+</svg>
