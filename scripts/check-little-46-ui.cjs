@@ -41,12 +41,18 @@ const server = http.createServer((req, res) => {
   console.log("UI: opening A lesson");
   await page.locator('[data-action="letter"][data-letter="A"]').click();
   assert.match(await page.locator(".play-content h1").innerText(), /ant/i);
+  const factBox=await page.locator(".fact-card").boundingBox();
+  const initialFooter=await page.locator(".play-footer").boundingBox();
+  assert.ok(initialFooter.y>=factBox.y+factBox.height-3,"Lesson CTA must not overlap the word explanation");
   await page.screenshot({ path:path.join(output,"03-word-intro.png"), fullPage:true });
   await page.locator('[data-action="look-next"]').click();
   await page.locator('[data-action="find-choice"][data-choice="A-0"]').click();
   assert.ok(await page.locator('[data-action="tile"]').count()>3,"The child must receive distractor letters as well as ANT");
   const firstBank=await page.locator('[data-action="tile"]').allTextContents();
   assert.notEqual(firstBank.slice(0,3).join(""),"ANT","Left-to-right tapping must not spell ANT");
+  const tilesBox=await page.locator(".spell-tiles").boundingBox();
+  const spellFooter=await page.locator(".play-footer").boundingBox();
+  assert.ok(spellFooter.y>=tilesBox.y+tilesBox.height-3,"Spelling footer must not cover the letter bank");
   await page.screenshot({ path:path.join(output,"04-tap-spelling.png"), fullPage:true });
   for(let n=0;n<3;n++) await page.locator('[data-action="tile"]:not([disabled])').first().click();
   assert.ok(await page.locator(".spell-tiles").count(),"Wrong left-to-right selection must remain in the spelling activity");
