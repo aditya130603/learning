@@ -9,7 +9,7 @@ on:
       - 'manifest.webmanifest'
       - 'service-worker.js'
       - 'assets/icon*'
-      - 'assets/scenes/children-garden.webp'
+      - 'assets/scenes/little-garden.svg'
       - 'tests/little-46.test.js'
       - 'scripts/package-little-46.sh'
       - 'scripts/check-little-46-ui.cjs'
