@@ -253,3 +253,30 @@ border:4px solid #bd8856;border-radius:15px;background:linear-gradient(160deg,#f
  .step-spell .spell-tiles{gap:7px}
  .step-spell .spell-tile{height:53px}
 }
+
+
+/* Layout audit: a sticky action bar previously covered word facts and letter choices.
+   Keep children's lesson content in normal document flow. Never overlay an answer. */
+.play-page .play-footer{position:relative!important;bottom:auto!important;z-index:1;
+  margin-top:16px!important;padding:10px 0 max(14px,env(safe-area-inset-bottom))!important;
+  background:transparent!important;flex-shrink:0}
+.play-page .play-content{flex:0 0 auto;min-height:0}
+.play-page{display:flex;flex-direction:column;min-height:calc(100vh - 76px);min-height:calc(100dvh - 76px);
+  height:auto!important;overflow:visible;padding-bottom:25px}
+.step-spell .spell-bank-title{margin:12px 0 10px}
+.step-spell .spell-tiles{position:relative;z-index:1;margin:0 auto 8px}
+.step-spell .spell-coach-note{margin:8px 0 0;font-size:11px}
+.step-spell .play-footer{margin-top:14px!important}
+@media(max-height:740px){
+ .step-spell .play-content>h1{margin:0 0 4px;font-size:27px}
+ .step-spell .play-subtitle{margin:0 auto 7px;font-size:12px}
+ .step-spell .spell-challenge-head{padding:7px 10px;margin:3px 0 8px}
+ .step-spell .spell-preview .picture-stage{height:100px}
+ .step-spell .spell-listen{min-height:44px}
+ .step-spell .spell-hint-line{margin-top:6px}
+ .step-spell .spell-slots{margin-bottom:9px}
+ .step-spell .spell-bank-title{margin:7px 0}
+ .step-spell .spell-tile{height:50px}
+ .step-spell .play-footer{margin-top:6px!important}
+ .step-look .play-footer{margin-top:8px!important}
+}
