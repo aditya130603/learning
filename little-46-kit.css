@@ -93,3 +93,6 @@
 @keyframes kit-sway{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(5deg)}}
 @keyframes kit-sparkle{0%,100%{filter:drop-shadow(0 8px 5px #385b3e63)}50%{filter:drop-shadow(0 3px 12px #fff6bb)}}
 body.reduce-motion .world-sprite,body.reduce-motion .garden-deco,body.reduce-motion .garden-flower{animation:none!important}
+
+/* Vector winding woodland path replaces the geometric strip; no interactive text in art. */
+.chapter-landscape .chapter-path {clip-path:none!important;position:absolute;inset:0!important;left:0!important;top:0!important;bottom:0!important;right:0!important;width:100%!important;height:100%!important;transform:none!important;border:0!important;opacity:.83!important;background:url("assets/kids46/winding-path.svg") center/100% 100% no-repeat!important;pointer-events:none;}
