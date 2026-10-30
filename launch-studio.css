@@ -44,3 +44,5 @@ body.launch-ui .ls-nav{background:#faf9f6}
 /* Preserve square artwork proportions inside shorter cards; crop, never squash. */
 .ls-art::before{inset:auto;left:0;top:50%;width:100%;height:auto;aspect-ratio:1;transform:translateY(-50%) scale(1.07)}
 @media(max-width:700px){.ls-panel .ls-art{height:min(34vh,300px);aspect-ratio:auto}.ls-steps{margin-bottom:16px}.ls-panel figcaption{padding:14px 16px}.ls-word-title h1{font-size:30px!important}}
+
+.ls-action-art{position:relative;overflow:hidden;isolation:isolate}.ls-action-art::before{content:"";position:absolute;inset:0;background:inherit;transform:scale(1.16)}
