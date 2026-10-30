@@ -198,6 +198,13 @@ border:4px solid #bd8856;border-radius:15px;background:linear-gradient(160deg,#f
 
 
 
+/* Shared lessons: actions belong AFTER the activity, never across its content. */
+.play-page {height:auto!important;overflow:visible;display:flex;flex-direction:column;}
+.play-page .play-content {flex:0 0 auto;min-height:0;}
+.play-page .play-footer {position:static!important;bottom:auto!important;z-index:1;flex-shrink:0;
+  margin-top:16px;padding:10px 0 max(14px,env(safe-area-inset-bottom));
+  background:transparent!important;}
+
 /* AGE 4–6 • SPELLING ACTIVITY
    Real illustrated picture + interactive letter bank.
    One task, one screen; no overlays and no text/image controls baked into art. */
