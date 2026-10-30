@@ -9,7 +9,7 @@ case "$dest" in
 esac
 rm -rf "$dest"
 mkdir -p "$dest/assets/scenes" "$dest/assets/kids46"
-cp index.html little-46.css little-46-storybook.css little-46.js little-46-data.js service-worker.js manifest.webmanifest "$dest/"
+cp index.html little-46.css little-46-storybook.css little-46.js little-46-spelling.js little-46-data.js service-worker.js manifest.webmanifest "$dest/"
 cp assets/icon.svg assets/icon-192.png assets/icon-512.png "$dest/assets/"
 cp assets/scenes/little-garden.svg "$dest/assets/scenes/"
 cp assets/kids46/*.svg "$dest/assets/kids46/"
