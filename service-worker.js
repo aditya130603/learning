@@ -1,17 +1,23 @@
-const CACHE = 'word-mayhem-v20-illustrated-launch';
-const ASSETS = ['./launch-content.js', './launch-studio.js', './launch-studio.css', './assets/launch/actions.webp', './assets/launch/story-00.webp', './assets/launch/story-01.webp', './assets/launch/story-02.webp', './assets/launch/story-03.webp', './assets/launch/story-04.webp', './assets/launch/story-05.webp', './assets/launch/story-06.webp', './assets/launch/story-07.webp', './assets/launch/story-08.webp', './assets/launch/story-09.webp', './assets/launch/story-10.webp', './assets/launch/story-11.webp', './assets/launch/story-12.webp', './assets/launch/story-13.webp', './assets/launch/story-14.webp', './assets/launch/story-15.webp', './assets/launch/story-16.webp', './assets/launch/story-17.webp', './assets/launch/story-18.webp', './assets/launch/story-19.webp', './assets/launch/story-20.webp', './assets/launch/story-21.webp', './assets/launch/pictures-00.webp', './assets/launch/pictures-01.webp', './assets/launch/pictures-02.webp', './assets/launch/pictures-03.webp', './assets/launch/pictures-04.webp', './assets/launch/pictures-05.webp', './assets/launch/pictures-06.webp', './assets/launch/pictures-07.webp', './assets/launch/pictures-08.webp', './assets/launch/pictures-09.webp','./adult-experience.js','./adult-experience.css','./coach-learning.js','./assets/companions/mira.webp','./assets/companions/arjun.webp','./assets/companions/QWEN-LICENSE.txt','./profiles.js','./learning-core.js','./learning-content.js','./learning-scenes.js','./speaking-companion.js','./learning-upgrade.js','./learning-upgrade.css','./curated-memory-v13.js','./mnemonic-scenes-v13.js','./adult-placement-v13.js','./live-kids-v13.js','./learning-v13.css','./kids-journey-v10.js','./kids-journey-v10.css','./guided-v8.js','./word-facts-v9.js','./ux-v9.js','./ux-v9.css','./adult-100-data.js','./adult-roadmap-v8.js','./progression-v8.css','./assets/v8-scenes/renaissance.webp','./assets/v8-scenes/meticulous.webp','./assets/v8-scenes/ephemeral.webp','./assets/v8-scenes/cogent.webp','./assets/v8-scenes/mitigate.webp','./assets/v8-scenes/juxtapose.webp','./assets/v8-scenes/under-weather.webp','./assets/v8-scenes/break-ice.webp','./assets/v8-scenes/wedding.webp','./assets/v8-scenes/frog.webp','./assets/v8-scenes/balloon.webp','./assets/v8-scenes/fox.webp','./','./index.html','./app.js','./words.js','./mission-content.js','./mayhem.js','./scene-art.js','./lexicon-data.js','./word-studio.js','./friend-challenge.js','./styles.css','./v3.css','./v5.css','./grammar-model.js','./grammar-context.js','./dictionary-study-v7.js','./dictionary-study-v7.css','./grammar-core.js','./adult-v5.js','./kids-v5.js','./kids-polish-v6.js','./mission-expansion-v6.js','./scene-pack-v6.js','./lexicon-v6.js','./lexicon-v6.css','./assets/scenes/word-mayhem-scenes-v6.webp','./manifest.webmanifest','./assets/icon.svg','./assets/icon-192.png','./assets/icon-512.png','./assets/scenes/renegade.webp','./assets/scenes/revival.webp','./assets/scenes/ephemeral.webp','./assets/scenes/world.webp','./assets/scenes/adult-lounge.webp','./assets/scenes/children-garden.webp','./assets/scenes/children-island.webp','./assets/scenes/children-space.webp','./assets/scenes/children-friends.webp','./assets/scenes/idiom-afloat.webp','./assets/scenes/kid-dog.webp','./assets/scenes/kids-quest.webp','./assets/scenes/kid-map.webp','./assets/scenes/city-light.webp','./assets/scenes/adult-mnemonic.webp'];
-self.addEventListener('install', event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
+/* Versioned atomic app-shell cache. Do not pre-cache old adult/dictionary files. */
+const CACHE = "little-learners-46-v1";
+const SHELL = [
+  "./", "./index.html", "./little-46.css", "./little-46-data.js", "./little-46.js",
+  "./manifest.webmanifest", "./assets/icon.svg", "./assets/icon-192.png",
+  "./assets/icon-512.png", "./assets/scenes/children-garden.webp"
+];
+self.addEventListener("install", function (event) {
+  event.waitUntil(caches.open(CACHE).then(function (cache) {
+    return cache.addAll(SHELL);
+  }).then(function () { return self.skipWaiting(); }));
 });
-self.addEventListener('activate', event=>{
-  event.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))),self.clients.claim()]));
+self.addEventListener("activate", function (event) {
+  event.waitUntil(caches.keys().then(function (names) {
+    return Promise.all(names.filter(function (key) { return key !== CACHE; }).map(function (key) { return caches.delete(key); }));
+  }).then(function () { return self.clients.claim(); }));
 });
-self.addEventListener('fetch', event=>{
-  if(event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
-  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-    if((event.request.url.endsWith('/grammar-context.bin') || /\/dictionary(?:-lessons)?\/[a-z]\.json$/.test(new URL(event.request.url).pathname)) && response.ok) {
-      const copy=response.clone();event.waitUntil(caches.open(CACHE).then(cache=>cache.put(event.request,copy)).catch(()=>{}));
-    }
-    return response;
-  })));
+self.addEventListener("fetch", function (event) {
+  if (event.request.method !== "GET" || new URL(event.request.url).origin !== self.location.origin) return;
+  event.respondWith(caches.match(event.request).then(function (cached) {
+    return cached || fetch(event.request);
+  }));
 });
