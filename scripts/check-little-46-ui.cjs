@@ -67,6 +67,22 @@ const server = http.createServer((req, res) => {
   await page.screenshot({ path:path.join(output,"08-home-small-320.png"), fullPage:true });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   assert.equal(overflow, false, "No horizontal scroll at 320px");
+  // The new storybook map and sticker shelf must be real accessible controls/content.
+  await page.locator('[data-action="garden"]').first().click();
+  assert.equal(await page.locator(".garden-flower").count(),26);
+  assert.equal(await page.locator('.garden-flower:not([disabled])').count(),1);
+  await page.screenshot({path:path.join(output,"09-garden-storybook-320.png"),fullPage:true});
+  await page.locator('[data-action="rewards"]').first().click();
+  assert.equal(await page.locator(".shelf-slot").count(),26);
+  assert.match(await page.locator(".rewards-celebration").innerText(),/0 of 26 letter stickers/i);
+  await page.screenshot({path:path.join(output,"10-sticker-storybook-320.png"),fullPage:true});
+  await page.locator('[data-action="home"]').first().click();
+  assert.equal(await page.locator(".hero-fox .buddy").count(),1);
+  const illustrationOk = await page.evaluate(() => {
+    const img=document.querySelector(".hero-fox img");
+    return img && img.complete && img.naturalWidth > 0;
+  });
+  assert.equal(illustrationOk,true,"The Pip illustration should load in offline package");
   assert.deepEqual(errors, [], "The site should have no browser exceptions");
   console.log("UI smoke checks passed; screenshots saved to", output);
   await browser.close();

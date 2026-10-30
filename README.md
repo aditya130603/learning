@@ -51,3 +51,7 @@ After merge to main, GitHub Pages publishes only the dist bundle. The Android bu
 **Important:** APK build success and headless browser checks do not guarantee compatibility with all Android 5/6 WebView engines. Real-phone installation, offline pronunciation and touch testing remain required. Progress is stored locally and disappears when app data is cleared.
 
 Design guide: design-system/little-learners-46/MASTER.md.
+
+## Storybook illustrated design (v2)
+
+The four primary screens now follow an illustrated woodland/garden art direction: original reusable SVG Pip fox, garden meadow, an illustrated alphabet path, a custom ant scene, functional flower-shaped letter stops, and a wooden sticker shelf whose slots accurately reflect earned progress. Styling is applied via `little-46-storybook.css` without replacing lesson logic. The reference concept is visual direction only: no non-interactive picture is substituted for buttons. All added SVGs are bundled offline inside the small Android build; other vocabulary words currently use their illustrated emoji.
