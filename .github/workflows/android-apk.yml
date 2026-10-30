@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check the 4-6 curriculum and unlock rules
-        run: node --test tests/little-46.test.js
+        run: node --test tests/little-46.test.js tests/little-46-spelling.test.js
       - name: Package tiny offline site
         run: bash scripts/package-little-46.sh dist
       - name: Save offline site for independent review
