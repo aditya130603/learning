@@ -85,6 +85,17 @@ jobs:
         run: python3 scripts/validate_tracks_v8.py --dictionary dictionary --output training/V8_COVERAGE_REPORT.json
       - name: Check learning logic
         run: node --test tests/*.test.js
+      - name: Check launch journeys in headless Chrome (no emulator)
+        run: |
+          npm install --prefix /tmp/wm-webcheck --no-save playwright@1.51.1
+          NODE_PATH=/tmp/wm-webcheck/node_modules UI_BROWSER=$(command -v google-chrome) node scripts/check-launch-ui.cjs
+      - name: Save launch screen checks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: launch-ui-screens
+          path: /tmp/launch-ui
+          if-no-files-found: ignore
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -101,6 +112,7 @@ jobs:
       - name: Bundle offline website and launcher icon
         run: |
           mkdir -p android/app/src/main/assets/assets android/app/src/main/res/drawable-nodpi
+          cp launch-content.js launch-studio.js launch-studio.css android/app/src/main/assets/
           cp index.html app.js words.js mission-content.js mayhem.js mnemonic-scenes-v13.js curated-memory-v13.js adult-placement-v13.js live-kids-v13.js learning-v13.css dictionary-study-v7.js dictionary-study-v7.css scene-art.js lexicon-data.js word-studio.js friend-challenge.js grammar-model.js grammar-context.js grammar-context.bin grammar-core.js adult-v5.js kids-v5.js kids-polish-v6.js guided-v8.js kids-journey-v10.js kids-journey-v10.css word-facts-v9.js ux-v9.js ux-v9.css adult-100-data.js adult-roadmap-v8.js progression-v8.css mission-expansion-v6.js scene-pack-v6.js lexicon-v6.js lexicon-v6.css styles.css v3.css v5.css service-worker.js manifest.webmanifest profiles.js learning-core.js learning-content.js learning-scenes.js speaking-companion.js learning-upgrade.js learning-upgrade.css adult-experience.js adult-experience.css coach-learning.js android/app/src/main/assets/
           cp -R assets/. android/app/src/main/assets/assets/
           mkdir -p android/app/src/main/assets/dictionary

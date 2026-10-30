@@ -1,0 +1,27 @@
+{
+  "4-6": {
+    "count": 200,
+    "distinct": 200,
+    "method": "Look, listen & say"
+  },
+  "7-9": {
+    "count": 200,
+    "distinct": 200,
+    "method": "Picture, spell & build"
+  },
+  "10-13": {
+    "count": 200,
+    "distinct": 200,
+    "method": "Predict, remember & explain"
+  },
+  "14-17": {
+    "count": 214,
+    "distinct": 214,
+    "method": "Notice, retrieve & express"
+  },
+  "18+": {
+    "count": 214,
+    "distinct": 214,
+    "method": "See it. Recall it. Use it."
+  }
+}

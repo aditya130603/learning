@@ -337,7 +337,7 @@ public final class MainActivity extends Activity {
             return;
         }
         webView.evaluateJavascript(
-            "(function(){var h=document.querySelector('.mobile-nav [data-nav=\"home\"]');" +
+            "(function(){if(window.WordMayhemBack)return window.WordMayhemBack();var h=document.querySelector('.mobile-nav [data-nav=\"home\"]');" +
             "if(!h)return false;if(h.classList.contains('active'))return false;" +
             "h.click();return true;})()",
             value -> { if (!"true".equals(value)) finish(); });
