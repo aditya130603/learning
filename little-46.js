@@ -101,6 +101,9 @@
     var guide = currentDescription(), count = D.countWords(progress);
     return topbar("", true) + '<main class="page home-page">' +
       '<section class="hero storybook-hero"><div class="hero-world"><div class="hero-heading"><p class="welcome-eyebrow">Welcome to your happy place!</p><h1>Hello, little<br><em>explorer!</em></h1></div>' +
+      '<img class="world-sprite hero-tree" src="assets/kits/nature/tree-puffy.svg" alt="" aria-hidden="true">' +
+      '<img class="world-sprite hero-bush" src="assets/kits/nature/bush-flowers.svg" alt="" aria-hidden="true">' +
+      '<img class="world-sprite hero-flower" src="assets/kits/nature/flower-coral.svg" alt="" aria-hidden="true">' +
       '<div class="hero-fox">' + fox() + '</div><div class="adventure-sign"><span class="sign-eyebrow">YOUR NEXT ADVENTURE</span><h2>' + safe(guide.heading) + '</h2>' +
       btn(guide.button, "resume", "btn-sign", "next") + '</div><span class="scene-spark scene-spark-one" aria-hidden="true">✦</span><span class="scene-spark scene-spark-two" aria-hidden="true">✿</span></div></section>' +
       '<div class="home-cheer">Little steps make <strong>big explorers!</strong> <span aria-hidden="true">✦</span></div>' +
@@ -112,45 +115,57 @@
       '</button></main>';
   }
   function renderGarden() {
-    var task = D.nextTask(progress);
-    var coords = [23,56,69,31,58,23,62,40,70,27,52,73,35,59,24,56,71,33,61,26,54,70,34,58,27,54];
-    var flowers = ["orange","yellow","purple","pink","blue"];
-    var nodes = [];
-    D.letters.forEach(function (letter, index) {
-      var open = D.unlocked(progress, letter), done = D.done(progress, letter);
-      var selected = task.type === "letter" && task.letter === letter;
-      var flower = flowers[index % 5];
-      var status = done ? '<span class="flower-check">' + icon("check",16) + '</span>' : (!open ? '<span class="flower-lock">' + icon("lock",15) + '</span>' :
-        '<span class="flower-progress">' + D.wordIndex(progress, letter) + '/5</span>');
-      nodes.push('<button class="garden-flower ' + flower + ' ' + (done ? "complete " : "") + (selected ? "current " : "") + (open ? "" : "locked") +
-        '" style="top:' + (190 + index * 142) + 'px;left:' + coords[index] + '%" data-action="letter" data-letter="' + letter + '" ' + (open ? "" : "disabled") +
-        ' aria-label="Letter ' + letter + ', ' + (done ? "complete" : open ? "available" : "locked") + '">' +
-        '<span class="petal p1"></span><span class="petal p2"></span><span class="petal p3"></span><span class="petal p4"></span><span class="petal p5"></span>' +
-        '<span class="flower-face">' + letter + '</span>' + status + '</button>');
-      if (index > 0 && index % 5 === 4) {
-        var group = Math.floor(index / 5);
-        nodes.push('<button class="garden-gate ' + (D.readyReview(progress, group) ? "ready" : "closed") +
-          '" style="top:' + (281 + index * 142) + 'px" data-action="review" data-group="' + group + '" ' +
-          (D.readyReview(progress, group) ? "" : "disabled") + '>' +
-          icon(D.readyReview(progress,group) ? "star" : "lock",18) + '<span>' +
-          (progress.reviews[String(group)] ? "Review complete!" : "Review " + D.letters[index-4] + "–" + letter) +
-          '</span></button>');
+    var task=D.nextTask(progress), names=["Sunny Meadow","Butterfly Brook","Mushroom Woods","Rainbow Hills","Clover Valley","The Last Bloom"];
+    var coords=[26,68,31,67,47], tops=[138,246,359,480,597], colors=["orange","yellow","purple","pink","blue"];
+    var chapters=[];
+    for(var group=0;group<6;group++){
+      var letters=D.letters.slice(group*5,group*5+5), letterNodes=[];
+      letters.forEach(function(letter,i){
+        var open=D.unlocked(progress,letter),done=D.done(progress,letter);
+        var selected=task.type==="letter" && task.letter===letter;
+        var status=done?'<span class="flower-check">'+icon("check",16)+'</span>':
+          (!open?'<span class="flower-lock">'+icon("lock",15)+'</span>':'<span class="flower-progress">'+D.wordIndex(progress,letter)+'/5</span>');
+        letterNodes.push('<button class="garden-flower '+colors[i]+' '+(done?"complete ":"")+(selected?"current ":"")+(open?"":"locked")+
+          '" style="top:'+tops[i]+'px;left:'+coords[i]+'%" data-action="letter" data-letter="'+letter+'" '+(open?"":"disabled")+
+          ' aria-label="Letter '+letter+', '+(done?"complete":open?"available":"locked")+'">'+
+          '<span class="petal p1"></span><span class="petal p2"></span><span class="petal p3"></span><span class="petal p4"></span><span class="petal p5"></span>'+
+          '<span class="flower-face">'+letter+'</span>'+status+'</button>');
+      });
+      var gate="";
+      if(letters.length===5){
+        gate='<button class="garden-gate '+(D.readyReview(progress,group)?"ready":"closed")+
+          '" style="top:711px" data-action="review" data-group="'+group+'" '+(D.readyReview(progress,group)?"":"disabled")+'>'+
+          icon(D.readyReview(progress,group)?"star":"lock",18)+'<span>'+
+          (progress.reviews[String(group)]?"Review complete!":"Review "+letters[0]+"–"+letters[4])+'</span></button>';
       }
-    });
-    return topbar("Letter Garden") + '<main class="page garden-page"><div class="garden-intro"><div><p class="eyebrow">WELCOME TO YOUR ADVENTURE</p>' +
-      '<h1>Explore the <em>alphabet!</em></h1><p>Follow the path. Tap a flower to learn.</p></div>' +
-      '<img src="assets/kids46/pip.svg" alt="Pip cheering you on" loading="lazy"></div>' +
-      '<div class="garden-world"><img class="garden-world-art" src="assets/kids46/garden-path.svg" alt="">' +
-      '<div class="garden-wood-sign"><strong>Letter Garden</strong><small>A little journey from A to Z</small></div>' +
-      nodes.join("") + '</div></main>';
+      var scenery='<img class="garden-deco deco-tree" src="assets/kits/nature/tree-puffy.svg" alt="" aria-hidden="true" loading="lazy">'+
+        '<img class="garden-deco deco-bush-left" src="assets/kits/nature/bush.svg" alt="" aria-hidden="true" loading="lazy">'+
+        '<img class="garden-deco deco-bush-right" src="assets/kits/nature/bush-flowers.svg" alt="" aria-hidden="true" loading="lazy">'+
+        '<img class="garden-deco deco-flower-one" src="assets/kits/nature/flower-pink.svg" alt="" aria-hidden="true" loading="lazy">'+
+        '<img class="garden-deco deco-flower-two" src="assets/kits/nature/flower-coral.svg" alt="" aria-hidden="true" loading="lazy">'+
+        '<img class="garden-deco deco-mushroom" src="assets/kits/nature/mushroom.svg" alt="" aria-hidden="true" loading="lazy">';
+      chapters.push('<section class="garden-chapter chapter-'+group+(letters.length<5?' chapter-short':'')+'" aria-label="'+names[group]+'">'+
+        '<div class="chapter-heading"><span class="chapter-number">'+(group+1)+'</span><div><strong>'+names[group]+'</strong><small>Letters '+letters[0]+'–'+letters[letters.length-1]+'</small></div></div>'+
+        '<div class="chapter-landscape">'+
+        '<img class="garden-world-art" src="assets/kids46/garden-path.svg" alt="" aria-hidden="true" loading="lazy">'+
+        '<span class="chapter-path" aria-hidden="true"></span>'+
+        scenery+letterNodes.join("")+gate+'</div></section>');
+    }
+    return topbar("Letter Garden")+'<main class="page garden-page">'+
+      '<div class="garden-intro"><div><p class="eyebrow">A WORLD OF LITTLE WORDS</p><h1>Follow the <em>flower path!</em></h1><p>Each blossom is a new adventure.</p></div>'+
+      '<img src="assets/kids46/pip.svg" alt="Pip cheering you on"></div>'+
+      '<div class="garden-world"><div class="garden-wood-sign"><strong>My Letter Garden</strong><small>Tap a bright flower to begin</small></div>'+
+      chapters.join("")+'</div></main>';
   }
   function word() { return D.words[state.letter][state.word]; }
-  function pictureFrame(item, extra) {
-    var artwork = item.id === "A-0" ? '<img class="vocab-art" src="assets/kids46/ant.svg" alt="A smiling ant in a sunny garden">' :
-      '<span class="picture-emoji" role="img" aria-label="' + safe(item.text) + '">' + item.picture + '</span>';
-    return '<div class="picture-stage ' + (extra || "") + (item.id === "A-0" ? " has-custom-art" : "") +
-      '"><span class="picture-orb picture-orb-one"></span><span class="picture-orb picture-orb-two"></span>' +
-      artwork + '<span class="picture-grass"></span></div>';
+  function pictureFrame(item,extra) {
+    var isAnt=item.id==="A-0",isApple=item.id==="A-1";
+    var art=isAnt?'<img class="vocab-art" src="assets/kids46/ant.svg" alt="A smiling ant in a garden">':
+      isApple?'<img class="vocab-art kit-vocab-apple" src="assets/kits/nature/apple.svg" alt="An illustrated apple">':
+      '<span class="picture-emoji" role="img" aria-label="'+safe(item.text)+'">'+item.picture+'</span>';
+    return '<div class="picture-stage '+(extra||"")+(isAnt||isApple?" has-custom-art":"")+(isApple?" has-kit-art":"")+'">'+
+      '<span class="picture-orb picture-orb-one"></span><span class="picture-orb picture-orb-two"></span>'+
+      art+'<span class="picture-grass"></span></div>';
   }
   function lessonShell(heading, description, body, footer, count) {
     var isQuiz = state.step === "quiz", n = isQuiz ? state.round : state.word;
@@ -322,7 +337,7 @@
       '<div class="sticker-shelves">' + D.letters.map(function (letter,index) {
         var isEarned = D.done(progress,letter), item = D.words[letter][0];
         return '<div class="shelf-slot ' + (isEarned ? "collected" : "not-yet") + '" aria-label="Letter ' + letter + (isEarned ? ' sticker earned' : ' sticker not yet earned') + '">' +
-          '<span class="sticker-illustration" role="img" aria-label="' + safe(item.text) + '">' + item.picture + '</span>' +
+          '<span class="sticker-illustration" role="img" aria-label="' + safe(item.text) + '">' + (letter==='A'?'<img src="assets/kits/nature/apple.svg" alt="">':item.picture) + '</span>' +
           '<span class="sticker-letter">' + letter + '</span>' + (isEarned ? '' : '<span class="sticker-lock">' + icon('lock',12) + '</span>') + '</div>';
       }).join("") + '</div></div>' +
       '<div class="rewards-celebration"><h2>' + (earned.length ? "You’re amazing!" : "Your adventure begins!") + '</h2><p>' +
