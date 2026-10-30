@@ -55,7 +55,7 @@ const server = http.createServer((req, res) => {
   const compactSpellLayout=await page.evaluate(() => ({
     viewport:innerHeight,
     footerBottom:document.querySelector(".play-footer").getBoundingClientRect().bottom,
-    sceneBottom:document.querySelector(".spell-scene").getBoundingClientRect().bottom,
+    sceneBottom:document.querySelector(".spell-world").getBoundingClientRect().bottom,
     tilesBottom:document.querySelector(".spell-tiles").getBoundingClientRect().bottom,
     pageWidth:document.querySelector("main").getBoundingClientRect().width
   }));
@@ -67,6 +67,8 @@ const server = http.createServer((req, res) => {
   await page.screenshot({ path:path.join(output,"04-tap-spelling.png"), fullPage:false });
   for(let n=0;n<3;n++) await page.locator('[data-action="tile"]:not([disabled])').first().click();
   assert.ok(await page.locator(".spell-tiles").count(),"Wrong left-to-right selection must remain in the spelling activity");
+  assert.equal(await page.locator(".spell-world .spell-mentor-fox").count(),1,"Pip should be an independent visual asset");
+  assert.equal(await page.locator(".spell-listen[data-action=say]").count(),1,"Listening control must remain functional");
   assert.match(await page.locator(".inline-feedback").innerText(),/not quite|good try/i);
   for (const letter of "ANT") {
     const tiles = page.locator('[data-action="tile"]:not([disabled])');
